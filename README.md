@@ -1,6 +1,6 @@
 # Causal Inference in Epidemiology Using R
 
-**Read the book:** <https://alanbrookhart.github.io/causal-inference-epi-r/>
+**Read the book:** <https://alanbrookhart.github.io/PHS921-Book/>
 
 *Causal Inference in Epidemiology Using R* is a code-first
 introduction to causal inference for epidemiology students moving from
