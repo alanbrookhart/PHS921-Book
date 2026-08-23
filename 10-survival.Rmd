@@ -376,8 +376,8 @@ distinguish a truly time-varying effect from selection. Nor is
 proportional hazards a technical detail a test can rescue; the assumption
 is that this awkward ratio happens to be constant.
 
-Risks do not have this problem. $\Pr(Y^{a=1} \le t)$ and
-$\Pr(Y^{a=0} \le t)$ are both defined over everyone who started, so their
+Risks do not have this problem. $\Pr(Y(1) \le t)$ and
+$\Pr(Y(0) \le t)$ are both defined over everyone who started, so their
 difference or ratio is a causal contrast in the sense of Chapter 3. This
 book therefore reports risks at named horizons — five years and
 `r admin_end` years for `sta` — and treats hazard ratios, when they

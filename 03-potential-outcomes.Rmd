@@ -32,21 +32,22 @@ received the nonselective drug.
 Potential outcomes give that question a name and a symbol. Let $A$
 denote the treatment Patient 47 receives, coded $A = 1$ for the Cox-2
 selective drug and $A = 0$ for the nonselective drug, and let $Y$ denote
-whether she develops incident PUD. Then $Y^1$ is the outcome she would
-have if she were treated with $A = 1$, and $Y^0$ is the outcome she
+whether she develops incident PUD. Then $Y(1)$ is the outcome she would
+have if she were treated with $A = 1$, and $Y(0)$ is the outcome she
 would have if she were treated with $A = 0$. These are **potential**
 outcomes — one for each treatment value she could in principle receive —
 and both exist, in the sense of being well-defined quantities, before we
 know which treatment she actually gets. Once treatment is assigned, one
 of them becomes the **observed** outcome and the other becomes
 counterfactual: contrary to the fact of what happened. If Patient 47
-actually receives the Cox-2 drug, we observe $Y^1$; $Y^0$ is what
+actually receives the Cox-2 drug, we observe $Y(1)$; $Y(0)$ is what
 her chart would show in the world where her physician wrote the other
 prescription.
 
 A word on notation, because it varies more than the idea does. We write
-these potential outcomes with superscripts, but many authors — and the
-PHS 921 lectures and exams — write $Y(1)$ and $Y(0)$, and others write
+these potential outcomes as $Y(1)$ and $Y(0)$, matching the PHS 921
+lectures and exams, but many books — *Causal Inference: What If* among
+them — write superscripts, $Y^1$ and $Y^0$ or $Y^a$, and others write
 $Y_a$ for the outcome under a generic treatment value $a$. All three
 notations denote the same objects, so it is worth learning to move
 between them freely rather than attaching the concept to any one of
@@ -54,7 +55,7 @@ them.
 
 With both potential outcomes in hand for a single patient, her
 **individual causal effect** of Cox-2 selectivity on PUD is simply the
-contrast between them, $Y^1 - Y^0$. If $Y^1 = 0$ and $Y^0 = 1$, the
+contrast between them, $Y(1) - Y(0)$. If $Y(1) = 0$ and $Y(0) = 1$, the
 Cox-2 drug prevented her ulcer; if both are 0, or both are 1, the choice
 of drug made no difference to her outcome, even though the drugs may
 differ enormously for other patients. This is a clean, well-defined
@@ -145,12 +146,12 @@ chapter exists precisely to close that gap without needing to.
 
 ## Average causal effects and estimands
 
-The individual causal effect $Y^1 - Y^0$ cannot be observed, but its
+The individual causal effect $Y(1) - Y(0)$ cannot be observed, but its
 *average* over a population can be, once we have the right tools —
 which is why causal inference works with population-level summaries
 called **estimands**. The one that shows up most often in this book is
 the **average treatment effect (ATE)**,
-$$\text{ATE} = E[Y^1] - E[Y^0],$$
+$$\text{ATE} = E[Y(1)] - E[Y(0)],$$
 the average, over everyone in the population of interest, of what would
 happen if everyone were treated minus what would happen if no one were.
 In the simulation above, `mean(y1) - mean(y0)` computed over all 100,000
@@ -159,7 +160,7 @@ outcomes for every one of them.
 
 A second estimand, the **average treatment effect in the treated
 (ATT)**,
-$$\text{ATT} = E[Y^1 \mid A = 1] - E[Y^0 \mid A = 1],$$
+$$\text{ATT} = E[Y(1) \mid A = 1] - E[Y(0) \mid A = 1],$$
 restricts that same contrast to the patients who were actually treated:
 it asks what treatment did for the people who received it, not for the
 population as a whole. In the simulation, that is
@@ -192,12 +193,12 @@ genuinely part ways.
 
 Any of these estimands can be reported on more than one scale. With $Y$
 binary, as PUD is, the most direct scale is the **risk difference**,
-$E[Y^1] - E[Y^0]$, interpretable as "how many fewer (or more) cases per
-100 patients treated." The **risk ratio**, $E[Y^1] / E[Y^0]$, expresses
+$E[Y(1)] - E[Y(0)]$, interpretable as "how many fewer (or more) cases per
+100 patients treated." The **risk ratio**, $E[Y(1)] / E[Y(0)]$, expresses
 the same contrast multiplicatively — a risk ratio of 0.7 means treatment
 reduces risk by 30%, regardless of baseline risk, which often makes it
 more portable across populations than a difference. The **odds ratio**,
-$$\frac{E[Y^1]/(1-E[Y^1])}{E[Y^0]/(1-E[Y^0])},$$
+$$\frac{E[Y(1)]/(1-E[Y(1)])}{E[Y(0)]/(1-E[Y(0)])},$$
 is the scale most familiar from logistic regression and case-control
 studies, but it approximates the risk ratio only when the outcome is
 rare, and can otherwise diverge from it substantially. None of
@@ -219,19 +220,19 @@ than abstract axioms.
 
 **Consistency** says that a patient's observed outcome equals the
 potential outcome under the treatment she actually received: if Patient
-47 takes the Cox-2 drug, her observed $Y$ equals $Y^1$, not some
-average or blend involving $Y^0$. This sounds almost too obvious to
+47 takes the Cox-2 drug, her observed $Y$ equals $Y(1)$, not some
+average or blend involving $Y(0)$. This sounds almost too obvious to
 state, but it is doing real work — it is what licenses the line
 `y = if_else(a == 1, y1, y0)` in the simulation above, and it can fail
 in practice when "treatment" is not well defined enough to pin down a
 single potential outcome. If "Cox-2 initiation" secretly bundles several
 different doses, durations, or concurrent gastroprotective strategies,
-then $Y^1$ is not one well-defined quantity but several, and consistency
+then $Y(1)$ is not one well-defined quantity but several, and consistency
 is violated before any statistical issue even arises.
 
 **Exchangeability** (also called ignorability) says that the treated
 and untreated groups would have had the same average outcome had they
-received the same treatment — formally, $Y^1, Y^0 \perp A$, potential
+received the same treatment — formally, $Y(1), Y(0) \perp A$, potential
 outcomes are statistically independent of the treatment actually
 received. This is exactly what fails in our simulation: because `a`
 depends on `severity`, and `severity` also drives `y0` and `y1`, treated
@@ -245,7 +246,7 @@ we are studying.
 
 Full exchangeability is usually too much to hope for in observational
 data, which is why most of this book works with a weaker version,
-**conditional exchangeability**: $Y^1, Y^0 \perp A \mid L$ for some set
+**conditional exchangeability**: $Y(1), Y(0) \perp A \mid L$ for some set
 of measured covariates $L$. Treatment need not be independent of
 potential outcomes overall, only *within levels* of $L$ — among
 patients who share the same measured `severity`, say, treatment

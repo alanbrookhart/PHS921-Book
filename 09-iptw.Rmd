@@ -387,7 +387,7 @@ The one-covariate regression we fit in the pseudo-population has a name.
 A **marginal structural model** is a model for the marginal mean of a
 potential outcome as a function of treatment,
 
-$$E[Y^{a}] = \beta_0 + \beta_1 a,$$
+$$E[Y(a)] = \beta_0 + \beta_1 a,$$
 
 *structural* because its arguments are counterfactual treatments rather
 than observed ones, *marginal* because it averages over the covariate

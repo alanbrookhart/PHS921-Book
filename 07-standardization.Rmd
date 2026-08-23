@@ -100,7 +100,7 @@ Now the awkward part. That `r sprintf("%.2f", cond_or)` is a
 **conditional** odds ratio: the odds ratio comparing two patients who
 are identical on all nineteen covariates and differ only in which NSAID
 they started. It is not the marginal contrast we defined in Chapter 3.
-The ATE was written $E[Y^1] - E[Y^0]$, an average over the whole
+The ATE was written $E[Y(1)] - E[Y(0)]$, an average over the whole
 population of what would happen under each treatment — a single number
 attached to a population, not to a stratum. Nothing in a regression
 coefficient delivers that, and the gap is not merely a matter of

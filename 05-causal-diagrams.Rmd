@@ -107,7 +107,7 @@ do: because each of the three variables opens its own separate backdoor
 path with no shared intermediate node, dropping any one of them leaves
 that path open, and the comparison stays confounded through whichever
 variable was left out. This is precisely the graphical version of the
-conditional exchangeability condition from Chapter 3 — $Y^a
+conditional exchangeability condition from Chapter 3 — $Y(a)
 \perp A \mid L$ for $L$ equal to this adjustment set — except that here
 we read the set off a picture instead of asserting it by fiat, and we
 leave the diagram open for a colleague to challenge by redrawing an
