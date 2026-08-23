@@ -1,0 +1,479 @@
+# (PART) Beyond Exchangeability {-}
+
+# Instrumental variables
+
+```{r setup-ch13, include=FALSE}
+source("R/setup.R")
+```
+
+Parts II and III differed in almost every mechanical detail —
+standardization against weighting, point outcomes against time to event,
+baseline treatment against sustained strategies — and agreed on a single
+premise. Every estimator assumed that within levels of the covariates we
+happened to record, treated and untreated patients were exchangeable.
+Part IV asks what remains available when that premise is precisely the
+thing we doubt. This chapter looks for variation in treatment we can
+argue is as good as randomly assigned even though the treatment itself
+plainly is not. Chapter 14 takes the opposite tack, and
+asks how badly exchangeability would have to fail before a finding
+reversed.
+
+## When exchangeability fails
+
+The bargain we have been striking all along is that if we measure enough
+covariates, treatment is as good as randomized within their levels, and
+it is a bargain we can never audit. Chapter 8's balance diagnostics
+confirm that the covariates we recorded are balanced; they are silent
+about the ones we did not. When a clinician chooses a Cox-2 selective
+agent because a patient looks frail in a way no billing code captures, no
+amount of adjustment for the codes we do have will repair the comparison.
+
+An **instrumental variable** offers a different bargain, and it is worth
+being clear that it is not a weaker one — only differently placed. We
+look for a variable $Z$ that shifts treatment for reasons that have
+nothing to do with prognosis, and we use only the part of the variation
+in treatment that $Z$ explains. Three conditions define such a variable,
+stated here as Hernán and Robins (2006) stated them for
+epidemiologists.
+
+1. **Relevance.** $Z$ is associated with treatment $A$. This is the one
+   condition the data can speak to.
+2. **Exclusion restriction.** $Z$ affects the outcome $Y$ only through
+   $A$. No arrow from $Z$ to $Y$ that bypasses treatment.
+3. **Instrument exchangeability.** Nothing points into both $Z$ and $Y$ —
+   no backdoor path connects the instrument to the outcome, either
+   unconditionally or after conditioning on measured covariates $L$. The
+   instrument is itself unconfounded.
+
+Conditions 2 and 3 are assumptions in the same unverifiable sense that
+conditional exchangeability was; we have moved the untestable content
+rather than eliminated it. What we gain is that the assumptions now
+concern a variable we may know something about institutionally, rather
+than the completeness of a covariate list.
+
+The three conditions together do not identify an effect. They bound one —
+the bounds are Manski's (1990), sharpened by Balke and Pearl (1997) —
+which is often a wide bound and rarely reported. For a point estimate a
+fourth assumption is needed, and there are two conventional choices.
+Under **effect homogeneity** — the effect of $A$ on $Y$ is constant
+across patients, or at least uncorrelated with how strongly $Z$ moves
+their treatment — the instrument identifies the average treatment effect.
+Under **monotonicity** — no patient's treatment is pushed in the opposite
+direction to everyone else's by the instrument — it identifies the
+average effect among those patients whose treatment the instrument
+actually moved. That second quantity is the **local average treatment
+effect**, and it is the one we will end up with.
+
+```{r ch13-iv-dag, message=FALSE}
+library(ggdag)
+dag_iv <- dagify(
+  pud  ~ cox2 + u,
+  cox2 ~ pref + u,
+  exposure = "cox2",
+  outcome  = "pud",
+  latent   = "u",
+  labels = c(pref = "Physician preference", cox2 = "Cox-2 selective",
+             pud = "Peptic ulcer", u = "Unmeasured confounders")
+)
+ggdag(dag_iv, text = FALSE, use_labels = "label") + theme_dag()
+```
+
+The diagram is the whole method in four nodes. The unmeasured $U$ points
+at both `cox2` and `pud`, so the backdoor path that ruined the crude
+comparison is still open and no adjustment set closes it. But `pref` has
+exactly one arrow out of it, into `cox2`, and nothing pointing in from
+$U$. The only way `pref` and `pud` can be associated is along
+`pref -> cox2 -> pud`, so any association we observe between them must
+be the drug's effect, scaled down by how much of `cox2` the instrument
+controls. Rescaling by that amount is what an IV estimator does. Note
+what the diagram asserts rather than shows: the missing `pref -> pud`
+arrow is the exclusion restriction, and the missing `u -> pref` arrow is
+instrument exchangeability.
+
+## Provider preference as an instrument
+
+Physicians differ in prescribing habits for reasons that outlive any
+individual patient — training, detailing, formulary, temperament. Two
+patients with identical records who walk into different offices may
+receive different drugs, and the difference is attributable to the office
+rather than to the patient. That is the intuition behind **provider
+preference** as an instrument: we take a physician's prescribing
+tendency, estimated from her *other* patients, as an assigned nudge
+toward one drug or the other.
+
+The leave-one-out construction matters. If a physician's preference were
+computed from all her visits including the index one, a patient's own
+treatment would contribute $1/n$ of her physician's score, and the first
+stage would be mechanically positive even for a physician with no habit
+at all. Excluding the index visit removes that arithmetic artifact, so
+whatever association survives reflects the habit and not the patient.
+
+The original implementation of this idea (Brookhart, Wang, Solomon, and
+Schneeweiss 2006) used a lag-1 variant: the instrument was simply what
+the physician prescribed to her *previous* patient. The leave-one-out
+mean we use here is the same instrument in spirit — both are proxies for
+a prescribing preference the patient did not choose — but it draws on all
+of the physician's other patients rather than one, and so uses more of
+the information each physician's panel contains.
+
+```{r pp-iv}
+ns_iv <- ns |>
+  group_by(phycode) |>
+  mutate(n_visits = n(),
+         pref = (sum(cox2_init) - cox2_init) / (n_visits - 1)) |>
+  ungroup() |>
+  filter(n_visits >= 2)
+```
+
+```{r ch13-cohort-values, include=FALSE}
+n_phys_all <- n_distinct(ns$phycode)
+n_phys_iv  <- n_distinct(ns_iv$phycode)
+n_pref_pos <- sum(ns_iv$pref > 0)
+```
+
+The filter is not a formality. Of `r n_phys_all` physicians, only
+`r n_phys_iv` contribute two or more visits; the rest have no other
+patient from whom a preference could be computed, since `n_visits - 1` is
+zero and the score undefined. The cohort falls from
+`r nrow(ns)` visits to `r nrow(ns_iv)`, carrying
+`r sum(ns_iv$cox2_init)` Cox-2 initiators and `r sum(ns_iv$pud)` ulcer
+cases. This is the first cost of the method, paid before any estimation:
+IV analyses buy their weaker assumptions with data.
+
+The distribution is lopsided. Cox-2 initiation is uncommon and most
+physicians in a panel of two to ten visits prescribed none, so `pref` is
+exactly zero for `r nrow(ns_iv) - n_pref_pos` of the `r nrow(ns_iv)`
+visits; only `r n_pref_pos` patients saw a physician who prescribed a
+Cox-2 drug to anyone else we observe.
+
+Relevance we can check directly.
+
+```{r ch13-first-stage}
+first_stage <- lm(cox2_init ~ pref, data = ns_iv)
+summary(first_stage)
+```
+
+```{r ch13-fs-values, include=FALSE}
+fs_coef <- coef(first_stage)["pref"]
+fs_se   <- summary(first_stage)$coefficients["pref", "Std. Error"]
+fs_f    <- summary(first_stage)$fstatistic[["value"]]
+fs_adj  <- anova(lm(reformulate(ns_covs, "cox2_init"), data = ns_iv),
+                 lm(reformulate(c("pref", ns_covs), "cox2_init"), data = ns_iv))
+fs_f_adj <- fs_adj$F[2]
+reduced  <- summary(lm(pud ~ pref, data = ns_iv))$coefficients["pref", ]
+```
+
+Moving from a physician who prescribed a Cox-2 agent to none of her
+other patients to one who prescribed it to all of them raises this
+patient's probability of receiving one by
+`r sprintf("%.1f", 100 * fs_coef)` percentage points
+(SE `r sprintf("%.1f", 100 * fs_se)`), with an $F$ statistic of
+`r sprintf("%.0f", fs_f)` — comfortably past the conventional
+rule-of-thumb threshold of 10. Adding `ns_covs` to the first stage barely
+touches it: the partial $F$ for `pref` is
+`r sprintf("%.0f", fs_f_adj)`. Physician habit does predict prescribing,
+which is the least we should demand.
+
+The second and third conditions cannot be checked, but one of their
+implications can be inspected. If the instrument is assigned for reasons
+unrelated to the patient, patient characteristics should be *more*
+balanced across levels of the instrument than across levels of treatment.
+
+```{r ch13-balance}
+source("R/table1.R")
+ns_iv <- ns_iv |> mutate(pref_any = as.integer(pref > 0))
+
+by_both <- function(f, vars) {
+  bind_rows(
+    `Treatment: nonselective / Cox-2` = f(ns_iv, vars, "cox2_init"),
+    `Instrument: pref = 0 / pref > 0` = f(ns_iv, vars, "pref_any"),
+    .id = "contrast"
+  ) |>
+    rename(group_0 = `0`, group_1 = `1`)
+}
+
+by_both(table1_continuous, "age") |> knitr::kable()
+by_both(table1_categorical, c("arthritis", "year")) |> knitr::kable()
+```
+
+```{r ch13-bal-values, include=FALSE}
+library(cobalt)
+bal_t <- bal.tab(reformulate(ns_covs, "cox2_init"), data = ns_iv, binary = "std")
+bal_i <- bal.tab(reformulate(ns_covs, "pref_any"), data = ns_iv, binary = "std")
+smd_t <- abs(bal_t$Balance$Diff.Un); names(smd_t) <- rownames(bal_t$Balance)
+smd_i <- abs(bal_i$Balance$Diff.Un); names(smd_i) <- rownames(bal_i$Balance)
+cox2_by_year <- tapply(ns_iv$cox2_init, ns_iv$year, mean)
+```
+
+The comparison is partly reassuring and partly not, which is more
+instructive than a clean result. On the clinical covariates the
+instrument behaves as advertised: age differs by
+`r sprintf("%.2f", smd_t["age"])` standardized units across treatment but
+only `r sprintf("%.2f", smd_i["age"])` across the instrument, and
+arthritis by `r sprintf("%.2f", smd_t["arthritis_Yes"])` against
+`r sprintf("%.2f", smd_i["arthritis_Yes"])`. Across all
+`r length(smd_t)` model terms the mean absolute standardized difference
+is `r sprintf("%.3f", mean(smd_t))` for treatment and
+`r sprintf("%.3f", mean(smd_i))` for the instrument.
+
+Calendar year is another matter, and the second table shows why. Cox-2
+prescribing fell steadily over this period, from
+`r sprintf("%.1f", 100 * cox2_by_year[["2005"]])`% of initiations in 2005
+to `r sprintf("%.1f", 100 * cox2_by_year[["2009"]])`% in 2009, and each
+NAMCS physician contributes visits from a single survey year. A
+high-preference physician is therefore disproportionately a 2005
+physician, and the standardized difference for the 2005 indicator is
+`r sprintf("%.2f", smd_i["year_2005"])` across the instrument against
+`r sprintf("%.2f", smd_t["year_2005"])` across treatment — worse, not
+better. Secular trends in ulcer diagnosis and management would then reach
+the outcome without passing through this patient's drug, violating the
+exclusion restriction. Year is measured, so the repair is available: we
+condition on it, and read the IV conditions as holding within levels of
+`ns_covs` rather than unconditionally. The diagnostic did not validate
+the instrument; it located a specific threat and told us what to adjust
+for.
+
+## The Wald and two-stage estimators
+
+With a binary instrument the estimator is arithmetic. Suppose the
+instrument shifts the treated fraction by $\Delta_A$ and the outcome risk
+by $\Delta_Y$. If the only route from instrument to outcome is through
+treatment, then $\Delta_Y = \beta \, \Delta_A$, where $\beta$ is the
+effect of treatment on the outcome. Solving gives the **Wald ratio**,
+
+$$\hat\beta = \frac{E[Y \mid Z = 1] - E[Y \mid Z = 0]}{E[A \mid Z = 1] - E[A \mid Z = 0]},$$
+
+a difference in outcomes divided by a difference in treatments. We
+dichotomize the instrument at the only cut point the data offer. Because
+`pref` is exactly zero for six visits in seven, splitting at the median
+with `ntile(pref, 2)` would divide the tied-at-zero mass arbitrarily and
+produce two groups that barely differ in treatment; `pref > 0` is the
+substantive contrast.
+
+```{r ch13-wald}
+wald_tab <- ns_iv |>
+  group_by(pref_any) |>
+  summarise(n = n(), treated = mean(cox2_init), risk = mean(pud),
+            .groups = "drop")
+wald_tab |> knitr::kable(digits = 4)
+
+wald <- with(wald_tab, diff(risk) / diff(treated))
+wald
+```
+
+```{r ch13-wald-values, include=FALSE}
+d_a <- diff(wald_tab$treated); d_y <- diff(wald_tab$risk)
+fs_bin_f <- summary(lm(cox2_init ~ pref_any, data = ns_iv))$fstatistic[["value"]]
+```
+
+The instrument moves treatment by
+`r sprintf("%.1f", 100 * d_a)` percentage points and the outcome by
+`r sprintf("%+.1f", 100 * d_y)`, so the ratio is
+`r sprintf("%+.1f", 100 * wald)` percentage points. Read the two
+numerators before the quotient: a `r sprintf("%+.1f", 100 * d_y)`-point
+difference in ulcer risk between groups of `r wald_tab$n[1]` and
+`r wald_tab$n[2]` patients is well inside noise, and dividing a noisy
+small number by `r sprintf("%.2f", d_a)` multiplies the noise by nine.
+
+The general form replaces the ratio with two regressions. Fit treatment
+on the instrument, take the fitted values, and regress the outcome on
+those — **two-stage least squares**, which reproduces the Wald ratio
+exactly with a single binary instrument and generalizes to continuous
+instruments and covariates.
+
+```{r ch13-iv-def, eval=FALSE}
+iv_estimator <- function(data, instrument, treat, outcome, covs = NULL,
+                         n_boot = 200, conf_level = 0.95, seed = NULL) {
+  if (!is.null(seed)) set.seed(seed)
+
+  tsls <- function(d) {
+    s1 <- lm(reformulate(c(instrument, covs), treat), data = d)
+    d$.that <- predict(s1)
+    coef(lm(reformulate(c(".that", covs), outcome), data = d))[".that"]
+  }
+
+  est <- tsls(data)
+  boot_est <- replicate(n_boot, tsls(slice_sample(data, prop = 1, replace = TRUE)))
+  alpha <- 1 - conf_level
+
+  tibble(
+    estimate  = unname(est),
+    conf_low  = quantile(boot_est, alpha / 2),
+    conf_high = quantile(boot_est, 1 - alpha / 2)
+  )
+}
+```
+
+Two choices in that code are deliberate. The first stage is `lm()` even
+though `cox2_init` is binary, where every instinct from Chapter 8 says
+logistic regression. Substituting fitted probabilities from a
+nonlinear first stage is the error known as the **forbidden regression**:
+two-stage least squares is consistent because the first stage is a
+*linear projection* of treatment onto the instrument and covariates,
+which needs no model to be correct, whereas a logistic first stage
+delivers usable fitted values only if the logistic model itself is right.
+
+The second is the bootstrap. Reading the standard error off the
+second-stage `lm()` would treat `.that` as data rather than as an
+estimate, understating uncertainty; resampling propagates both stages,
+and the `seed` argument makes a particular set of resamples
+reproducible.
+
+```{r ch13-iv-fit}
+source("R/iv_estimator.R")
+
+iv_plain <- iv_estimator(ns_iv, "pref", "cox2_init", "pud", seed = 1301)
+iv_adj   <- iv_estimator(ns_iv, "pref", "cox2_init", "pud",
+                         covs = ns_covs, seed = 1301)
+bind_rows(unadjusted = iv_plain, adjusted = iv_adj, .id = "model") |>
+  knitr::kable(digits = 4)
+```
+
+Now the full comparison, with Part II's estimates recomputed alongside.
+
+```{r ch13-compare}
+source("R/standardize.R"); source("R/propensity.R"); source("R/iptw_estimator.R")
+
+ps_model <- reformulate(ns_covs, "cox2_init")
+crude <- ns |> group_by(cox2_init) |> summarise(r = mean(pud), .groups = "drop") |> pull(r)
+std   <- standardize(ns, reformulate(c("cox2_init", ns_covs), "pud"),
+                     treat = "cox2_init", n_boot = 200, seed = 921)
+ipw   <- iptw_estimator(ns, ps_model, outcome = "pud", treat = "cox2_init")
+matched <- ps_match(est_ps(ns, ps_model), treat = "cox2_init", caliper = 0.05)
+mr    <- tapply(matched$pud, matched$cox2_init, mean)
+iv_wald <- iv_estimator(ns_iv, "pref_any", "cox2_init", "pud", seed = 1301)
+
+get <- function(d, key, col) d[[col]][d[[1]] == key]
+
+tibble(
+  estimator = c("Crude", "Standardization (Ch. 7)", "PS matching (Ch. 8)",
+                "IPTW (Ch. 9)", "IV: Wald, pref > 0",
+                "IV: 2SLS, continuous pref", "IV: 2SLS + covariates"),
+  estimand  = c("none", "ATE", "ATT", "ATE", "LATE", "LATE", "LATE"),
+  n         = c(nrow(ns), nrow(ns), nrow(matched), nrow(ns), rep(nrow(ns_iv), 3)),
+  rd_pp = 100 * c(crude[2] - crude[1], get(std, "rd", "estimate"),
+                  mr[[2]] - mr[[1]], get(ipw, "cox2_init", "estimate"),
+                  iv_wald$estimate, iv_plain$estimate, iv_adj$estimate),
+  lower = 100 * c(NA, get(std, "rd", "conf_low"), NA,
+                  get(ipw, "cox2_init", "conf.low"),
+                  iv_wald$conf_low, iv_plain$conf_low, iv_adj$conf_low),
+  upper = 100 * c(NA, get(std, "rd", "conf_high"), NA,
+                  get(ipw, "cox2_init", "conf.high"),
+                  iv_wald$conf_high, iv_plain$conf_high, iv_adj$conf_high)
+) |> knitr::kable(digits = 1)
+```
+
+```{r ch13-compare-values, include=FALSE}
+risk0 <- mean(ns_iv$pud[ns_iv$cox2_init == 0])
+width_plain <- 100 * (iv_plain$conf_high - iv_plain$conf_low)
+width_ipw   <- 100 * (get(ipw, "cox2_init", "conf.high") -
+                      get(ipw, "cox2_init", "conf.low"))
+n_compliers <- round(nrow(ns_iv) * d_a)
+```
+
+The three IV rows are not three answers. They are one non-answer,
+reported three ways. The continuous-instrument estimate is
+`r sprintf("%+.1f", 100 * iv_plain$estimate)` percentage points, the
+covariate-adjusted version `r sprintf("%+.1f", 100 * iv_adj$estimate)`,
+and the binary Wald ratio `r sprintf("%+.1f", 100 * wald)` — a change of
+sign across two codings of the same instrument. Their intervals span
+roughly `r sprintf("%.0f", width_plain)` percentage points against
+`r sprintf("%.1f", width_ipw)` for IPTW on the same question, and they
+include values that are arithmetically impossible: the ulcer risk among
+nonselective initiators here is
+`r sprintf("%.1f", 100 * risk0)`%, so a risk difference of
+`r sprintf("%.0f", 100 * iv_plain$conf_low)` points cannot occur. An
+interval containing impossible values is not really an interval about the
+effect. Part II's estimates, whatever their residual confounding, at
+least sit on the scale of the quantity they estimate.
+
+## Interpreting the LATE
+
+Suppose the instrument were flawless and the sample large. What would we
+have estimated? Take the binary Wald row first, where the answer is
+cleanest. Under monotonicity, patients divide into three groups.
+**Always-takers** receive the Cox-2 drug regardless of which physician
+they see; **never-takers** receive the nonselective agent regardless; and
+**compliers** receive whichever drug their physician's habit favors. The
+instrument carries no information about the first two groups, because
+their treatment does not respond to it. The local average treatment
+effect is the average effect among compliers alone.
+
+The first stage measures how large that group is. Moving from a
+zero-preference to a positive-preference physician shifts the treated
+fraction by `r sprintf("%.1f", 100 * d_a)` points, so roughly one patient
+in `r sprintf("%.0f", 1 / d_a)` is a complier —
+about `r n_compliers` of the `r nrow(ns_iv)` in the cohort, among whom we
+would expect on the order of `r sprintf("%.0f", n_compliers * risk0)`
+ulcer cases. That number, not `r nrow(ns_iv)`, is the effective size of
+the Wald analysis, and it accounts for the intervals above better than
+any other single quantity.
+
+The continuous-`pref` rows, which carry the headline estimates, need one
+further step of care, because with a many-valued instrument there is no
+single complier group. A shift in preference from 0 to 0.25 moves one set
+of patients and a shift from 0.5 to 0.75 moves another, and 2SLS under a
+linear model returns a weighted average of these per-increment local
+effects across the instrument's support, weighted by how much treatment
+each increment shifts (Angrist and Imbens 1995). The complier arithmetic
+above is exact for the binary row and an illustration of the idea for the
+others; no single describable subgroup sits behind that weighted average.
+
+Compliers are a subgroup we cannot enumerate — no patient is labelled —
+and their clinical meaning depends on the instrument. Here they are
+patients whose prescription was genuinely up for grabs: not the arthritic
+patient with a prior bleed for whom a Cox-2 agent is clearly indicated,
+nor the young patient with no GI history who will get ibuprofen from
+anyone, but the intermediate patient whose treatment tracked her
+physician's habit. Whether the average effect in that group is what a
+guideline committee wants is worth asking out loud, and the answer is
+often no. The LATE is not the ATE of Chapter 3 and not the ATT of
+Chapter 8; it is a third estimand, defined by the instrument we happened
+to find.
+
+Two caveats bound what this chapter has shown. The weak-instrument
+literature warns that when the first stage is barely predictive, 2SLS is
+biased toward the confounded estimate and its intervals undercover; the
+$F$ statistic of `r sprintf("%.0f", fs_f)` clears the usual threshold, so
+that is not our leading problem — but the threshold assumes independent
+observations, and `pref` varies at the physician level with only
+`r n_phys_iv` physicians contributing. `iv_estimator()` as written
+resamples visits — rows — rather than physicians, so every interval in
+this chapter is too narrow by an amount we have not measured; clustering
+at the physician level would widen all of them. Our leading problem is
+nonetheless simpler, and not repairable by a
+better estimator: the reduced-form association between instrument and
+outcome is `r sprintf("%+.3f", reduced[["Estimate"]])`
+(SE `r sprintf("%.3f", reduced[["Std. Error"]])`), indistinguishable from
+zero, and dividing a null numerator by a small denominator yields a wide
+interval around nothing.
+
+That is the honest summary. The provider-preference instrument in these
+data is strong enough to be worth constructing, transparent enough to
+audit — the year imbalance we found is a real finding about the
+instrument — and far too small to settle the question. Reported as one
+line in a sensitivity table beside Part II's estimates, its
+non-contradiction of the null is mildly informative because it rests on
+different assumptions. Reported as the headline result, with its point
+estimate quoted and its interval quietly omitted, it would be
+indefensible.
+
+## Exercises
+
+1. Rebuild the instrument requiring `n_visits >= 3` instead of 2. Report
+   the resulting cohort size, the first-stage $F$, and the IV estimate
+   with its interval. The score is measured from more visits and so is
+   less noisy, but fewer patients remain. Which effect dominates here,
+   and how would you preregister the threshold?
+2. Compare `iv_estimator()` run with `covs = ns_covs` against the
+   unadjusted fit, and explain why covariates must appear in *both*
+   stages rather than only the second. Then remove `year` from `ns_covs`
+   and rerun. Given the imbalance documented above, how much of the
+   difference between the adjusted and unadjusted estimates is calendar
+   time?
+3. Suppose physicians who favor Cox-2 agents also practice in
+   better-resourced settings, so their patients receive closer follow-up
+   and more attentive management of GI symptoms. Draw the DAG. Which of
+   the three IV conditions fails, in which direction would it bias the
+   estimate, and would conditioning on `ns_covs` help? Propose one
+   variable, measured or not, that would let you probe the assumption.

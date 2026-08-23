@@ -1,0 +1,513 @@
+# Inverse probability of treatment weighting
+
+```{r setup-ch09, include=FALSE}
+source("R/setup.R")
+```
+
+Chapter 8 built a propensity score and then spent it two ways, both of
+which threw something away: stratification coarsened the score into five
+bands, and matching discarded every nonselective initiator who failed to
+pair with a Cox-2 patient. This chapter puts the same fitted score to a
+third use that keeps every patient. Rather than grouping people who
+resemble each other, we leave the cohort intact and give each patient a
+*weight* — larger for those who received the treatment their covariates
+made unlikely, smaller for those who received the expected one. In the
+reweighted cohort treatment and covariates are unrelated by
+construction, so a plain comparison of two weighted means estimates the
+causal contrast. This is **inverse probability of treatment weighting**,
+the last of Part II's three estimators and the one whose logic carries
+furthest, since it alone extends cleanly to treatments that change over
+time.
+
+## Reweighting to a pseudo-population
+
+The intuition is easiest to see in a cohort small enough to work by
+hand. Suppose the only confounder is frailty, present in 400 of 1,000
+patients. Frail patients are treated with probability 0.60 and
+non-frail patients with probability 0.15, and the true risk of the
+outcome is 20% in frail patients and 10% in non-frail patients
+regardless of treatment — so the treatment does nothing at all.
+
+```{r ch09-toy}
+toy <- tibble(
+  frail = c(  1,   1,   0,   0),
+  arm   = c(  1,   0,   1,   0),
+  n     = c(240, 160,  90, 510),
+  cases = c( 48,  32,   9,  51)
+) |>
+  mutate(
+    e        = if_else(frail == 1, 0.60, 0.15),
+    wt       = if_else(arm == 1, 1 / e, 1 / (1 - e)),
+    pseudo_n = n * wt,
+    pseudo_y = cases * wt
+  )
+
+toy |> knitr::kable(digits = 3)
+```
+
+```{r ch09-toy-values, include=FALSE}
+crude_toy <- with(toy, tapply(cases, arm, sum) / tapply(n, arm, sum))
+wtd_toy   <- with(toy, tapply(pseudo_y, arm, sum) / tapply(pseudo_n, arm, sum))
+```
+
+Compared crudely, treatment looks harmful: risk
+`r sprintf("%.1f", 100 * crude_toy[2])`% among the treated against
+`r sprintf("%.1f", 100 * crude_toy[1])`% among the untreated, a risk
+difference of
+`r sprintf("%+.1f", 100 * (crude_toy[2] - crude_toy[1]))` percentage
+points for a drug with no effect. The reason is entirely in the `n`
+column: the treated arm is nearly three-quarters frail, the untreated
+arm three-quarters not.
+
+Now read the `wt` column. A frail treated patient had probability 0.60
+of ending up where she did, so she stands in for $1/0.60 = 1.67$
+patients like her; a frail *untreated* patient had probability 0.40, so
+she stands in for two and a half. Look at `pseudo_n`: both arms now
+contain 400 frail and 600 non-frail patients, 1,000 apiece — each arm
+inflated into a copy of the whole cohort. In this
+**pseudo-population** — Hernán and Robins's term for the reweighted
+cohort — frailty is distributed identically across arms, its association
+with treatment broken not by conditioning on frailty but by duplicating
+people until it no longer matters, and the weighted risks come out at
+`r sprintf("%.1f", 100 * wtd_toy[2])`% and
+`r sprintf("%.1f", 100 * wtd_toy[1])`%, a risk difference of exactly
+zero.
+
+That is the whole idea. The general form of the weight for a patient
+with covariates $L$ who received treatment $A$ is
+
+$$W = \frac{1}{P(A \mid L)} = \frac{A}{e(L)} + \frac{1-A}{1 - e(L)},$$
+
+the reciprocal of the probability of the treatment actually received —
+which is where the estimator's name comes from. Each patient represents
+herself plus everyone with her covariates who *would* have gone the
+other way, and Chapter 3's identification conditions license that
+substitution: consistency, conditional exchangeability given $L$, and
+positivity. Positivity now does visible work. As $e(L)$ approaches zero
+for a treated patient her weight grows without bound, and a handful of
+patients come to speak for the entire pseudo-population.
+
+## Building the weights
+
+The weight above, $1/P(A \mid L)$, is the **unstabilized** weight. It
+averages to about 2, because each arm is blown up to the size of the
+full cohort and the pseudo-population is therefore roughly twice the
+real one. Nothing is wrong with that, but it makes the weights larger
+and more variable than they need to be, and variance in the weights is
+variance in the estimate.
+
+**Stabilized** weights fix this by multiplying by the marginal
+probability of the treatment received,
+
+$$W^{s} = \frac{P(A)}{P(A \mid L)} = A\,\frac{\Pr(A=1)}{e(L)} + (1-A)\,\frac{1 - \Pr(A=1)}{1 - e(L)}.$$
+
+The numerator does not depend on covariates, so it cannot undo the
+balancing the denominator achieves; it simply rescales each arm so that
+the pseudo-population is about the size of the real cohort. The
+diagnostic consequence is convenient: stabilized weights should average
+close to 1, and a mean far from 1 is a sign that the treatment model is
+misbehaving. Cole and Hernán (2008) are the practical reference for
+constructing these weights and for reading their mean this way.
+
+Our estimator packages the whole procedure — fit the treatment model,
+form the weights, optionally truncate them, and fit a weighted
+regression of the outcome on treatment alone.
+
+```{r ch09-iptw-def, eval=FALSE}
+iptw_estimator <- function(data, treat_model, outcome, treat,
+                           family = gaussian(), stabilize = TRUE,
+                           truncate_at = NULL) {
+  data <- est_ps(data, treat_model)
+  p_treat <- mean(data[[treat]])
+
+  data <- data |>
+    mutate(
+      wt = if_else(.data[[treat]] == 1, 1 / ps, 1 / (1 - ps)),
+      wt = if (stabilize) {
+        if_else(.data[[treat]] == 1, p_treat * wt, (1 - p_treat) * wt)
+      } else wt
+    )
+
+  if (!is.null(truncate_at)) {
+    data <- data |> mutate(wt = pmin(wt, quantile(wt, truncate_at)))
+  }
+
+  fit <- geepack::geeglm(
+    reformulate(treat, outcome),
+    id = seq_len(nrow(data)), weights = data$wt,
+    family = family, data = data
+  )
+  broom::tidy(fit, conf.int = TRUE)
+}
+```
+
+Three details deserve comment. The function calls Chapter 8's `est_ps()`
+rather than fitting its own logistic model, which keeps one definition of
+"propensity score" in the book. The outcome regression is
+`reformulate(treat, outcome)` — treatment and nothing else, because the
+weights have already dealt with the covariates; a weighted regression
+that also adjusted for `ns_covs` would be a different, doubly adjusted
+estimator. And the fit goes through `geepack::geeglm()` with
+`id = seq_len(nrow(data))`, making every patient her own cluster under an
+independent working correlation. That is an elaborate way to reproduce a
+`glm()` point estimate; what it buys is the sandwich standard error. A
+weighted `glm()` treats the weights as counts of real observations and
+reports intervals far too narrow; the robust variance from `geeglm()`
+does not.
+
+That code lives in `R/iptw_estimator.R`. Before using it, look at the
+weights themselves.
+
+```{r ch09-weights}
+source("R/propensity.R")
+
+ps_model <- reformulate(ns_covs, "cox2_init")
+wts <- est_ps(ns, ps_model) |>
+  mutate(
+    p_treat  = mean(cox2_init),
+    w_unstab = if_else(cox2_init == 1, 1 / ps, 1 / (1 - ps)),
+    w_stab   = if_else(cox2_init == 1, p_treat * w_unstab,
+                       (1 - p_treat) * w_unstab)
+  )
+
+summary(wts$w_unstab)
+summary(wts$w_stab)
+```
+
+```{r ch09-wt-hist}
+ggplot(wts, aes(x = w_stab)) +
+  geom_histogram(bins = 40, fill = "grey35") +
+  facet_wrap(
+    ~ factor(cox2_init, labels = c("Nonselective NSAID", "Cox-2 selective")),
+    scales = "free_y"
+  ) +
+  labs(x = "Stabilized weight", y = "Patients") +
+  theme_minimal()
+```
+
+```{r ch09-wt-values, include=FALSE}
+mean_stab <- mean(wts$w_stab)
+max_un    <- max(wts$w_unstab)
+max_st    <- max(wts$w_stab)
+ess <- function(w) sum(w)^2 / sum(w^2)
+ess_un <- ess(wts$w_unstab); ess_st <- ess(wts$w_stab)
+n_big <- sum(wts$w_stab > 1.5)
+big_trt <- sum(wts$w_stab > 1.5 & wts$cox2_init == 1)
+ps_min_trt <- min(wts$ps[wts$cox2_init == 1])
+```
+
+The stabilized weights average `r sprintf("%.3f", mean_stab)`, close
+enough to 1 to be reassuring, while the unstabilized ones average about
+2 as advertised. The maxima are more informative:
+`r sprintf("%.1f", max_un)` unstabilized against
+`r sprintf("%.1f", max_st)` stabilized. That largest unstabilized weight
+belongs to the Cox-2 initiator whose estimated propensity score is
+`r sprintf("%.3f", ps_min_trt)` — a patient whose covariates made the
+Cox-2 drug very unlikely, who received it anyway, and who is therefore
+asked to represent thirty-odd patients like herself who did not. Kish's
+effective sample size, $(\sum w)^2 / \sum w^2$, falls from
+`r nrow(ns)` unweighted to `r sprintf("%.0f", ess_st)` under stabilized
+weights and all the way to `r sprintf("%.0f", ess_un)` unstabilized: a
+compact measure of how much information a few large weights consume.
+
+The histogram shows where the asymmetry lives. Nonselective initiators
+are the common case, so their weights cluster tightly around 1, while
+the Cox-2 arm spreads out with a long right tail —
+`r n_big` patients carry a stabilized weight above 1.5, of whom
+`r big_trt` are Cox-2 initiators. Extreme weights are not a numerical
+annoyance to be tidied away; they are the positivity assumption
+complaining. That patient sits in the sparse left tail of Chapter 8's
+density plot, where matching declined to find a partner: matching
+reported the difficulty by leaving her out, weighting reports it by
+making her enormously influential, which is easier to overlook — so the
+weight distribution should be printed and plotted every time.
+
+## Estimating the effect
+
+With the weights in hand the effect estimate is a weighted regression of
+`pud` on `cox2_init` and nothing else. The link function chooses the
+scale: an identity link on a 0/1 outcome — `family = gaussian()` — gives
+the treatment coefficient as a risk difference, and a log link with
+`poisson()` gives it as a log risk ratio, which we exponentiate.
+
+```{r iptw}
+source("R/propensity.R"); source("R/iptw_estimator.R")
+ps_model <- reformulate(ns_covs, "cox2_init")
+iptw_estimator(ns, ps_model, outcome = "pud", treat = "cox2_init",
+               family = gaussian()) |> knitr::kable(digits = 4)
+iptw_estimator(ns, ps_model, outcome = "pud", treat = "cox2_init",
+               family = poisson(link = "log")) |>
+  mutate(across(c(estimate, conf.low, conf.high), exp)) |> knitr::kable(digits = 3)
+```
+
+```{r ch09-iptw-values, include=FALSE}
+g <- function(fam, col) {
+  r <- iptw_estimator(ns, ps_model, outcome = "pud", treat = "cox2_init",
+                      family = fam)
+  r[[col]][r$term == "cox2_init"]
+}
+ipw_rd <- g(gaussian(), "estimate")
+ipw_lo <- g(gaussian(), "conf.low"); ipw_hi <- g(gaussian(), "conf.high")
+ipw_rr    <- exp(g(poisson(link = "log"), "estimate"))
+ipw_rr_lo <- exp(g(poisson(link = "log"), "conf.low"))
+ipw_rr_hi <- exp(g(poisson(link = "log"), "conf.high"))
+```
+
+The weighted risk difference is
+`r sprintf("%+.2f", 100 * ipw_rd)` percentage points, with a 95%
+interval from `r sprintf("%.1f", 100 * ipw_lo)` to
+`r sprintf("%+.1f", 100 * ipw_hi)` points, and the weighted risk ratio
+is `r sprintf("%.2f", ipw_rr)`
+(`r sprintf("%.2f", ipw_rr_lo)` to `r sprintf("%.2f", ipw_rr_hi)`).
+Both sit essentially on the null. The Poisson fit deserves a note: the
+outcome is binary, not a count, so the likelihood is deliberately wrong —
+but the coefficient of a log-link regression on a 0/1 outcome still
+estimates a log risk ratio, and the sandwich variance repairs the
+standard error the wrong likelihood would give. This is the modified
+Poisson approach to risk ratios, and another reason the `geeglm()`
+machinery is there.
+
+Notice how little there is to the outcome side: the regression has one
+covariate. Everything we know about age, arthritis, steroids, and the
+other seventeen variables entered through the weights, built without ever
+looking at `pud` — Chapter 8's design-stage discipline carried through to
+the estimate.
+
+## Truncation and diagnostics
+
+The obvious response to a weight of `r sprintf("%.1f", max_un)` is to
+cap it. **Truncation** replaces every weight above a chosen percentile
+with the value at that percentile; our function does this with
+`pmin(wt, quantile(wt, truncate_at))` when `truncate_at` is supplied.
+
+```{r ch09-truncate}
+iptw_estimator(ns, ps_model, outcome = "pud", treat = "cox2_init",
+               family = gaussian(), truncate_at = 0.99) |>
+  knitr::kable(digits = 4)
+```
+
+```{r ch09-trunc-values, include=FALSE}
+tr <- iptw_estimator(ns, ps_model, outcome = "pud", treat = "cox2_init",
+                     family = gaussian(), truncate_at = 0.99)
+tr_rd <- tr$estimate[tr$term == "cox2_init"]
+tr_se <- tr$std.error[tr$term == "cox2_init"]
+un_se <- g(gaussian(), "std.error")
+n_cap <- sum(wts$w_stab > quantile(wts$w_stab, 0.99))
+```
+
+Capping at the 99th percentile touches `r n_cap` of the
+`r nrow(ns)` patients and moves the risk difference from
+`r sprintf("%+.2f", 100 * ipw_rd)` to
+`r sprintf("%+.2f", 100 * tr_rd)` percentage points, with the standard
+error changing from `r sprintf("%.4f", un_se)` to
+`r sprintf("%.4f", tr_se)`. In this cohort truncation buys almost
+nothing, which is the most useful thing it could have told us: the
+estimate does not hang on a few influential patients.
+
+The trade-off is worth stating plainly. Truncation is a
+deliberate exchange of bias for variance: the untruncated estimator is
+consistent for the ATE if the treatment model is right, and the
+truncated one is not, because we have knowingly misrepresented how much
+of the pseudo-population the extreme patients should represent. What we
+get back is stability, and when a single weight dominates the sum a
+little bias can be a good trade. The honest way to use truncation is as
+a sensitivity analysis rather than a default: report the untruncated
+estimate, report it capped at the 99th and 95th percentiles, and if they
+disagree materially, say so — a result that depends on whether one
+patient counts thirty times or ten is a result driven by extrapolation
+into a region where the data are thin, and no cap repairs that.
+Trimming, which drops patients outside a range of the propensity score
+altogether, is the other common option; it changes the population and
+therefore the estimand, and should be described as such. The distinction
+is worth holding onto, since the two words are not always kept apart:
+truncation caps a weight and keeps the patient, trimming discards the
+patient — often those outside a percentile range of the propensity score
+— and both the course and much of the literature use "trimming" loosely
+for either operation, so it is worth saying which one you did.
+
+## Standardized mortality ratio weights
+
+The weights built so far blow both arms up into a copy of the whole
+cohort, which is why they estimate the ATE. A small change to the weight
+redirects the estimator at a different population. Leave the treated arm
+alone — every treated patient keeps weight 1 — and give each untreated
+patient $e(L) / (1 - e(L))$, the odds of treatment her covariates imply.
+The untreated are then reweighted to resemble the treated rather than the
+cohort, the treated covariate distribution becomes the standard, and the
+estimand is the ATT: the effect of treatment among the treated. In the
+course these are called **SMR (standardized mortality ratio) weights**,
+after the indirect standardization that gives a standardized mortality
+ratio its name.
+
+```{r ch09-smr}
+source("R/propensity.R")
+
+smr <- est_ps(ns, ps_model) |>
+  mutate(w_smr = if_else(cox2_init == 1, 1, ps / (1 - ps)))
+
+smr_fit <- geepack::geeglm(
+  pud ~ cox2_init,
+  id = seq_len(nrow(smr)), weights = smr$w_smr,
+  family = gaussian(), data = smr
+)
+broom::tidy(smr_fit, conf.int = TRUE) |> knitr::kable(digits = 4)
+```
+
+```{r ch09-smr-values, include=FALSE}
+st <- broom::tidy(smr_fit, conf.int = TRUE)
+gs <- function(col) st[[col]][st$term == "cox2_init"]
+smr_rd <- gs("estimate"); smr_lo <- gs("conf.low"); smr_hi <- gs("conf.high")
+w_unt     <- smr$w_smr[smr$cox2_init == 0]
+smr_mean  <- mean(w_unt); smr_max <- max(w_unt)
+smr_match <- ps_match(est_ps(ns, ps_model), treat = "cox2_init",
+                      caliper = 0.05)
+smr_mr    <- tapply(smr_match$pud, smr_match$cox2_init, mean)
+smr_att   <- smr_mr[2] - smr_mr[1]
+```
+
+The SMR-weighted risk difference is
+`r sprintf("%+.2f", 100 * smr_rd)` percentage points
+(`r sprintf("%.1f", 100 * smr_lo)` to
+`r sprintf("%+.1f", 100 * smr_hi)`). Set beside the ATE of
+`r sprintf("%+.2f", 100 * ipw_rd)` points from the same score and
+Chapter 8's matched estimate of `r sprintf("%+.2f", 100 * smr_att)`
+points on the same cohort, it lands between them. That is a reasonable
+place to be: SMR weighting targets the ATT, as matching did, but reaches
+it by keeping the unmatched controls at reduced weight rather than
+discarding them, so the two ATT estimates need not coincide, and neither
+sits far from the null. The weights themselves show what that costs:
+among the untreated they average only `r sprintf("%.2f", smr_mean)` and
+none exceeds `r sprintf("%.2f", smr_max)`, because the common arm has to
+be shrunk hard to resemble the rare one. The interval widens
+accordingly — the price of asking about the treated rather than everyone.
+
+## MSMs and where weighting shines
+
+The one-covariate regression we fit in the pseudo-population has a name.
+A **marginal structural model** is a model for the marginal mean of a
+potential outcome as a function of treatment,
+
+$$E[Y^{a}] = \beta_0 + \beta_1 a,$$
+
+*structural* because its arguments are counterfactual treatments rather
+than observed ones, *marginal* because it averages over the covariate
+distribution instead of conditioning on it. The class, and the name, are
+Robins, Hernán, and Brumback's (2000). Under the identification
+conditions, fitting it in the weighted data estimates its parameters, so
+$\beta_1$ is the ATE of Chapter 3 — the same estimand standardization
+targeted, reached by another route. Ours is *saturated*: with a binary
+treatment it has one parameter per arm and so cannot be misspecified.
+Larger MSMs can be, and often carry baseline effect modifiers on the
+right-hand side to allow subgroup effects.
+
+The deeper reason to learn weighting is that this framework survives
+time-varying treatment, and conditioning does not. Suppose patients
+start and stop a drug over months of follow-up while their covariates
+evolve. A confounder measured at month six is affected by treatment at
+month three — a mediator as well as a confounder. Adjust for it in an
+outcome regression and you block part of the effect you are trying to
+measure, and may induce collider bias besides; leave it out and the
+later treatment stays confounded. No covariate set resolves that
+conflict by conditioning. Weighting does: build a weight from a
+treatment model at each time point, multiply the per-visit weights along
+each patient's history, and fit a marginal structural model in the
+resulting pseudo-population. The time-varying covariates appear in the
+weight models, where they cause no trouble, and never in the outcome
+model, so nothing is blocked. Chapter 11 applies the identical logic to
+censoring rather than treatment, and Chapter 12 uses it to emulate
+trials with sustained strategies. Part III is largely a series of
+variations on this chapter.
+
+## Three estimators, one estimand
+
+Part II asked one question three times. Here are the answers, with the
+crude comparison for reference. The standardization row re-runs
+`standardize()` with Chapter 7's seed, so its bootstrap interval
+reproduces that chapter's exactly.
+
+```{r ch09-compare}
+source("R/standardize.R")
+
+crude <- ns |>
+  group_by(cox2_init) |>
+  summarise(r = mean(pud), .groups = "drop") |>
+  pull(r)
+std <- standardize(ns, reformulate(c("cox2_init", ns_covs), "pud"),
+                   treat = "cox2_init", n_boot = 200, seed = 921)
+ipw <- iptw_estimator(ns, ps_model, outcome = "pud", treat = "cox2_init")
+
+pick <- function(d, what, col) d[[col]][d[[1]] == what]
+
+comparison <- tibble(
+  estimator = c("Crude", "Standardization (Ch. 7)", "IPTW, stabilized"),
+  estimand  = c("none (confounded)", "ATE", "ATE"),
+  rd_pp     = 100 * c(crude[2] - crude[1], pick(std, "rd", "estimate"),
+                      pick(ipw, "cox2_init", "estimate")),
+  lower     = 100 * c(NA, pick(std, "rd", "conf_low"),
+                      pick(ipw, "cox2_init", "conf.low")),
+  upper     = 100 * c(NA, pick(std, "rd", "conf_high"),
+                      pick(ipw, "cox2_init", "conf.high"))
+)
+
+comparison |> knitr::kable(digits = 2)
+```
+
+```{r ch09-compare-values, include=FALSE}
+crude_rd <- crude[2] - crude[1]
+std_rd   <- pick(std, "rd", "estimate")
+matched <- ps_match(est_ps(ns, ps_model), treat = "cox2_init", caliper = 0.05)
+mr <- tapply(matched$pud, matched$cox2_init, mean)
+att_rd <- mr[2] - mr[1]
+```
+
+The crude risk difference of
+`r sprintf("%+.1f", 100 * crude_rd)` percentage points is the confounded
+starting point, and both adjusted estimators pull it across the null:
+standardization to `r sprintf("%+.2f", 100 * std_rd)` points and IPTW to
+`r sprintf("%+.2f", 100 * ipw_rd)`. The agreement is no accident. Both
+target the ATE, both use the same nineteen covariates, and both rest on
+the same identification assumptions; they differ only in which nuisance
+model carries the load — an outcome model for `pud` in Chapter 7, a
+treatment model for `cox2_init` here. Two estimators leaning on
+different models landing in the same place is mild evidence that neither
+model is badly wrong. It is not evidence that the assumptions hold,
+since both would be wrong together if `ns_covs` were missing an
+important confounder.
+
+Chapter 8's matched analysis, recomputed here, gave a risk difference of
+`r sprintf("%+.1f", 100 * att_rd)` percentage points, further from the
+null than either of these — not a contradiction, since matching targeted
+the ATT, as the SMR weights above did, averaging over the older and
+sicker Cox-2 initiators rather than the whole cohort, and did so with
+roughly a sixth of the data. Its interval overlaps these comfortably.
+
+What all three agree on is the shape of the answer: the crude signal of
+harm is confounding, and once the arms are comparable the estimates
+hover near the null with intervals wide enough to admit a modest benefit
+or a modest harm. With `r sum(ns$pud)` ulcer cases and
+`r sum(ns$cox2_init)` Cox-2 initiators, that is the honest summary. No
+choice of estimator will sharpen it, because better estimators cannot
+manufacture information the cohort does not contain.
+
+## Exercises
+
+1. Rerun `iptw_estimator()` with `stabilize = FALSE` and compare the
+   point estimate, the standard error, and the weight distribution to the
+   stabilized version. The estimate and its robust standard error will be
+   unchanged; explain why stabilization cannot matter for a *saturated*
+   marginal structural model, and describe a setting — an MSM with
+   effect modifiers, or the time-varying weights of Chapter 11 — where
+   it would.
+2. Drop five covariates from `ns_covs` to misspecify the treatment model
+   — take `arthritis`, `corticosteroid_use`, `aspirin_use`, `ppi_use`,
+   and `h2_antagonist_use`, all plausible confounders — and rerun the
+   estimator. Report the maximum stabilized weight and the risk
+   difference under both covariate sets. Which moves more, the estimate
+   or the weight distribution, and what does that tell you about using
+   weight diagnostics to detect an inadequate adjustment set?
+3. Formalize what the SMR section did by hand: write `iptw_att()`, a
+   copy of `iptw_estimator()` in which treated patients receive weight 1
+   and untreated patients receive `ps / (1 - ps)`. Confirm that it
+   reproduces the SMR-weighted estimate above, then compare it with
+   Chapter 8's matched estimate. Why is stabilization unnecessary for
+   these weights, and which arm's weights now carry the long tail?

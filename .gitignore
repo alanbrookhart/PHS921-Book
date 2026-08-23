@@ -1,0 +1,11 @@
+.Rproj.user
+.Rhistory
+.RData
+.DS_Store
+_book/
+_bookdown_files/
+*_cache/
+*_files/
+.superpowers/
+quotes/
+docs/

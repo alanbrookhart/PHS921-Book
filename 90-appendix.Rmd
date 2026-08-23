@@ -1,0 +1,383 @@
+# (APPENDIX) Appendices {-}
+
+# R and RStudio setup
+
+This appendix collects the one-time setup we assumed you had already
+done, back in Chapter 2. If everything already works — you can knit a
+chapter and see `ns` and `sta` load without complaint — you can skip
+straight past it.
+
+## Installing R and RStudio
+
+Install R first, then RStudio. Both are free.
+
+- **R**: download and install the current release from
+  [CRAN](https://cran.r-project.org/), the Comprehensive R Archive
+  Network. Pick the installer for your operating system and accept the
+  defaults.
+- **RStudio**: download and install RStudio Desktop from
+  [posit.co/download/rstudio-desktop](https://posit.co/download/rstudio-desktop/).
+  RStudio is an editor for R, not a replacement for it, so R must already
+  be installed before RStudio is any use.
+
+Open RStudio once, just to confirm it starts and finds your R
+installation (it will say so in the Console pane on startup).
+
+## Installing the packages this book uses
+
+Every chapter in this book leans on the `tidyverse` for data manipulation
+and plotting, and most chapters bring in one or two special-purpose
+packages on top of that. Install all of them at once by pasting the
+following into the R console and running it:
+
+```{r app-install-packages, eval = FALSE}
+install.packages(c(
+  "tidyverse",  # dplyr, ggplot2, purrr, and friends
+  "bookdown",   # builds this book; only needed if you render it yourself
+  "dagitty",    # causal diagrams, Chapter 5
+  "ggdag",      # plotting causal diagrams, Chapter 5 and later chapters
+  "survival",   # Surv(), survfit(), survSplit(), Chapters 10-12
+  "cobalt",     # covariate-balance tables and plots, Chapter 8
+  "geepack",    # weighted GEE, the engine behind iptw_estimator() and
+                # ipcw_estimator(), Chapters 9 and 11
+  "broom",      # tidy() for turning model objects into tibbles
+  "remotes"     # installs packages from GitHub, including NAMCS below
+))
+```
+
+One package used in Chapters 11 and 12, `splines`, ships with base R
+and never needs installing.
+
+## Installing the NAMCS teaching package
+
+The two cohorts this book uses throughout, `ns` and `sta`, are not on
+CRAN. They live in a companion package, `NAMCS`, distributed from
+GitHub. With `remotes` installed from the previous step, run:
+
+```{r app-install-namcs, eval = FALSE}
+remotes::install_github("alanbrookhart/NAMCS")
+```
+
+If that command fails, it is almost always one of two things: `remotes`
+is not installed (revisit the previous step), or GitHub is unreachable
+from your network (try again from a different network, or ask your
+instructor for the data files directly).
+
+## Loading everything a chapter needs
+
+Every chapter and appendix in this book opens with a chunk that runs
+
+```{r app-setup-source, eval = FALSE}
+source("R/setup.R")
+```
+
+`R/setup.R` loads the tidyverse and the `NAMCS` package, loads `ns` and
+`sta`, and derives the handful of analysis columns and covariate lists
+(`ns_covs`, `sta_covs`, and so on) that later chapters take for granted.
+Sourcing it is the whole of what you need to do to follow along with any
+chapter's code on its own, without having run the earlier chapters
+first.
+
+```{r setup-app, include = FALSE}
+source("R/setup.R")
+```
+
+# NAMCS codebook
+
+Both teaching cohorts carry many more columns than the ones we actually
+use in adjustment models (`ns_covs` and `sta_covs` in `R/setup.R` are
+short lists curated from a much wider survey). This appendix is the
+reference for the rest: a full variable-by-variable codebook, generated
+directly from the data rather than typed out by hand, so it will always
+match whatever is actually in the installed `NAMCS` package.
+
+## The NSAID cohort (`ns`)
+
+```{r app-nsaid-codebook}
+tibble(
+  variable = names(ns),
+  type = map_chr(ns, ~ class(.x)[1]),
+  example_values = map_chr(ns, ~ paste(head(unique(.x), 3), collapse = ", "))
+) |>
+  knitr::kable(caption = "Variables in the `ns` (NSAID) cohort.")
+```
+
+## The statin cohort (`sta`)
+
+```{r app-statin-codebook}
+tibble(
+  variable = names(sta),
+  type = map_chr(sta, ~ class(.x)[1]),
+  example_values = map_chr(sta, ~ paste(head(unique(.x), 3), collapse = ", "))
+) |>
+  knitr::kable(caption = "Variables in the `sta` (statin) cohort.")
+```
+
+## A note on the outcomes
+
+As Chapter 2 mentioned, both cohorts are built from real NAMCS office
+visits, but their outcomes are simulated: `incident_pud` in `ns`, and the
+event-time variables (`cv_time`, `death_time`, `loss_fu_time`) that
+`R/setup.R` combines into `event_time` and `cv_event` in `sta`. Nothing
+about the covariates or the treatment assignment is invented — only the
+outcome, generated from a data-generating process that whoever built the
+simulation knows exactly, because they wrote it. That is a deliberate
+choice for a teaching book: it means every chapter's estimate can in
+principle be checked against a right answer, which is a luxury no real
+analysis has. We analyze the cohorts here the way we would analyze real
+data, arguing for each assumption rather than looking the truth up, but
+the truth is there behind the file — which is what makes these two
+cohorts safe to learn on.
+
+# The estimator toolkit
+
+Across the book we wrote one small function per chapter, each solving
+the identification or estimation problem that chapter introduced, and
+each built to be reused rather than thrown away. This table collects all
+of them in one place — what they are called, which chapter introduced
+them, what you hand them, and what you get back. Every one of them lives
+in its own file under `R/`, and is loaded with `source("R/<file>")` after
+the `source("R/setup.R")` that opens every chapter — exactly as the
+chapters do it. One dependency is worth naming: `iptw_estimator()` calls
+`est_ps()`, so source `R/propensity.R` alongside
+`R/iptw_estimator.R`.
+
+```{r app-toolkit-table, echo = FALSE}
+tribble(
+  ~ name, ~ file, ~ chapter, ~ signature, ~ returns,
+  "table1_continuous", "table1.R", "2",
+    "table1_continuous(data, vars, by)",
+    "Tibble of mean (SD) for each continuous variable, one column per level of `by`.",
+  "table1_categorical", "table1.R", "2",
+    "table1_categorical(data, vars, by)",
+    "Tibble of n (%) for each level of each categorical variable, one column per level of `by`.",
+  "standardize", "standardize.R", "7",
+    "standardize(data, outcome_model, treat, family = binomial(), n_boot = 200, conf_level = 0.95, seed = NULL)",
+    "Tibble with one row per estimand (risk0, risk1, rd, rr) giving the point estimate and a bootstrap confidence interval, from parametric g-formula standardization.",
+  "est_ps", "propensity.R", "8",
+    "est_ps(data, treat_model)",
+    "The input data with a `ps` column added, holding fitted propensity scores from a logistic regression.",
+  "ps_match", "propensity.R", "8",
+    "ps_match(data, treat, ps = \"ps\", caliper = 0.05)",
+    "Matched-pairs data frame from greedy 1:1 nearest-neighbor matching on `ps`, without replacement, with a `pair_id` column.",
+  "iptw_estimator", "iptw_estimator.R", "9",
+    "iptw_estimator(data, treat_model, outcome, treat, family = gaussian(), stabilize = TRUE, truncate_at = NULL)",
+    "Tidy tibble (via `broom::tidy()`) of a weighted-GEE treatment-effect estimate with a robust confidence interval, from stabilized or unstabilized IPTW.",
+  "plot_km", "km.R", "10",
+    "plot_km(data, treat, time = \"event_time\", event = \"cv_event\", wt = NULL, labels = NULL)",
+    "A ggplot object: cumulative incidence curves by treatment arm, with confidence bands, optionally weighted.",
+  "make_person_period", "ipcw.R", "11",
+    "make_person_period(data, time, event, cuts)",
+    "Person-period expansion of one-row-per-patient survival data, via `survival::survSplit()`.",
+  "ipcw_estimator", "ipcw.R", "11",
+    "ipcw_estimator(pp_data, censor_model, outcome_formula, id = \".row_id\", numerator_model = NULL, truncate_at = 0.99)",
+    "A list with `fit` (tidy weighted-GEE coefficients) and `data` (the person-period data with censoring weights attached), from IPCW.",
+  "ccw_estimator", "ccw_estimator.R", "12",
+    "ccw_estimator(pp_data, censor_model, treat, id = \".row_id\", numerator_model = NULL, truncate_at = 0.99)",
+    "Tibble of hazard, survival, and cumulative risk by treatment arm and interval, from the clone-censor-weight algorithm.",
+  "iv_estimator", "iv_estimator.R", "13",
+    "iv_estimator(data, instrument, treat, outcome, covs = NULL, n_boot = 200, conf_level = 0.95, seed = NULL)",
+    "Tibble with one row giving the two-stage-least-squares estimate and a bootstrap confidence interval.",
+  "evalue_rr", "sensitivity.R", "14",
+    "evalue_rr(rr, conf_low = NULL, conf_high = NULL)",
+    "Tibble giving the E-value for the point estimate and, if a confidence interval is supplied, for the bound closest to the null.",
+  "adjust_rr_unmeasured", "sensitivity.R", "14",
+    "adjust_rr_unmeasured(rr_obs, p_u1, p_u0, rr_ud)",
+    "A single numeric: the risk ratio that would remain after removing the bias contributed by a specified unmeasured binary confounder."
+) |>
+  knitr::kable(
+    col.names = c("Function", "File", "Ch.", "Signature", "Returns"),
+    caption = "Estimator and helper functions defined in R/, in the order they are introduced."
+  )
+```
+
+# Course map: PHS 921
+
+This book accompanies PHS 921, and the two are organized on their own
+terms: the course moves in the order that works for a semester of
+lectures, the book in the order that works for a reader building one
+idea on the last. This table lines the two up, session by session, so
+that a student can find the chapter behind any lecture and a reader can
+see which lecture a chapter was written for. The lab meets separately
+and works through the code, so the R material appears here only where a
+session is built around it.
+
+| Session | Topic | Where in the book |
+|---|---|---|
+| 1 | Introduction | Chapter 1 |
+| 2–3 | Intro to R workshop | Chapter 2, Appendix A |
+| 4 | RCTs and experiments | Chapter 4 |
+| 5 | Counterfactuals | Chapter 3 |
+| 6 | Study design and immortal time bias | Chapter 6 |
+| 7 | Real-world data sources | Chapter 2 (the two cohorts), Appendix B |
+| 8 | Generalized linear models | used throughout Chapters 7–9 |
+| 9–11 | Propensity scores and IPTW | Chapters 8–9 |
+| 12 | G-computation | Chapter 7 |
+| 13–14 | Variable selection and DAGs (+ workshop) | Chapter 5; Chapter 8 (choosing the propensity-score model) |
+| 15 | Censored data and Kaplan–Meier | Chapter 10 |
+| 17 | Cox regression, IPCW, competing risks | Chapter 11; Chapter 10 (death as a competing risk) |
+| 18 | IPCW workshop | Chapter 11 |
+| 19–20 | Artificial censoring; clone-censor-weight | Chapter 12 |
+| 22 | Natural experiments and instrumental variables | Chapter 13 |
+| 23 | Negative control outcomes | Chapter 14 (negative control outcomes) |
+| 24 | External control arms | Chapter 4 (target trials, for context) |
+| 25–26 | Protocol presentations | Chapter 4's protocol table with Chapter 14's reporting checklist |
+
+Two places in the table run backwards relative to the page order. The
+book introduces causal diagrams (Chapter 5) before study design
+(Chapter 6), and g-computation (Chapter 7) before propensity scores
+(Chapters 8–9), because each earlier chapter supplies vocabulary the
+later one uses. The course takes both pairs in the other order. Where
+the two disagree, follow the map rather than the page numbers.
+
+# Further reading
+
+This book is deliberately narrow: two running examples, one estimator
+per chapter, just enough theory to justify each one. The sources below
+go further, in different directions.
+
+**On the framework as a whole.** Miguel Hernán and James Robins, *Causal
+Inference: What If* (Chapman & Hall/CRC), is the book this one is most
+indebted to. It covers the same potential-outcomes framework at greater
+depth and rigor, with a fuller treatment of time-varying treatments,
+g-methods, and the assumptions each identification strategy needs.
+It is available free online and is the natural next stop after this
+course.
+
+**On where the framework came from.** Two short papers repay reading for
+how the ideas were first put.
+
+- Holland (1986, JASA) — statistics and causal inference: the paper that
+  set the two side by side and fixed much of the potential-outcomes
+  vocabulary Chapter 3 uses.
+- Hernán (2004, JECH) — a definition of a causal effect, written for
+  epidemiologists, insisting that we say what an effect is a statement
+  about before choosing anything to estimate it with.
+
+**On causal diagrams.** Chapter 5 uses DAGs as a working tool; these two
+papers are where the tool and its most useful application were set out
+for epidemiology.
+
+- Greenland, Pearl, and Robins (1999, Epidemiology) — causal diagrams for
+  epidemiologic research: the paper that introduced DAGs to the field,
+  with the backdoor reasoning Chapter 5 runs on.
+- Hernán, Hernández-Díaz, and Robins (2004, Epidemiology) — a structural
+  approach to selection bias, which recasts a long list of named biases
+  as conditioning on a collider. The source for Chapter 5's selection
+  bias section, and the reason Chapters 10 and 11 can treat censoring and
+  survivorship as the same problem.
+
+**On epidemiologic method more broadly.** Kenneth Rothman, Sander
+Greenland, and Timothy Lash, *Modern Epidemiology* (Lippincott Williams
+& Wilkins), is the standard reference for study design, bias, and
+measurement issues that sit upstream of any causal estimator — how a
+cohort or case-control study is assembled, what confounding and
+selection bias look like in practice, and how the field has thought
+about validity before "causal inference" was its own subfield.
+
+**On the target trial.** The framework Chapter 4 adopts and Chapters 6
+and 12 keep returning to.
+
+- Hernán and Robins (2016, AJE) — using big data to emulate a target
+  trial when a randomized trial is not available: the paper that named
+  the framework and the source of Chapter 4's protocol table.
+- Hernán et al. (2016, Journal of Clinical Epidemiology) — specifying a
+  target trial prevents immortal time bias, which is the argument behind
+  Chapter 6's insistence that eligibility, assignment, and start of
+  follow-up share a date.
+
+**On design in healthcare databases.** Both papers bear directly on
+Chapter 6.
+
+- Ray (2003, AJE) — the case for new-user designs, and what a cohort of
+  prevalent users quietly does to a comparison.
+- Schneeweiss et al. (2019, Annals of Internal Medicine) — a graphical
+  convention for depicting longitudinal study designs, which makes an
+  argument about eligibility and time zero reviewable at a glance.
+
+**On standardization and the g-formula.** The machinery of Chapter 7,
+and why a regression coefficient is not the estimand.
+
+- Robins (1986, Mathematical Modelling) — the paper that introduced the
+  g-formula, of which Chapter 7's predict-then-average recipe is the
+  simplest case.
+- Greenland, Robins, and Pearl (1999, Statistical Science) — confounding
+  and collapsibility in causal inference: the reference for why a
+  conditional and a marginal odds ratio differ even with no confounding
+  at all.
+
+**On confounding control and propensity scores.** These take up the
+questions Chapter 8 raises and then sets aside.
+
+- Rubin (2008, Annals of Applied Statistics) — for objective causal
+  inference, design trumps analysis: the argument behind Chapter 8's
+  claim that building the score without looking at the outcome is most
+  of what the score is for.
+- Brookhart et al. (2006, AJE) — variable selection for propensity score
+  models: which covariates belong in a treatment model, and what
+  including or excluding one does to bias and variance.
+- Brookhart et al. (2010, Medical Care) — a survey of the options for
+  confounding control in healthcare database studies, of which this book
+  works through a few in detail.
+- Schneeweiss et al. (2009, Epidemiology) — high-dimensional propensity
+  score adjustment: the automated proxy-selection algorithm Chapter 8
+  mentions but does not implement.
+- Lipsitch, Tchetgen Tchetgen, and Cohen (2010, Epidemiology) — negative
+  controls, and what a non-null association with an outcome the treatment
+  cannot cause does and does not establish. The source for Chapter 14's
+  section on them.
+
+**On weighting and marginal structural models.** Chapter 9's estimator,
+in the papers that established it.
+
+- Robins, Hernán, and Brumback (2000, Epidemiology) — marginal structural
+  models and causal inference in epidemiology: the source of the model
+  class and of the name Chapter 9 explains.
+- Cole and Hernán (2008, AJE) — constructing inverse probability weights
+  for marginal structural models, which is the practical companion to
+  Chapter 9's stabilization and truncation.
+
+**On what to report.** All three argue for a particular quantity rather
+than a particular estimator.
+
+- Cole et al. (2015, AJE) — risk: a case for reporting risks and risk
+  contrasts rather than ratios of hazards, which is why Chapters 10
+  through 12 keep returning to cumulative incidence.
+- Hernán (2010, Epidemiology) — the hazards of hazard ratios: the short
+  editorial behind Chapter 10's built-in selection argument, and the
+  reason this book treats a hazard ratio as a modeling device rather than
+  an estimand.
+- Hernán and Robins (2017, NEJM) — per-protocol analyses of pragmatic
+  trials, the argument behind Chapter 4's per-protocol discussion and
+  Chapter 12's censoring and weighting.
+
+**On instrumental variables.** Chapter 13 leans on all three.
+
+- Angrist, Imbens, and Rubin (1996, JASA) — identification of causal
+  effects using instrumental variables, and the paper that made the
+  complier-average interpretation standard.
+- Hernán and Robins (2006, Epidemiology) — instruments for causal
+  inference: an epidemiologist's dream? The source of Chapter 13's
+  statement of the three conditions, and of its skepticism about them.
+- Brookhart et al. (2006, Epidemiology) — preference-based instrumental
+  variables: what makes a prescriber's preference a defensible
+  instrument, and where that assumption tends to break.
+
+**On sensitivity analysis.** The two devices Chapter 14 builds, each in
+the paper that introduced it.
+
+- Schneeweiss (2006, Pharmacoepidemiology and Drug Safety) — sensitivity
+  analysis and external adjustment for unmeasured confounders, the source
+  of Chapter 14's term and of the bias-factor parameterization it uses.
+- VanderWeele and Ding (2017, Annals of Internal Medicine) — sensitivity
+  analysis in observational research: introducing the E-value, and the
+  derivation Chapter 14's second device rests on.
+
+**On the software.** Yihui Xie, J.J. Allaire, and Garrett Grolemund,
+*R Markdown: The Definitive Guide* and the `bookdown` documentation at
+[bookdown.org](https://bookdown.org/), cover the publishing system this
+book itself is written in. Hadley Wickham, Mine Çetinkaya-Rundel, and
+Garrett Grolemund, *R for Data Science* ("R4DS", also free online),
+is the best general reference for the tidyverse functions — `dplyr`
+verbs, `ggplot2`, `purrr` — that Chapter 2 introduces only as much of as
+this book needs.

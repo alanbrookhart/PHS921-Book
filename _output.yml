@@ -1,0 +1,9 @@
+bookdown::gitbook:
+  css: style.css
+  config:
+    toc:
+      collapse: section
+      before: |
+        <li><a href="./">Causal Inference in Epidemiology Using R</a></li>
+    download: null
+    sharing: null

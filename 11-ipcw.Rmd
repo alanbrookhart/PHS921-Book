@@ -1,0 +1,453 @@
+# Inverse probability of censoring weights
+
+```{r setup-ch11, include=FALSE}
+source("R/setup.R")
+```
+
+Chapter 10 ended with a diagram and a promise. The diagram put loss to
+follow-up between treatment and an unmeasured element of prognosis,
+making every risk set past time zero a selected sample and every
+Kaplan–Meier factor a comparison among survivors of that selection. The
+promise was that we already own the tool for it. Chapter 9 met a problem
+of the same shape — a variable associated with treatment that we could
+not condition on without breaking something — and solved it by
+reweighting rather than conditioning. This chapter builds the weights for
+censoring, which requires reshaping the cohort into a form we will use
+for the rest of Part III.
+
+## Weighting returns
+
+The two estimators are the same idea addressed to different columns. An
+inverse probability of treatment weight is the reciprocal of the
+probability of the treatment a patient actually received, $1/P(A \mid
+L)$, and it builds a pseudo-population in which treatment is unrelated to
+$L$. An **inverse probability of censoring weight** is the reciprocal of
+the probability of the *observation status* a patient actually had: among
+patients still under observation at time $t$, each is weighted by one
+over her probability of having remained uncensored that long. She then
+stands in for herself plus the patients like her who dropped out, and in
+the reweighted data the people we can still see represent the people we
+started with.
+
+One structural difference matters. Treatment here happens once, at time
+zero, so its weight is a single number per patient. Censoring accumulates:
+a patient must survive being censored in the first year, and then the
+second, and so on, and the chance of getting through all of it is a
+product of the chances of getting through each piece. Splitting follow-up
+into intervals $k = 1, \dots, K$ and writing $C_k = 1$ for censoring
+during interval $k$, the weight in effect at interval $t$ is
+
+$$W^{C}(t) = \prod_{k \le t} \frac{1}{\Pr(C_k = 0 \mid C_{k-1} = 0, A, L)},$$
+
+and its stabilized version replaces the 1 in each numerator with
+$\Pr(C_k = 0 \mid C_{k-1} = 0)$, a probability that depends on time but
+not on covariates. As in Chapter 9 the numerator cannot undo the
+balancing the denominator achieves; it rescales, so that a stabilized
+weight averages near 1 and a mean far from 1 signals a misbehaving
+censoring model.
+
+What the weights buy is a renamed assumption. Kaplan–Meier needs
+censoring to be non-informative outright; the weighted analysis needs it
+to be non-informative *given the covariates in the censoring model*,
+which is the survival-data version of conditional exchangeability and is
+just as unverifiable. Two things are needed to fit it: a data structure
+with one row per patient per interval, and a model for censoring in that
+structure.
+
+## Person-period data
+
+The trick that makes everything else easy is to stop treating each
+patient as one row. Cut follow-up into yearly intervals and give a
+patient one row for each interval she survives into, carrying her
+baseline covariates along; the row records the interval, whether the
+outcome happened in it, and whether censoring happened in it. A patient
+followed 3.1 years contributes four rows, the last a stub from year 3 to
+year 3.1. `survival::survSplit()` does the cutting, and wrapping it fixes
+the column names we will rely on later.
+
+```{r ch11-pp-def, eval=FALSE}
+make_person_period <- function(data, time, event, cuts) {
+  data <- data |> mutate(.row_id = dplyr::row_number())
+  survival::survSplit(
+    as.formula(paste0("Surv(", time, ", ", event, ") ~ .")),
+    data = data, cut = cuts, start = "tstart", end = "tstop",
+    event = event
+  ) |> as_tibble()
+}
+```
+
+The `. ~` on the right of the formula keeps every other column, so
+covariates are repeated down a patient's rows unchanged. `.row_id` is
+added before splitting and is what glues the rows back into people —
+needed for the running product of weights and for the cluster-robust
+variance at the end. The event we split on is censoring, defined as
+being lost to follow-up before having a cardiovascular event; the next
+section takes up why that definition and not another. Because
+`survSplit()` cannot make an interval out of nothing, we first set aside
+the handful of patients whose follow-up ends at time zero.
+
+```{r ch11-pp, message=FALSE, warning=FALSE}
+library(survival)
+source("R/ipcw.R")
+
+sta_cens <- sta |>
+  filter(event_time > 0) |>
+  mutate(
+    censored  = as.integer(!is.na(loss_fu_time) & loss_fu_time <= event_time &
+                             cv_event == 0),
+    cens_time = event_time
+  )
+
+pp <- make_person_period(sta_cens, time = "cens_time", event = "censored",
+                         cuts = 1:9) |>
+  mutate(event = as.integer(cv_event == 1 &
+                            event_time > tstart & event_time <= tstop))
+```
+
+Two details of bookkeeping deserve naming, because getting either wrong
+silently changes the analysis. First, `cens_time` is a copy of
+`event_time`: `survSplit()` consumes the time variable it splits on and
+replaces it with `tstart` and `tstop`, so splitting on the copy leaves
+the original `event_time` intact as an ordinary carried-along column.
+Second, the outcome indicator has to be rebuilt by hand. The `censored`
+column that comes back from `survSplit()` is already interval-specific —
+1 only in the interval where censoring happened — but `cv_event` is
+still the patient-level value, repeated down every row, so a patient with
+an event would appear to have one in each of her intervals. The
+`event_time > tstart & event_time <= tstop` comparison puts it in the one
+interval
+that contains it. Look at two patients, one lost to follow-up and one
+with an event, before and after expansion.
+
+```{r ch11-one-person}
+mid <- sta_cens$event_time > 2 & sta_cens$event_time < 3
+ids <- c(first(which(sta_cens$censored == 1 & mid)),
+         first(which(sta_cens$cv_event == 1 & mid)))
+
+sta_cens |> mutate(.row_id = row_number()) |> slice(ids) |>
+  select(.row_id, statin, event_time, cv_event, censored)
+
+pp |> filter(.row_id %in% ids) |>
+  select(.row_id, statin, tstart, tstop, event, censored)
+```
+
+The rows read as a small clinical history: at risk through each interval,
+then one final interval in which either the outcome arrives or the patient
+disappears. Since the two indicators are now built from three different
+columns, they need checking against the patient-level cohort rather than
+trusted.
+
+```{r ch11-checks}
+tibble(
+  quantity        = c("patients", "person-period rows", "outcome events",
+                      "patients censored"),
+  person_period   = c(n_distinct(pp$.row_id), nrow(pp), sum(pp$event),
+                      sum(pp$censored)),
+  patient_level   = c(nrow(sta_cens), NA, sum(sta_cens$cv_event),
+                      sum(sta_cens$censored))
+) |> knitr::kable()
+```
+
+```{r ch11-pp-values, include=FALSE}
+n_drop  <- nrow(sta) - nrow(sta_cens)
+n_ppl   <- n_distinct(pp$.row_id)
+n_rows  <- nrow(pp)
+n_ev    <- sum(pp$event)
+n_cens  <- sum(pp$censored)
+ok      <- n_ev == sum(sta_cens$cv_event) && n_cens == sum(sta_cens$censored) &&
+           n_ev == sum(sta$cv_event)
+```
+
+Dropping the `r n_drop` patients with no follow-up leaves
+`r format(n_ppl, big.mark = ",")` patients and
+`r format(n_rows, big.mark = ",")` person-period rows, about
+`r sprintf("%.1f", n_rows / n_ppl)` intervals each. The expansion
+preserves `r n_ev` events — the same count as `sum(sta$cv_event)`, since
+none of the dropped patients had one — and `r format(n_cens, big.mark = ",")`
+censorings, matching the patient-level indicator exactly — both
+identities hold, which is `r ok`. Checks this dull are worth printing
+every time, because an event indicator that is right at the patient level
+and wrong at the interval level produces plausible output and a wrong
+answer.
+
+The reason to pay this price in rows is that a logistic regression fitted
+to person-period data estimates a **discrete-time hazard**. Each row asks
+whether the event happened in that interval among patients who reached
+it, which is exactly the conditional quantity Kaplan–Meier computes; a
+logistic model of that indicator, pooled over intervals and with time on
+the right-hand side, is a **pooled logistic** model and approximates a
+proportional hazards model when the interval hazards are small. Ours
+carries time as `splines::ns(tstop, 3)` rather than `factor(tstop)`,
+spending three degrees of freedom instead of nine on a hazard we expect
+to be smooth. And because the hazards can be multiplied back up into a
+survival curve, the model returns risks at the horizons the target trial
+named, not only ratios.
+
+## Building censoring weights
+
+The censoring indicator above makes a substantive choice worth defending.
+Of the ways follow-up ends in `sta`, only loss to follow-up is treated as
+the censoring we weight for. Administrative censoring at
+`r admin_end` years is excluded because it happens to everyone still
+present at a calendar boundary that no covariate predicts — the benign
+case of Chapter 10. Death is excluded for a worse reason: it is a
+competing risk that Chapter 10 chose to treat as censoring, and putting
+it in the censoring model would weight the analysis toward a world in
+which nobody dies of anything else, an estimand harder to defend than the
+one we have. Both choices are assumptions, not conveniences, and the
+second is the chapter's weakest point.
+
+With the indicator fixed, the censoring model is a pooled logistic
+regression of `censored` on time and the baseline covariates, fitted
+across all person-period rows at once. In lecture, and in much of the
+literature, censoring models are instead fit with Cox proportional
+hazards regression; the pooled logistic on person-period data is its
+discrete-time analog, and with intervals this short the two give
+essentially the same weights. Our estimator wraps the whole
+sequence: fit the censoring model, fit the numerator model, take the
+running product down each patient's rows, truncate, and fit the weighted
+outcome model.
+
+```{r ch11-ipcw-def, eval=FALSE}
+ipcw_estimator <- function(pp_data, censor_model, outcome_formula,
+                           id = ".row_id", numerator_model = NULL,
+                           truncate_at = 0.99) {
+  cens_fit <- glm(censor_model, family = binomial(), data = pp_data)
+  pp_data <- pp_data |> mutate(p_uncens = 1 - predict(cens_fit, type = "response"))
+
+  if (!is.null(numerator_model)) {
+    num_fit <- glm(numerator_model, family = binomial(), data = pp_data)
+    pp_data <- pp_data |> mutate(p_uncens_num = 1 - predict(num_fit, type = "response"))
+  } else {
+    pp_data <- pp_data |> mutate(p_uncens_num = 1)
+  }
+
+  pp_data <- pp_data |>
+    group_by(.data[[id]]) |>
+    arrange(tstop, .by_group = TRUE) |>
+    mutate(w_cens = cumprod(p_uncens_num) / cumprod(p_uncens)) |>
+    ungroup() |>
+    mutate(w_cens = pmin(w_cens, quantile(w_cens, truncate_at)))
+
+  # geeglm() looks up `id` and `weights` in the environment of the formula it
+  # is handed; ours was built by the caller, so re-home it here.
+  environment(outcome_formula) <- environment()
+
+  fit <- geepack::geeglm(
+    outcome_formula, id = pp_data[[id]], weights = pp_data$w_cens,
+    family = binomial(), data = pp_data
+  )
+  list(fit = broom::tidy(fit, conf.int = TRUE), data = pp_data)
+}
+```
+
+The `cumprod()` line is the whole time-varying idea in one expression:
+grouped by patient and ordered by interval, the weight at interval $t$ is
+the running product of stabilized numerators over the running product of
+uncensored probabilities, exactly the $W^{C}(t)$ written above. When
+`numerator_model` is `NULL` the numerator is 1 and the weights are
+unstabilized. Truncation reuses Chapter 9's `pmin(w, quantile(w, p))`,
+here applied across all rows rather than all patients. The fit goes
+through `geepack::geeglm()` with `id` set to the patient identifier, which
+now does real work: a patient contributes several correlated rows, and
+treating them as independent observations would understate the standard
+error twice over — once for the weights and once for the repeated rows.
+Clustering on the patient repairs both. The function returns the tidied
+fit and the weighted data, so the weights can be inspected rather than
+taken on trust.
+
+```{r ipcw, warning=FALSE}
+res <- ipcw_estimator(
+  pp,
+  censor_model    = reformulate(c("splines::ns(tstop, 3)", sta_covs), "censored"),
+  outcome_formula = reformulate(c("statin", "splines::ns(tstop, 3)"), "event"),
+  numerator_model = reformulate("splines::ns(tstop, 3)", "censored")
+)
+
+res$fit |> knitr::kable(digits = 3)
+```
+
+The outcome model is deliberately thin: `statin`, a spline in time, and
+nothing else. Confounding of the treatment contrast is Chapter 9's job
+and is not addressed here, so the `statin` coefficient in that table is a
+censoring-corrected *crude* comparison, not an effect estimate. (A weighted binomial fit also
+provokes a warning about non-integer successes, since the weights are
+fractional; it is expected, and the sandwich variance is what we are
+relying on rather than the likelihood.)
+
+## Weight diagnostics
+
+A weight is a claim about how many unseen patients each observed patient
+represents, and the claim should be looked at before it is believed.
+
+```{r ch11-wt-interval}
+res$data |>
+  group_by(interval = ceiling(tstop)) |>
+  summarise(rows = n(), mean = mean(w_cens), sd = sd(w_cens),
+            max = max(w_cens), .groups = "drop") |>
+  knitr::kable(digits = 3)
+```
+
+```{r ch11-wt-values, include=FALSE}
+w   <- res$data$w_cens
+res_un <- ipcw_estimator(
+  pp,
+  censor_model    = reformulate(c("splines::ns(tstop, 3)", sta_covs), "censored"),
+  outcome_formula = reformulate(c("statin", "splines::ns(tstop, 3)"), "event"),
+  numerator_model = reformulate("splines::ns(tstop, 3)", "censored"),
+  truncate_at = 1
+)
+w_raw  <- res_un$data$w_cens
+n_cap  <- sum(w_raw > quantile(w_raw, 0.99))
+ess    <- sum(w)^2 / sum(w^2)
+```
+
+Two things stand out, and the second is the more important. The
+stabilized weights average `r sprintf("%.3f", mean(w))` with a standard
+deviation of `r sprintf("%.3f", sd(w))` — the reassuring diagnostic,
+telling us the censoring model is not producing a pseudo-population of
+the wrong size. But the whole distribution is narrow. The largest weight
+in the data is `r sprintf("%.2f", max(w_raw))` before truncation, and the
+weights drift away from 1 only slowly as the intervals accumulate,
+because a running product of numbers very close to 1 stays close to 1.
+Kish's effective sample size, `r format(round(ess), big.mark = ",")` of
+`r format(n_rows, big.mark = ",")` rows, records the same fact: these
+weights cost almost no information.
+
+That narrowness is a finding about the cohort, not about the method. The
+weights spread out only to the extent that the covariates in the
+censoring model predict who drops out, and Chapter 10 already showed they
+barely do — every standardized difference between the early-loss patients
+and everyone else was under 0.10. A censoring model built from variables
+that do not predict censoring returns probabilities near the overall
+average, and those cancel almost exactly against the stabilizing
+numerator.
+
+Truncation, on this evidence, is a formality. Capping at the 99th
+percentile touches `r format(n_cap, big.mark = ",")` of the
+`r format(n_rows, big.mark = ",")` rows and changes the largest weight
+from `r sprintf("%.2f", max(w_raw))` to `r sprintf("%.2f", max(w))`, so
+nothing here hangs on it. It is worth keeping the habit anyway, since a
+running product is the one weight that can misbehave badly: a single
+interval with a low estimated probability of remaining uncensored
+multiplies into every later weight for that patient, and with ten
+intervals and a richer censoring model, weights in the hundreds are
+routine. The rule from Chapter 9 carries over — report the untruncated
+estimate, report it capped, and if they disagree materially, say so
+rather than choosing.
+
+## Did it matter?
+
+The honest test is to fit the same pooled logistic model twice, once with
+the censoring weights and once with weights of 1, and put the answers
+beside each other. Since the model is a hazard model, we also multiply
+the fitted hazards back into risks at the horizons Chapter 10 named.
+
+```{r ch11-compare, warning=FALSE}
+d      <- res$data
+w_one  <- rep(1, nrow(d))
+outcome_formula <- reformulate(c("statin", "splines::ns(tstop, 3)"), "event")
+
+wfit <- geepack::geeglm(outcome_formula, id = d$.row_id, weights = d$w_cens,
+                        family = binomial(), data = d)
+ufit <- geepack::geeglm(outcome_formula, id = d$.row_id, weights = w_one,
+                        family = binomial(), data = d)
+
+bind_rows("IPCW weighted" = broom::tidy(wfit, conf.int = TRUE),
+          "Unweighted"    = broom::tidy(ufit, conf.int = TRUE),
+          .id = "analysis") |>
+  filter(term == "statin") |>
+  mutate(across(c(estimate, conf.low, conf.high), exp)) |>
+  select(analysis, odds_ratio = estimate, conf.low, conf.high) |>
+  knitr::kable(digits = 3)
+```
+
+```{r ch11-risk}
+grid <- expand_grid(statin = 0:1, tstop = 1:admin_end)
+
+risk_at <- function(fit) {
+  grid |>
+    mutate(h = predict(fit, newdata = grid, type = "response")) |>
+    group_by(statin) |>
+    mutate(risk = 1 - cumprod(1 - h)) |>
+    ungroup() |>
+    filter(tstop %in% c(5, admin_end))
+}
+
+bind_rows("IPCW weighted" = risk_at(wfit), "Unweighted" = risk_at(ufit),
+          .id = "analysis") |>
+  select(analysis, statin, years = tstop, risk) |>
+  knitr::kable(digits = 4)
+```
+
+```{r ch11-compare-values, include=FALSE}
+pull_or <- function(fit) {
+  t <- broom::tidy(fit); exp(t$estimate[t$term == "statin"])
+}
+or_w <- pull_or(wfit); or_u <- pull_or(ufit)
+rk <- function(fit, a, y) {
+  r <- risk_at(fit); r$risk[r$statin == a & r$tstop == y]
+}
+rd_w <- rk(wfit, 1, 5) - rk(wfit, 0, 5)
+rd_u <- rk(ufit, 1, 5) - rk(ufit, 0, 5)
+km5 <- 1 - summary(survfit(Surv(event_time, cv_event) ~ statin, data = sta),
+                   times = 5)$surv
+```
+
+The weighted odds ratio for `statin` is `r sprintf("%.3f", or_w)` against
+`r sprintf("%.3f", or_u)` unweighted, and the five-year risk difference
+moves from `r sprintf("%+.2f", 100 * rd_u)` percentage points to
+`r sprintf("%+.2f", 100 * rd_w)`. Nothing happened. The confidence
+intervals are effectively identical. The weighted five-year risks,
+`r sprintf("%.1f", 100 * rk(wfit, 0, 5))`% without a statin and
+`r sprintf("%.1f", 100 * rk(wfit, 1, 5))`% with one, also land near
+Chapter 10's Kaplan–Meier estimates of
+`r sprintf("%.1f", 100 * km5[1])`% and
+`r sprintf("%.1f", 100 * km5[2])`% — reassurance that the pooled logistic
+is estimating the same curve, with the remaining gap the price of
+describing a hazard with three degrees of freedom.
+
+This is the expected result and it is worth sitting with rather than
+apologizing for. Weights near 1 cannot move an estimate, and the weights
+are near 1 because the variables we measured do not predict who left. The
+correction was available, we applied it, and the data said the correction
+was not needed *for the censoring that baseline covariates can see*. The
+limits of that sentence are the whole point. If dropping out is driven by
+something we did not record — a symptom that worsened, a decision to stop
+attending, the unmeasured prognosis in Chapter 10's diagram — then the
+collider is still being conditioned on, the estimate is still biased, and
+this analysis looks exactly as it does now. A well-behaved weight
+distribution is evidence that the censoring model found little to
+correct, never evidence that there was little to correct. That is the
+uncomfortable symmetry with Chapter 9's unmeasured confounding, and it is
+why Chapter 14 exists.
+
+One more thing is missing from the model above, deliberately. A complete
+analysis of this question would weight for both problems at once: build
+Chapter 9's stabilized treatment weight from a model for `statin` given
+`sta_covs`, build this chapter's censoring weight for each interval,
+multiply them per row, and fit the same pooled logistic marginal
+structural model with the product as its weight. The two weights address
+different arrows and compose cleanly, and their product is the standard
+recipe for time-to-event marginal structural models. Chapter 12 assembles
+it, in service of a harder question than a point treatment.
+
+## Exercises
+
+1. Refit the censoring model without the comorbidity variables — keep
+   only `age`, `sex`, `race`, `region`, and `year` alongside the spline in
+   time. Report the mean, standard deviation, and maximum of the
+   resulting weights and the `statin` odds ratio. Which of the two
+   changes more, and what does that tell you about how much of the
+   censoring signal the comorbidities carried?
+2. Rerun `ipcw_estimator()` with `numerator_model = NULL` to get
+   unstabilized weights. Report their mean and maximum and explain why
+   the mean is no longer near 1. Then explain why the `statin` estimate
+   barely changes even though the weights are much larger, and describe a
+   situation in which stabilization would matter more.
+3. Set `truncate_at = 0.95` and compare the weight distribution and the
+   estimate against the 99th-percentile version. Given the largest
+   untruncated weight in this cohort, was truncation ever going to matter
+   here? Describe the features of a censoring model — number of
+   intervals, strength of the covariate-censoring association — that
+   would make the answer different.

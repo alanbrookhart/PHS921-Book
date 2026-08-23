@@ -1,0 +1,54 @@
+---
+title: "Causal Inference in Epidemiology Using R"
+author: "M. Alan Brookhart"
+date: "`r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+link-citations: yes
+description: >
+  An introduction to causal inference with epidemiologic
+  applications in R, using data from the National Ambulatory
+  Medical Care Survey (NAMCS).
+---
+
+# Preface {-}
+
+## Who this book is for
+
+I wrote this book for epidemiology students working toward an MPH or PhD
+who want to move from associational thinking to causal thinking. I assume
+you have had an introductory course in epidemiology and one in
+biostatistics — you should be comfortable with concepts like confounding,
+odds ratios, and hazard ratios, and with fitting a regression model. I do
+not assume any prior exposure to causal inference as a formal framework,
+and I do not assume any prior experience with R. Both are things we will
+build up together, chapter by chapter.
+
+## How the book works
+
+The ideas in this book are easiest to learn when they are attached to a
+real analysis rather than left as abstractions, so we will return
+throughout to two running examples drawn from the National Ambulatory
+Medical Care Survey (NAMCS). The first asks whether treatment with a
+selective Cox-2 inhibitor, compared with a nonselective NSAID, changes
+the risk of peptic ulcer disease. The second asks whether initiating a
+statin changes the risk of a cardiovascular event, and brings in
+follow-up time, censoring, and survival outcomes. As we work through
+these examples, we will also build a small toolkit of R functions for
+estimating causal effects — standardization, propensity score weighting,
+censoring weights, and so on — that you will write once and then reuse,
+and extend, in later chapters.
+
+## Software
+
+Appendix A walks through installing R, RStudio, and the packages this
+book relies on, including a companion package that provides the NAMCS
+example datasets in a de-identified, teaching-ready form. You can install
+that package directly from GitHub:
+
+```{r, eval = FALSE}
+remotes::install_github("alanbrookhart/NAMCS")
+```
+
+If you run into trouble at any point, Appendix A is the place to look
+first.

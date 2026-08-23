@@ -1,0 +1,319 @@
+# Getting started with R and the NAMCS data
+
+```{r setup-ch02, include=FALSE}
+source("R/setup.R")
+```
+
+Every idea in this book is attached to code, and the code is R. If you
+have never used R before, this chapter is for you: it introduces just
+enough of the tidyverse to read and write the data manipulations in the
+chapters that follow, walks through the two example cohorts you will be
+living with for the rest of the semester, and ends by building your first
+reusable function — a "Table 1" generator you will reach for in every
+observational study you ever run, in this course and after it. If you
+already know R and the tidyverse well, skim this chapter for the two data
+sets and read the Table 1 section, since `table1_continuous()` and
+`table1_categorical()` are used again in later chapters.
+
+## R, RStudio, and the tidyverse
+
+R is the language; RStudio is the editor most people use to write and run
+it. Appendix A walks through installing both, along with the packages
+this book relies on. Once they are installed, you will type or paste code
+into a script or, as here, into a code chunk inside an R Markdown
+document, and run it a line or a chunk at a time.
+
+The basic vocabulary of R is small. An **object** is a name that holds a
+value — a number, a piece of text, or, most often in this book, a
+rectangular data set with rows and columns (a **data frame**, or in the
+tidyverse a **tibble**). A **function** takes some input, does something
+to it, and returns an output; `mean(x)` takes a vector `x` and returns
+its average. A **package** is a bundle of functions someone else wrote
+and shared, loaded with `library()`. The tidyverse is one such bundle —
+really a collection of packages, including `dplyr` for manipulating data
+frames and `ggplot2` for plotting — built around a shared design that
+tries to make code read like a description of what you want done rather
+than a set of instructions for how a computer should do it.
+
+The setup chunk at the top of this chapter already did the loading for
+us: `source("R/setup.R")` runs a script that attaches the tidyverse,
+attaches the `NAMCS` package that supplies our example data, and builds
+the two analysis cohorts, `ns` and `sta`, that we will use throughout the
+book. Every chapter starts this way, so that it can be read and rendered
+on its own without depending on anything that came before it.
+
+The one piece of tidyverse syntax you should get comfortable with
+immediately is the pipe, `|>`. It takes whatever is on its left and
+passes it as the first argument to whatever is on its right, so that
+`x |> f()` means the same thing as `f(x)`. This lets you chain several
+operations together and read them roughly left to right, top to bottom,
+as a sequence of steps: start with the data, then filter it, then
+summarize it. Four `dplyr` verbs will carry most of the weight in this
+book: `filter()` keeps rows that satisfy a condition, `select()` keeps
+particular columns, `mutate()` adds or changes a column, and
+`group_by()` paired with `summarise()` computes a statistic separately
+within each level of a grouping variable. A fifth, `count()`, is a
+shortcut for counting rows within groups.
+
+A few examples, all using the NSAID cohort `ns`:
+
+```{r verbs-demo}
+ns |> filter(age >= 65) |> nrow()
+
+ns |> select(cox2_initiation, age, sex) |> head(3)
+
+ns |> mutate(age65 = as.integer(age >= 65)) |> count(age65)
+
+ns |>
+  group_by(cox2_initiation) |>
+  summarise(n = n(), mean_age = mean(age))
+
+ns |> count(sex, cox2_initiation)
+```
+
+The first line counts how many patients in `ns` are 65 or older. The
+second pulls out three columns and prints the first few rows. The third
+uses `mutate()` to add a new column, `age65`, that recodes age as a 0/1
+indicator for being 65 or older, and then counts how many patients land
+in each category — the same recode-and-count pattern behind `cox2_init`
+and `pud`, the two convenience columns `R/setup.R` added for us. The
+fourth groups patients by which drug class they initiated and reports
+the number of patients and mean age in each group — a first, very small
+taste of the comparisons we will spend the rest of the book refining. The
+fifth cross-tabulates sex against treatment group. None of this is
+causal inference yet; it is just description, but description is where
+every analysis starts, and it is worth being fluent in it before adding
+any causal machinery on top.
+
+## The NAMCS teaching cohorts
+
+The data behind every example in this book come from the National
+Ambulatory Medical Care Survey (NAMCS), an annual survey of visits to
+office-based physicians in the United States. We use five years of
+NAMCS, 2005 through 2009, assembled into two teaching cohorts by the
+`NAMCS` R package. Both cohorts are built from real survey visits, but
+the outcomes — peptic ulcer disease in one cohort, cardiovascular events
+and survival times in the other — are simulated, so that we know there
+is a true underlying data-generating process while still working with
+realistic covariate structure. This is common in causal inference
+teaching materials: it lets us illustrate methods with plausible clinical
+questions without the ambiguity of relying on outcomes we cannot
+validate.
+
+The first cohort, `ns`, follows new users of NSAIDs — patients starting
+either a nonselective NSAID or a Cox-2 selective inhibitor — and asks
+whether the choice of drug class affects the risk of incident peptic
+ulcer disease. `glimpse()` gives a quick sense of what is in it:
+
+```{r glimpse-ns}
+glimpse(ns)
+```
+
+There are `r nrow(ns)` patients in `ns`, of whom
+`r sum(ns$cox2_initiation == "Yes")` initiated a Cox-2 selective
+inhibitor. Alongside the treatment indicator `cox2_initiation` and the
+outcome `incident_pud`, the cohort carries baseline covariates: age, sex,
+race, region, calendar year, a set of chronic conditions, and
+comedications like corticosteroids, aspirin, and gastroprotective drugs.
+`R/setup.R` already added two convenience columns, `cox2_init` and `pud`,
+which are the same information as `cox2_initiation` and `incident_pud`
+recoded as 0/1 integers — most of the model-fitting functions we write
+later expect a numeric 0/1 treatment or outcome rather than a factor.
+
+The second cohort, `sta`, follows patients who did or did not initiate a
+statin, and asks whether statin initiation reduces the risk of a
+cardiovascular event. Because a cardiovascular event can happen — or
+fail to happen — at any point over years of follow-up, this cohort looks
+a little different:
+
+```{r glimpse-sta}
+glimpse(sta)
+```
+
+There are `r nrow(sta)` patients in `sta`, and `r sum(sta$statin == 1)`
+of them initiated a statin. Instead of a single yes/no outcome measured
+at a fixed time, `sta` carries several time variables — `cv_time`,
+`death_time`, `loss_fu_time` — recording, in years, when each event
+would have occurred had it occurred at all (a patient who never has the
+event has a missing `cv_time`). `R/setup.R` combines these into a single
+`event_time`, the time to whichever of a cardiovascular event, death,
+loss to follow-up, or the administrative end of the study (`admin_end`,
+set to `r admin_end` years) happened first, and a `cv_event` indicator for whether
+that first thing was actually the cardiovascular event. We will not need
+any of that machinery until Chapter 10, on survival outcomes and
+censoring; for now it is enough to know that `sta` exists, that it is
+bigger and slower-moving than `ns`, and that it is where the book turns
+once we start worrying about follow-up time.
+
+Appendix B collects a full codebook for both cohorts, generated directly
+from the data rather than typed out by hand, so it will always match
+what is actually in the package. If you are ever unsure what a variable
+means, that is the place to check.
+
+## Plotting with ggplot2
+
+`ggplot2` builds a plot by mapping columns of data to visual properties
+— an x-axis, a y-axis, a color — and then adding layers on top that
+say how to draw it: as points, bars, lines, or histograms. Every
+`ggplot2` call in this book starts the same way, with `ggplot(data,
+aes(...))` naming the data and the mapping, followed by one or more
+`geom_*()` layers.
+
+A natural first question about `ns` is whether Cox-2 initiators and
+nonselective NSAID initiators look similar in age. A histogram, faceted
+by treatment group, answers this directly:
+
+```{r age-hist, fig.cap = "Age distribution by initiated drug class."}
+ggplot(ns, aes(age)) +
+  geom_histogram(binwidth = 5, boundary = 0) +
+  facet_wrap(~cox2_initiation) +
+  labs(x = "Age (years)", y = "Number of patients",
+       title = "Age distribution by initiated drug class")
+```
+
+The two distributions are not identical, and that alone is worth
+sitting with for a moment: it means age could confound any simple
+comparison of peptic ulcer risk between the groups, since age is
+plausibly related to both which drug a physician chooses to prescribe
+and the baseline risk of peptic ulcer disease.
+
+A second question is whether the two groups differ in their burden of
+relevant comorbidities and comedications. A bar chart of prevalence, one
+bar per condition per group, is a compact way to see several
+comparisons at once:
+
+```{r comorbid-bars, fig.cap = "Prevalence of selected comorbidities and comedications by initiated drug class."}
+ns |>
+  select(cox2_initiation, arthritis, diabetes, hypertension,
+         corticosteroid_use) |>
+  pivot_longer(-cox2_initiation, names_to = "condition") |>
+  group_by(cox2_initiation, condition) |>
+  summarise(prevalence = mean(value == "Yes"), .groups = "drop") |>
+  ggplot(aes(condition, prevalence, fill = cox2_initiation)) +
+  geom_col(position = "dodge") +
+  labs(x = NULL, y = "Prevalence", fill = "Initiated Cox-2?") +
+  coord_flip()
+```
+
+Arthritis, in particular, is more common among Cox-2 initiators than
+among nonselective NSAID initiators, which makes clinical sense — Cox-2
+selective drugs are often chosen specifically for patients thought to be
+at higher gastrointestinal risk — and is exactly the kind of pattern that
+will occupy us once we start asking how to adjust for confounding.
+
+## Your first reusable functions: Table 1
+
+Every observational paper you will ever read, and every one you will
+ever write, opens with a table comparing the characteristics of the
+groups being compared — universally, if a little unimaginatively, called
+"Table 1." It is descriptive, not causal, but it is also indispensable:
+it is where a reader first sees whether the groups look similar,
+and it is often where a reader first suspects they don't. You will make
+some version of this table for every study you ever do, so rather than
+rebuild it from scratch each time, we are going to write it once, as a
+function, and reuse it for the rest of this book.
+
+A function in R is defined with `function(...)`, naming its arguments,
+followed by a body that computes something from them and returns it (by
+default, the value of the last expression evaluated). Writing your own
+functions is the single habit that will save you the most time as an R
+user, because it turns a block of code you would otherwise copy, paste,
+and slightly mis-edit into something you write once, test once, and
+trust afterward.
+
+A Table 1 needs to summarize two kinds of variables differently:
+continuous variables as a mean and standard deviation, and categorical
+variables as a count and percentage, both computed separately within
+each level of a grouping variable (here, treatment group). We will write
+one function for each.
+
+For continuous variables, the recipe is: reshape the requested columns
+into a long format with one row per patient per variable, group by the
+grouping variable and the variable name, compute `"mean (sd)"` as a
+formatted string, and reshape back so that each treatment group is its
+own column.
+
+```{r table1-continuous-def}
+table1_continuous <- function(data, vars, by) {
+  data |>
+    select(all_of(c(by, vars))) |>
+    pivot_longer(all_of(vars), names_to = "variable") |>
+    group_by(.data[[by]], variable) |>
+    summarise(
+      stat = sprintf("%.1f (%.1f)",
+                     mean(value, na.rm = TRUE), sd(value, na.rm = TRUE)),
+      .groups = "drop"
+    ) |>
+    pivot_wider(names_from = all_of(by), values_from = stat)
+}
+```
+
+A couple of details are worth pointing out because they recur throughout
+this book. `all_of(vars)` tells `select()` and `pivot_longer()` that
+`vars` is a character vector of column names supplied by the caller,
+rather than a single column to look up literally — this is what lets the
+function work for any set of variables, not just the ones we happen to
+try first. `.data[[by]]` does the analogous thing for `group_by()`,
+letting the name of the grouping column be a string passed in as an
+argument rather than hard-coded. Together these are what make the
+function *reusable*: nothing about age or treatment group is written
+into the body of `table1_continuous()` itself.
+
+Categorical variables follow the same shape, but count levels instead of
+averaging values:
+
+```{r table1-categorical-def}
+table1_categorical <- function(data, vars, by) {
+  data |>
+    select(all_of(c(by, vars))) |>
+    mutate(across(all_of(vars), as.character)) |>
+    pivot_longer(all_of(vars), names_to = "variable", values_to = "level") |>
+    count(.data[[by]], variable, level) |>
+    group_by(.data[[by]], variable) |>
+    mutate(stat = sprintf("%d (%.1f%%)", n, 100 * n / sum(n))) |>
+    ungroup() |>
+    select(-n) |>
+    pivot_wider(names_from = all_of(by), values_from = stat)
+}
+```
+
+Both functions are saved in `R/table1.R` so that later chapters can pull
+them in with a single `source()` call rather than redefining them. Let's
+use them on the NSAID cohort, comparing Cox-2 initiators to nonselective
+NSAID initiators on age and on five categorical covariates, and format
+the results with `knitr::kable()` for a readable table:
+
+```{r table1}
+source("R/table1.R")
+table1_continuous(ns, vars = "age", by = "cox2_initiation") |> knitr::kable()
+table1_categorical(
+  ns,
+  vars = c("sex", "arthritis", "aspirin_use", "ppi_use", "corticosteroid_use"),
+  by = "cox2_initiation"
+) |> knitr::kable()
+```
+
+Look at the two tables side by side. Cox-2 initiators are, on average,
+older than nonselective NSAID initiators, and a substantially larger
+share of them have a history of arthritis. Neither table tells us
+whether Cox-2 selectivity affects peptic ulcer risk — that question
+needs the rest of this book — but both are exactly the kind of evidence
+an epidemiologist reaches for first, and both came from two functions
+you now understand well enough to have written yourself.
+
+## Exercises
+
+1. Build both a continuous and a categorical Table 1 for the statin
+   cohort, comparing statin initiators to non-initiators
+   (`statin_use`) on `age` and on `diabetes`, `hypertension`, and
+   `tobacco_use`. Use `table1_continuous()` and `table1_categorical()`
+   exactly as they were used above, just pointing them at `sta` and a
+   different `by` variable and variable list.
+2. The age-by-group histogram in the *Plotting with ggplot2* section was
+   built for the NSAID cohort. Adapt that code to plot the distribution
+   of `age` by `statin_use` in the `sta` cohort instead. Do the two
+   statin groups look as similar in age as the two NSAID groups did?
+3. Using `count()`, tabulate the number of visits per calendar `year`
+   separately for statin initiators and non-initiators in `sta`. Is the
+   number of statin initiators roughly constant across 2005–2009, or
+   does it trend up or down?

@@ -1,0 +1,425 @@
+# (PART) Core Methods {-}
+
+# Outcome regression and standardization
+
+```{r setup-ch07, include=FALSE}
+source("R/setup.R")
+```
+
+Part I built the vocabulary: potential outcomes and estimands in
+Chapter 3, the target trial in Chapter 4, a diagram and an adjustment
+set in Chapter 5, and a design that earns the right to compare two arms
+in Chapter 6. What Part I never did was produce a number. Part II does.
+Over the next three chapters we answer the question we have been
+circling since Chapter 1 — does initiating a Cox-2 selective inhibitor,
+rather than a nonselective NSAID, change the risk of peptic ulcer
+disease? — three separate times, with three estimators that make the
+same identification assumptions and reach the same estimand by
+different routes: standardization here, propensity scores in Chapter 8,
+and inverse probability of treatment weighting in Chapter 9. They are
+not rival philosophies but three ways of using the covariates in
+`ns_covs` to repair the imbalance Chapter 6's Table 1 laid out, and part
+of the point of running all three is to see how little the answer moves
+when the machinery changes. We also start building the toolkit promised
+in the preface, with the book's first estimator function,
+`standardize()`.
+
+## Adjusting with regression
+
+Let us start where most epidemiologic analyses start, with a regression
+model for the outcome. Chapter 6's Table 1 told us that Cox-2
+initiators are older, sicker, and more likely to be on corticosteroids
+than nonselective initiators, so the crude comparison of PUD risk
+between arms is confounded — and confounded in a direction we can
+anticipate, since the patients steered toward the Cox-2 drug were
+steered there partly *because* their physicians judged them to be at
+higher GI risk.
+
+```{r ch07-crude}
+ns |>
+  group_by(cox2_init) |>
+  summarise(n = n(), cases = sum(pud), risk = mean(pud), .groups = "drop") |>
+  knitr::kable(digits = 3)
+```
+
+```{r ch07-crude-values, include=FALSE}
+crude <- ns |> group_by(cox2_init) |> summarise(r = mean(pud), .groups = "drop") |> pull(r)
+crude_rd <- crude[2] - crude[1]
+crude_rr <- crude[2] / crude[1]
+crude_or <- exp(coef(glm(pud ~ cox2_init, family = binomial(), data = ns))[["cox2_init"]])
+n_cox2 <- sum(ns$cox2_init)
+```
+
+The crude risks run `r sprintf("%.1f", 100 * crude[2])`% in the Cox-2 arm
+against `r sprintf("%.1f", 100 * crude[1])`% among nonselective
+initiators — a crude risk difference of
+`r sprintf("%+.1f", 100 * crude_rd)` percentage points and a crude risk
+ratio of `r sprintf("%.2f", crude_rr)`. Taken at face value that says the
+Cox-2 drug *raises* ulcer risk, against its entire clinical rationale —
+the signature of confounding by indication, and the number adjustment
+has to work on.
+
+The standard first move is a logistic model for `pud` that includes the
+treatment indicator alongside every covariate in the adjustment set.
+Rather than typing nineteen covariate names, we let `reformulate()`
+assemble the formula from `ns_covs`, which keeps `R/setup.R` as the
+single source of truth for what "adjusted" means in this book.
+
+```{r ch07-outcome-model}
+library(broom)
+
+fit <- glm(
+  reformulate(c("cox2_init", ns_covs), "pud"),
+  family = binomial(),
+  data = ns
+)
+
+tidy(fit, exponentiate = TRUE, conf.int = TRUE) |>
+  filter(term %in% c("cox2_init", "age", "arthritisYes", "corticosteroid_useYes")) |>
+  knitr::kable(digits = 3)
+```
+
+```{r ch07-model-values, include=FALSE}
+tt <- tidy(fit, exponentiate = TRUE, conf.int = TRUE)
+cond_or    <- tt$estimate[tt$term == "cox2_init"]
+cond_or_lo <- tt$conf.low[tt$term == "cox2_init"]
+cond_or_hi <- tt$conf.high[tt$term == "cox2_init"]
+age_or     <- tt$estimate[tt$term == "age"]
+```
+
+Adjustment does what we hoped. The coefficient on `cox2_init`,
+exponentiated, is an odds ratio of `r sprintf("%.2f", cond_or)` (95% CI
+`r sprintf("%.2f", cond_or_lo)` to `r sprintf("%.2f", cond_or_hi)`) —
+moved from the crude odds ratio of `r sprintf("%.2f", crude_or)` to just
+below the null, though with an interval far too wide to rule out either
+a modest benefit or a modest harm. Age carries an odds ratio of
+`r sprintf("%.2f", age_or)` per year, which is where much of the
+confounding lived.
+
+Now the awkward part. That `r sprintf("%.2f", cond_or)` is a
+**conditional** odds ratio: the odds ratio comparing two patients who
+are identical on all nineteen covariates and differ only in which NSAID
+they started. It is not the marginal contrast we defined in Chapter 3.
+The ATE was written $E[Y^1] - E[Y^0]$, an average over the whole
+population of what would happen under each treatment — a single number
+attached to a population, not to a stratum. Nothing in a regression
+coefficient delivers that, and the gap is not merely a matter of
+rescaling from odds to risks.
+
+The reason is **noncollapsibility**. If treatment truly has no effect,
+the conditional and marginal odds ratios agree at 1. Otherwise, even
+with no confounding at all, the odds ratio averaged over strata is
+pulled toward the null relative to the odds ratio within any stratum,
+simply because the odds scale is nonlinear and the strata have different
+baseline risks. The conditional odds ratio and the marginal odds ratio
+are answering different questions, and the difference between them is
+not bias in either — it is a property of the scale. Greenland, Robins,
+and Pearl (1999) are the standard reference for keeping this distinction
+straight, and for the point that noncollapsibility and confounding are
+different phenomena that the same numerical gap can express. Risk
+differences and risk ratios do not behave this way; they collapse. So the fix is not to
+choose a better model, it is to stop reading the estimand off a
+coefficient. We want a marginal contrast, and standardization is how we
+get one from the very same fitted model.
+
+## Standardization: predict, then average
+
+The recipe, in words, is four steps. Fit an outcome model that includes
+treatment and the covariates. Then take the entire cohort and set every
+patient's treatment to 1 — including the patients who actually took the
+nonselective drug — and ask the model to predict each patient's risk in
+that hypothetical world. Take the whole cohort again, set everyone's
+treatment to 0, and predict again. Average each set of predictions and
+contrast the two averages. This is the **parametric g-formula**, due to
+Robins (1986): the model is used only as a device for interpolating what
+each individual's risk would have been under each treatment, and the
+averaging — over the observed covariate distribution of the whole
+cohort — is what turns those individual predictions into a marginal,
+population-level contrast.
+
+It takes five lines.
+
+```{r ch07-hand-rolled}
+ns1 <- ns |> mutate(cox2_init = 1)
+ns0 <- ns |> mutate(cox2_init = 0)
+risk1 <- mean(predict(fit, newdata = ns1, type = "response"))
+risk0 <- mean(predict(fit, newdata = ns0, type = "response"))
+c(risk0 = risk0, risk1 = risk1, rd = risk1 - risk0, rr = risk1 / risk0)
+```
+
+Notice what the two copies of the data are doing. `ns1` is the cohort as
+it would look if every one of these `r nrow(ns)` patients had started a
+Cox-2 inhibitor, with every covariate left exactly as observed; `ns0` is
+the same cohort under the nonselective strategy. Because both averages
+are taken over the *same* covariate distribution — everybody, once each,
+in both worlds — the difference between them cannot be attributed to a
+difference in case mix. That is the whole trick, and it is the same
+trick as classical direct standardization to a reference population,
+with the fitted model standing in for the stratum-specific rates.
+
+Every step of that reasoning leans on Chapter 3's identification
+conditions. Consistency lets us read a predicted risk under
+`cox2_init = 1` as a potential outcome; conditional exchangeability,
+which Chapter 5's diagram is our argument for, is what makes a model fit
+partly to treated patients usable for predicting untreated ones. And
+positivity is what keeps the prediction honest: with only `r n_cox2`
+Cox-2 initiators among `r nrow(ns)` patients, the model extrapolates
+fairly hard when it imagines a Cox-2 world for covariate patterns where
+almost no Cox-2 initiator was observed. Standardization will produce a
+number anyway, without complaining — a reason to keep Chapter 6's Table
+1 in view rather than trusting the estimator blindly.
+
+We are going to want this in Chapters 8 and 9, so let us package it.
+The function takes the data, a model formula, and the name of the
+treatment column, and returns one row per estimand. Two details are
+worth pausing on. The `"{treat}" := 1` syntax inside `mutate()` is
+`dplyr`'s glue notation for assigning to a column whose name is held in
+a variable, which is what lets the same function work for `cox2_init`
+here and `statin` later. And the point estimates are wrapped in their
+own inner function, `point_estimates()`, because the bootstrap in the
+next section needs to run exactly the same computation on a resampled
+data set — fitting the model *inside* the resample, not reusing the
+original fit.
+
+```{r ch07-standardize-def, eval=FALSE}
+standardize <- function(data, outcome_model, treat, family = binomial(),
+                        n_boot = 200, conf_level = 0.95, seed = NULL) {
+  if (!is.null(seed)) set.seed(seed)
+
+  point_estimates <- function(d) {
+    fit <- glm(outcome_model, family = family, data = d)
+    d1 <- d |> mutate("{treat}" := 1)
+    d0 <- d |> mutate("{treat}" := 0)
+    risk1 <- mean(predict(fit, newdata = d1, type = "response"))
+    risk0 <- mean(predict(fit, newdata = d0, type = "response"))
+    c(risk0 = risk0, risk1 = risk1, rd = risk1 - risk0, rr = risk1 / risk0)
+  }
+
+  est <- point_estimates(data)
+  boot_est <- replicate(n_boot, {
+    point_estimates(slice_sample(data, prop = 1, replace = TRUE))
+  })
+  alpha <- 1 - conf_level
+
+  tibble(
+    estimand  = names(est),
+    estimate  = unname(est),
+    conf_low  = apply(boot_est, 1, quantile, probs = alpha / 2),
+    conf_high = apply(boot_est, 1, quantile, probs = 1 - alpha / 2)
+  )
+}
+```
+
+That code lives in `R/standardize.R`, so from here on we source it
+rather than retype it.
+
+```{r standardize}
+source("R/standardize.R")
+std <- standardize(
+  ns,
+  outcome_model = reformulate(c("cox2_init", ns_covs), "pud"),
+  treat = "cox2_init", n_boot = 200, seed = 921
+)
+std |> knitr::kable(digits = 3)
+```
+
+```{r ch07-std-values, include=FALSE}
+g <- function(what, col = "estimate") std[[col]][std$estimand == what]
+std_r0 <- g("risk0"); std_r1 <- g("risk1")
+std_rd <- g("rd"); std_rr <- g("rr")
+marg_or <- (std_r1 / (1 - std_r1)) / (std_r0 / (1 - std_r0))
+```
+
+Here is the answer, on the scale Chapter 3 asked for. Had every patient
+in `ns` started a nonselective NSAID, the model puts PUD risk at
+`r sprintf("%.1f", 100 * std_r0)`%; had every one of them started a
+Cox-2 inhibitor, `r sprintf("%.1f", 100 * std_r1)`%. The standardized
+risk difference is `r sprintf("%+.1f", 100 * std_rd)` percentage points
+(95% CI `r sprintf("%.1f", 100 * g("rd", "conf_low"))` to
+`r sprintf("%+.1f", 100 * g("rd", "conf_high"))`) and the standardized
+risk ratio `r sprintf("%.2f", std_rr)`
+(`r sprintf("%.2f", g("rr", "conf_low"))` to
+`r sprintf("%.2f", g("rr", "conf_high"))`). Adjustment has moved the
+crude risk ratio of `r sprintf("%.2f", crude_rr)` to
+`r sprintf("%.2f", std_rr)` — from apparent harm to a point estimate
+slightly on the protective side of the null — but the interval
+comfortably includes 1, so what the data support is "no large effect
+either way," not "a benefit." With `r sum(ns$pud)` ulcer cases and
+`r n_cox2` Cox-2 initiators, that is about as much precision as this
+cohort has to offer.
+
+Note also what noncollapsibility looks like in the arithmetic. The
+standardized risks imply a *marginal* odds ratio of
+`r sprintf("%.3f", marg_or)`, while the regression coefficient gave a
+conditional odds ratio of `r sprintf("%.3f", cond_or)` — the conditional
+one sitting slightly further from the null, exactly as predicted. The
+gap is small here only because PUD is uncommon; with a common outcome it
+can be substantial.
+
+## The bootstrap
+
+The point estimates came out of a `glm()` fit, so it is tempting to
+reach for that model's standard errors. They do not apply. The
+standardized risk difference is not a parameter of the logistic model at
+all — it is a nonlinear function of *every* coefficient in the model,
+combined with the empirical covariate distribution of the cohort. There
+is no line in the `summary()` output whose standard error describes it,
+and the delta-method calculation that would produce one by hand is
+tedious and specification-specific.
+
+Resampling sidesteps the algebra. The logic is this: the sampling
+variability of our estimate comes from the fact that `ns` is one draw of
+`r nrow(ns)` patients from some larger population, so we mimic that draw
+by sampling `r nrow(ns)` patients from `ns` *with replacement*, and
+recompute the whole estimator — refit the model, re-predict both worlds,
+re-average, re-contrast — on each resample. The spread of those
+recomputed estimates approximates the spread we would see across
+repeated samples from the population, and the 2.5th and 97.5th
+percentiles of that spread give a 95% percentile confidence interval.
+The critical discipline is that everything downstream of sampling must
+be redone inside each replicate, model fitting included; bootstrapping
+only the averaging step, with the coefficients held fixed, would ignore
+the largest source of uncertainty in the whole procedure.
+
+`n_boot` trades precision for time. Each replicate is a full `glm()` fit
+on `r nrow(ns)` rows, and our default of 200 is enough to place an
+interval roughly while keeping a book that re-renders often tolerable to
+build. The percentile endpoints are themselves noisy at that size,
+though, so a different seed will shift them in the second decimal place;
+for a result you intend to publish, 1,000 or 2,000 is the right order of
+magnitude, and `seed` is what makes whichever number you choose
+reproducible.
+
+## Effect modification
+
+So far we have estimated one effect for everybody. But the effect of a
+Cox-2 inhibitor might plausibly differ by whether a patient is also
+taking aspirin, since aspirin damages gastric mucosa through the same
+prostaglandin pathway the Cox-2 drug was designed to spare. When a
+causal effect differs across levels of a covariate, we call that
+**effect modification** (or heterogeneity of treatment effect), and we
+look for it by letting the treatment coefficient depend on that
+covariate — an interaction term.
+
+```{r ch07-interaction}
+fit_int <- glm(
+  reformulate(c("cox2_init", ns_covs, "cox2_init:aspirin_use"), "pud"),
+  family = binomial(), data = ns
+)
+
+tidy(fit_int, exponentiate = TRUE, conf.int = TRUE) |>
+  filter(str_detect(term, "cox2_init")) |>
+  knitr::kable(digits = 3)
+```
+
+```{r ch07-int-values, include=FALSE}
+ti <- tidy(fit_int, exponentiate = TRUE, conf.int = TRUE)
+int_or <- ti$estimate[ti$term == "cox2_init:aspirin_useYes"]
+int_p  <- ti$p.value[ti$term == "cox2_init:aspirin_useYes"]
+n_asa  <- sum(ns$aspirin_use == "Yes")
+n_asa_cox2 <- sum(ns$aspirin_use == "Yes" & ns$cox2_init == 1)
+```
+
+The interaction term is a ratio of odds ratios,
+`r sprintf("%.2f", int_or)` with a p-value of
+`r sprintf("%.2f", int_p)` — no evidence of modification, which is
+unsurprising given that only `r n_asa` of the `r nrow(ns)` patients use
+aspirin and only `r n_asa_cox2` of those started a Cox-2 inhibitor. But
+the coefficient is not what we want anyway, for the same reason as
+before: it is a conditional, noncollapsible quantity on the odds scale.
+The subgroup effects we actually care about are two standardized risk
+differences, one per aspirin stratum.
+
+Standardizing within a subgroup means changing the population we average
+over: instead of predicting both worlds for the whole cohort, we predict
+both worlds for the aspirin users only, then repeat for the non-users.
+Fitting a separate model within each stratum is the fully flexible
+version of the interaction above — it lets every coefficient, not just
+treatment's, differ by aspirin use — so we can get subgroup effects by
+calling `standardize()` on each subset. One adjustment is forced on us:
+`aspirin_use` is constant within a stratum by construction and has to
+leave the covariate list, and among aspirin users
+`anti_coagulant_use` turns out to be constant too. With only
+`r n_asa` aspirin users we cannot support nineteen covariates in that
+stratum in any case. We fit a deliberately lean model in both strata so the
+two are comparable.
+
+```{r ch07-subgroups, warning=FALSE}
+lean <- reformulate(c("cox2_init", "age", "sex", "arthritis"), "pud")
+
+sub <- bind_rows(
+  standardize(filter(ns, aspirin_use == "No"),  lean, "cox2_init", seed = 922) |>
+    mutate(aspirin = "No", .before = 1),
+  standardize(filter(ns, aspirin_use == "Yes"), lean, "cox2_init", seed = 923) |>
+    mutate(aspirin = "Yes", .before = 1)
+)
+sub |> knitr::kable(digits = 3)
+```
+
+```{r ch07-sub-values, include=FALSE}
+gs <- function(a, what, col = "estimate") {
+  sub[[col]][sub$aspirin == a & sub$estimand == what]
+}
+```
+
+Aspirin users start from a much higher baseline: a standardized
+nonselective-NSAID risk of `r sprintf("%.1f", 100 * gs("Yes", "risk0"))`%
+against `r sprintf("%.1f", 100 * gs("No", "risk0"))`% among non-users,
+which is the pathway acting as advertised. The standardized risk
+differences, though, are
+`r sprintf("%+.1f", 100 * gs("Yes", "rd"))` points among aspirin users
+and `r sprintf("%+.1f", 100 * gs("No", "rd"))` points among non-users,
+and the aspirin-user interval runs from
+`r sprintf("%.1f", 100 * gs("Yes", "rd", "conf_low"))` to
+`r sprintf("%+.1f", 100 * gs("Yes", "rd", "conf_high"))` percentage
+points — wide enough to contain nearly any clinically meaningful effect
+in either direction. The risk ratio row is worse still, with a lower
+bound at essentially zero: in some resamples the handful of
+aspirin-using Cox-2 initiators produced a predicted risk near zero, and
+the bootstrap reports that instability faithfully. It is a signal about
+the data, not a discovery about the drug. We suppressed R's separation
+warnings in that chunk to keep the output readable, but they tell the
+same story.
+
+It is worth being precise about how effect modification differs from
+confounding, because both get described loosely as "a covariate that
+matters." Confounding is a problem of identification: a common cause of
+treatment and outcome makes the observed contrast fail to equal the
+causal one, and we adjust for it to recover a valid estimate. Effect
+modification is not a problem at all — it is a feature of the causal
+effect itself. A confounder must be handled or the answer is wrong; an
+effect modifier is something we choose to report on, and the estimand
+changes when we do, from one ATE for the cohort to a set of
+subgroup-specific ATEs. A variable can be one, the other, or both:
+aspirin use here is a candidate for either role. Note also that the
+overall standardized risk difference of
+`r sprintf("%+.1f", 100 * std_rd)` points is a weighted average of the
+subgroup effects, weighted by how common each subgroup is — which is why
+a cohort-level ATE can be small while an effect in a small subgroup is
+large, and why the population you standardize to is part of the
+estimand, not an implementation detail.
+
+## Exercises
+
+1. The model above enters `age` linearly on the log-odds scale. Refit it
+   with `poly(age, 2)` in place of `age` and rerun `standardize()` with
+   the same seed. How much do the standardized risks and the risk
+   difference move? Does the confidence interval change enough to alter
+   what you would conclude, and what does your answer suggest about how
+   sensitive this estimate is to the functional form of the strongest
+   confounder?
+2. `ppi_use` and `h2_antagonist_use` are gastroprotective drugs, so they
+   may be markers of a physician's concern about GI risk rather than
+   causes of it. Drop both from the covariate list and rerun
+   `standardize()`. Report the standardized risk difference with and
+   without them. This is an informal sensitivity analysis to the choice
+   of adjustment set; using Chapter 5's language, sketch the DAG under
+   which including them is right and the DAG under which it is wrong.
+3. Everything in this chapter estimated the ATE, averaging predictions
+   over the whole cohort. The ATT averages over the treated only.
+   Modify `point_estimates()` inside a copy of `standardize()` so that
+   the two predicted risks are averaged over `filter(d, cox2_init == 1)`
+   while the model is still fit on all of `d`, and estimate the ATT for
+   the Cox-2 question. Why must the *model* still be fit on the full
+   data even though the *averaging* is restricted, and would you expect
+   the ATT here to sit above or below the ATE given Chapter 6's Table 1?
