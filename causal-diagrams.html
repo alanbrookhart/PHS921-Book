@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 5 Causal diagrams | Causal Inference in Epidemiology Using R</title>
+  <meta name="description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 5 Causal diagrams | Causal Inference in Epidemiology Using R" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 5 Causal diagrams | Causal Inference in Epidemiology Using R" />
+  
+  <meta name="twitter:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+<meta name="author" content="M. Alan Brookhart" />
+
+
+<meta name="date" content="2026-08-23" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="the-randomized-trial-as-the-benchmark.html"/>
+<link rel="next" href="study-design-for-causal-questions.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Causal Inference in Epidemiology Using R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+</ul></li>
+<li class="part"><span><b>I Foundations</b></span></li>
+<li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="why.html"><a href="why.html#questions-epidemiology-cannot-answer-with-association-alone"><i class="fa fa-check"></i><b>1.1</b> Questions epidemiology cannot answer with association alone</a></li>
+<li class="chapter" data-level="1.2" data-path="why.html"><a href="why.html#a-first-look-at-the-data"><i class="fa fa-check"></i><b>1.2</b> A first look at the data</a></li>
+<li class="chapter" data-level="1.3" data-path="why.html"><a href="why.html#what-this-book-covers"><i class="fa fa-check"></i><b>1.3</b> What this book covers</a></li>
+<li class="chapter" data-level="1.4" data-path="why.html"><a href="why.html#how-to-read-this-book"><i class="fa fa-check"></i><b>1.4</b> How to read this book</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html"><i class="fa fa-check"></i><b>2</b> Getting started with R and the NAMCS data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#r-rstudio-and-the-tidyverse"><i class="fa fa-check"></i><b>2.1</b> R, RStudio, and the tidyverse</a></li>
+<li class="chapter" data-level="2.2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-teaching-cohorts"><i class="fa fa-check"></i><b>2.2</b> The NAMCS teaching cohorts</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#plotting-with-ggplot2"><i class="fa fa-check"></i><b>2.3</b> Plotting with ggplot2</a></li>
+<li class="chapter" data-level="2.4" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1"><i class="fa fa-check"></i><b>2.4</b> Your first reusable functions: Table 1</a></li>
+<li class="chapter" data-level="2.5" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#exercises"><i class="fa fa-check"></i><b>2.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html"><i class="fa fa-check"></i><b>3</b> Potential outcomes and causal effects</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#two-futures-for-every-patient"><i class="fa fa-check"></i><b>3.1</b> Two futures for every patient</a></li>
+<li class="chapter" data-level="3.2" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#a-gods-eye-view-simulation"><i class="fa fa-check"></i><b>3.2</b> A god’s-eye view: simulation</a></li>
+<li class="chapter" data-level="3.3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#average-causal-effects-and-estimands"><i class="fa fa-check"></i><b>3.3</b> Average causal effects and estimands</a></li>
+<li class="chapter" data-level="3.4" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#the-identification-conditions"><i class="fa fa-check"></i><b>3.4</b> The identification conditions</a></li>
+<li class="chapter" data-level="3.5" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html"><i class="fa fa-check"></i><b>4</b> The randomized trial as the benchmark</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#why-randomization-works"><i class="fa fa-check"></i><b>4.1</b> Why randomization works</a></li>
+<li class="chapter" data-level="4.2" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#intention-to-treat-and-per-protocol"><i class="fa fa-check"></i><b>4.2</b> Intention-to-treat and per-protocol</a></li>
+<li class="chapter" data-level="4.3" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#the-target-trial"><i class="fa fa-check"></i><b>4.3</b> The target trial</a></li>
+<li class="chapter" data-level="4.4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#exercises-2"><i class="fa fa-check"></i><b>4.4</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="causal-diagrams.html"><a href="causal-diagrams.html"><i class="fa fa-check"></i><b>5</b> Causal diagrams</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="causal-diagrams.html"><a href="causal-diagrams.html#drawing-causal-assumptions"><i class="fa fa-check"></i><b>5.1</b> Drawing causal assumptions</a></li>
+<li class="chapter" data-level="5.2" data-path="causal-diagrams.html"><a href="causal-diagrams.html#the-nsaidpud-diagram"><i class="fa fa-check"></i><b>5.2</b> The NSAID–PUD diagram</a></li>
+<li class="chapter" data-level="5.3" data-path="causal-diagrams.html"><a href="causal-diagrams.html#confounders-colliders-and-mediators"><i class="fa fa-check"></i><b>5.3</b> Confounders, colliders, and mediators</a></li>
+<li class="chapter" data-level="5.4" data-path="causal-diagrams.html"><a href="causal-diagrams.html#selection-bias-as-collider-stratification"><i class="fa fa-check"></i><b>5.4</b> Selection bias as collider stratification</a></li>
+<li class="chapter" data-level="5.5" data-path="causal-diagrams.html"><a href="causal-diagrams.html#exercises-3"><i class="fa fa-check"></i><b>5.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html"><i class="fa fa-check"></i><b>6</b> Study design for causal questions</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#design-before-analysis"><i class="fa fa-check"></i><b>6.1</b> Design before analysis</a></li>
+<li class="chapter" data-level="6.2" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#new-user-designs"><i class="fa fa-check"></i><b>6.2</b> New-user designs</a></li>
+<li class="chapter" data-level="6.3" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#active-comparator-designs"><i class="fa fa-check"></i><b>6.3</b> Active-comparator designs</a></li>
+<li class="chapter" data-level="6.4" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#immortal-time-and-other-time-zero-problems"><i class="fa fa-check"></i><b>6.4</b> Immortal time and other time-zero problems</a></li>
+<li class="chapter" data-level="6.5" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#exercises-4"><i class="fa fa-check"></i><b>6.5</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>II Core Methods</b></span></li>
+<li class="chapter" data-level="7" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html"><i class="fa fa-check"></i><b>7</b> Outcome regression and standardization</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#adjusting-with-regression"><i class="fa fa-check"></i><b>7.1</b> Adjusting with regression</a></li>
+<li class="chapter" data-level="7.2" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#standardization-predict-then-average"><i class="fa fa-check"></i><b>7.2</b> Standardization: predict, then average</a></li>
+<li class="chapter" data-level="7.3" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#the-bootstrap"><i class="fa fa-check"></i><b>7.3</b> The bootstrap</a></li>
+<li class="chapter" data-level="7.4" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#effect-modification"><i class="fa fa-check"></i><b>7.4</b> Effect modification</a></li>
+<li class="chapter" data-level="7.5" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="propensity-scores.html"><a href="propensity-scores.html"><i class="fa fa-check"></i><b>8</b> Propensity scores</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="propensity-scores.html"><a href="propensity-scores.html#one-number-that-summarizes-confounding"><i class="fa fa-check"></i><b>8.1</b> One number that summarizes confounding</a></li>
+<li class="chapter" data-level="8.2" data-path="propensity-scores.html"><a href="propensity-scores.html#estimating-the-score"><i class="fa fa-check"></i><b>8.2</b> Estimating the score</a></li>
+<li class="chapter" data-level="8.3" data-path="propensity-scores.html"><a href="propensity-scores.html#stratification"><i class="fa fa-check"></i><b>8.3</b> Stratification</a></li>
+<li class="chapter" data-level="8.4" data-path="propensity-scores.html"><a href="propensity-scores.html#matching"><i class="fa fa-check"></i><b>8.4</b> Matching</a></li>
+<li class="chapter" data-level="8.5" data-path="propensity-scores.html"><a href="propensity-scores.html#choosing-the-ps-model"><i class="fa fa-check"></i><b>8.5</b> Choosing the PS model</a></li>
+<li class="chapter" data-level="8.6" data-path="propensity-scores.html"><a href="propensity-scores.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html"><i class="fa fa-check"></i><b>9</b> Inverse probability of treatment weighting</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#reweighting-to-a-pseudo-population"><i class="fa fa-check"></i><b>9.1</b> Reweighting to a pseudo-population</a></li>
+<li class="chapter" data-level="9.2" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#building-the-weights"><i class="fa fa-check"></i><b>9.2</b> Building the weights</a></li>
+<li class="chapter" data-level="9.3" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#estimating-the-effect"><i class="fa fa-check"></i><b>9.3</b> Estimating the effect</a></li>
+<li class="chapter" data-level="9.4" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#truncation-and-diagnostics"><i class="fa fa-check"></i><b>9.4</b> Truncation and diagnostics</a></li>
+<li class="chapter" data-level="9.5" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#standardized-mortality-ratio-weights"><i class="fa fa-check"></i><b>9.5</b> Standardized mortality ratio weights</a></li>
+<li class="chapter" data-level="9.6" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#msms-and-where-weighting-shines"><i class="fa fa-check"></i><b>9.6</b> MSMs and where weighting shines</a></li>
+<li class="chapter" data-level="9.7" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#three-estimators-one-estimand"><i class="fa fa-check"></i><b>9.7</b> Three estimators, one estimand</a></li>
+<li class="chapter" data-level="9.8" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#exercises-7"><i class="fa fa-check"></i><b>9.8</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>III Time, Censoring, and Survival</b></span></li>
+<li class="chapter" data-level="10" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html"><i class="fa fa-check"></i><b>10</b> Survival outcomes and censoring</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#the-statin-question"><i class="fa fa-check"></i><b>10.1</b> The statin question</a></li>
+<li class="chapter" data-level="10.2" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#anatomy-of-time-to-event-data"><i class="fa fa-check"></i><b>10.2</b> Anatomy of time-to-event data</a></li>
+<li class="chapter" data-level="10.3" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#kaplanmeier"><i class="fa fa-check"></i><b>10.3</b> Kaplan–Meier</a></li>
+<li class="chapter" data-level="10.4" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#death-as-a-competing-risk"><i class="fa fa-check"></i><b>10.4</b> Death as a competing risk</a></li>
+<li class="chapter" data-level="10.5" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#risks-versus-hazards"><i class="fa fa-check"></i><b>10.5</b> Risks versus hazards</a></li>
+<li class="chapter" data-level="10.6" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#when-censoring-lies"><i class="fa fa-check"></i><b>10.6</b> When censoring lies</a></li>
+<li class="chapter" data-level="10.7" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#exercises-8"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html"><i class="fa fa-check"></i><b>11</b> Inverse probability of censoring weights</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weighting-returns"><i class="fa fa-check"></i><b>11.1</b> Weighting returns</a></li>
+<li class="chapter" data-level="11.2" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#person-period-data"><i class="fa fa-check"></i><b>11.2</b> Person-period data</a></li>
+<li class="chapter" data-level="11.3" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#building-censoring-weights"><i class="fa fa-check"></i><b>11.3</b> Building censoring weights</a></li>
+<li class="chapter" data-level="11.4" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weight-diagnostics"><i class="fa fa-check"></i><b>11.4</b> Weight diagnostics</a></li>
+<li class="chapter" data-level="11.5" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#did-it-matter"><i class="fa fa-check"></i><b>11.5</b> Did it matter?</a></li>
+<li class="chapter" data-level="11.6" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#exercises-9"><i class="fa fa-check"></i><b>11.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html"><i class="fa fa-check"></i><b>12</b> Clone-censor-weight</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#from-point-treatments-to-treatment-strategies"><i class="fa fa-check"></i><b>12.1</b> From point treatments to treatment strategies</a></li>
+<li class="chapter" data-level="12.2" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#the-clone-censor-weight-recipe"><i class="fa fa-check"></i><b>12.2</b> The clone-censor-weight recipe</a></li>
+<li class="chapter" data-level="12.3" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#deviation-in-the-statin-cohort"><i class="fa fa-check"></i><b>12.3</b> Deviation in the statin cohort</a></li>
+<li class="chapter" data-level="12.4" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#estimating-per-protocol-risk-curves"><i class="fa fa-check"></i><b>12.4</b> Estimating per-protocol risk curves</a></li>
+<li class="chapter" data-level="12.5" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#interpreting-the-per-protocol-effect"><i class="fa fa-check"></i><b>12.5</b> Interpreting the per-protocol effect</a></li>
+<li class="chapter" data-level="12.6" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#exercises-10"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>IV Beyond Exchangeability</b></span></li>
+<li class="chapter" data-level="13" data-path="instrumental-variables.html"><a href="instrumental-variables.html"><i class="fa fa-check"></i><b>13</b> Instrumental variables</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="instrumental-variables.html"><a href="instrumental-variables.html#when-exchangeability-fails"><i class="fa fa-check"></i><b>13.1</b> When exchangeability fails</a></li>
+<li class="chapter" data-level="13.2" data-path="instrumental-variables.html"><a href="instrumental-variables.html#provider-preference-as-an-instrument"><i class="fa fa-check"></i><b>13.2</b> Provider preference as an instrument</a></li>
+<li class="chapter" data-level="13.3" data-path="instrumental-variables.html"><a href="instrumental-variables.html#the-wald-and-two-stage-estimators"><i class="fa fa-check"></i><b>13.3</b> The Wald and two-stage estimators</a></li>
+<li class="chapter" data-level="13.4" data-path="instrumental-variables.html"><a href="instrumental-variables.html#interpreting-the-late"><i class="fa fa-check"></i><b>13.4</b> Interpreting the LATE</a></li>
+<li class="chapter" data-level="13.5" data-path="instrumental-variables.html"><a href="instrumental-variables.html#exercises-11"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html"><i class="fa fa-check"></i><b>14</b> Sensitivity analysis</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#what-we-assumed-and-cannot-check"><i class="fa fa-check"></i><b>14.1</b> What we assumed and cannot check</a></li>
+<li class="chapter" data-level="14.2" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#external-adjustment"><i class="fa fa-check"></i><b>14.2</b> External adjustment</a></li>
+<li class="chapter" data-level="14.3" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#the-e-value"><i class="fa fa-check"></i><b>14.3</b> The E-value</a></li>
+<li class="chapter" data-level="14.4" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#negative-control-outcomes"><i class="fa fa-check"></i><b>14.4</b> Negative control outcomes</a></li>
+<li class="chapter" data-level="14.5" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#reporting-a-causal-analysis"><i class="fa fa-check"></i><b>14.5</b> Reporting a causal analysis</a></li>
+<li class="chapter" data-level="14.6" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#exercises-12"><i class="fa fa-check"></i><b>14.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendices</b></span></li>
+<li class="chapter" data-level="A" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html"><i class="fa fa-check"></i><b>A</b> R and RStudio setup</a>
+<ul>
+<li class="chapter" data-level="A.1" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-r-and-rstudio"><i class="fa fa-check"></i><b>A.1</b> Installing R and RStudio</a></li>
+<li class="chapter" data-level="A.2" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-packages-this-book-uses"><i class="fa fa-check"></i><b>A.2</b> Installing the packages this book uses</a></li>
+<li class="chapter" data-level="A.3" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-namcs-teaching-package"><i class="fa fa-check"></i><b>A.3</b> Installing the NAMCS teaching package</a></li>
+<li class="chapter" data-level="A.4" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#loading-everything-a-chapter-needs"><i class="fa fa-check"></i><b>A.4</b> Loading everything a chapter needs</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="namcs-codebook.html"><a href="namcs-codebook.html"><i class="fa fa-check"></i><b>B</b> NAMCS codebook</a>
+<ul>
+<li class="chapter" data-level="B.1" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-nsaid-cohort-ns"><i class="fa fa-check"></i><b>B.1</b> The NSAID cohort (<code>ns</code>)</a></li>
+<li class="chapter" data-level="B.2" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-statin-cohort-sta"><i class="fa fa-check"></i><b>B.2</b> The statin cohort (<code>sta</code>)</a></li>
+<li class="chapter" data-level="B.3" data-path="namcs-codebook.html"><a href="namcs-codebook.html#a-note-on-the-outcomes"><i class="fa fa-check"></i><b>B.3</b> A note on the outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="C" data-path="the-estimator-toolkit.html"><a href="the-estimator-toolkit.html"><i class="fa fa-check"></i><b>C</b> The estimator toolkit</a></li>
+<li class="chapter" data-level="D" data-path="course-map-phs-921.html"><a href="course-map-phs-921.html"><i class="fa fa-check"></i><b>D</b> Course map: PHS 921</a></li>
+<li class="chapter" data-level="E" data-path="further-reading.html"><a href="further-reading.html"><i class="fa fa-check"></i><b>E</b> Further reading</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Causal Inference in Epidemiology Using R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="causal-diagrams" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Chapter 5</span> Causal diagrams<a href="causal-diagrams.html#causal-diagrams" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Chapter 1 named confounding by indication in words: physicians steer
+Cox-2 selective NSAIDs toward patients they already judge to be at
+higher gastrointestinal risk, which is why the crude comparison came out
+backwards. Chapter 3 gave that idea a formal home inside potential
+outcomes, as a failure of exchangeability, and named the covariates that
+would need to be equal on average across treatment groups for a
+comparison to be believable. What neither chapter offered was a way to
+<em>look</em> at a causal assumption and read off, mechanically, which
+variables belong on that list — and, just as important, which variables
+do not belong on it and would actively damage the analysis if included.
+In this chapter we build that language. A causal diagram turns a set of
+substantive beliefs about how variables relate to one another into a
+picture we can reason about with a handful of rules, check with
+software, and cross-check with colleagues who may not share our
+subject-matter expertise but can still read a graph.</p>
+<div id="drawing-causal-assumptions" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> Drawing causal assumptions<a href="causal-diagrams.html#drawing-causal-assumptions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A causal diagram, in the sense we use throughout this book, is a directed
+acyclic graph (DAG): a collection of <strong>nodes</strong>, one for each variable
+that matters to the question, connected by <strong>arrows</strong> that represent
+direct causal effects. An arrow from <span class="math inline">\(A\)</span> to <span class="math inline">\(B\)</span> asserts that <span class="math inline">\(A\)</span> has
+some effect on <span class="math inline">\(B\)</span>, holding everything else in the picture fixed; the
+absence of an arrow is an equally substantive claim, that no such direct
+effect exists. “Acyclic” rules out feedback loops drawn as a single
+static picture — <span class="math inline">\(A\)</span> cannot cause <span class="math inline">\(B\)</span> which causes <span class="math inline">\(A\)</span> within the same
+diagram, though time can be represented instead by drawing <span class="math inline">\(A\)</span> at one
+point in time and <span class="math inline">\(A\)</span> at a later point as two separate nodes. Every
+arrow in a DAG is a claim someone is willing to defend on scientific
+grounds, not a claim estimated from data; the diagram is where we write
+causal assumptions down and argue about them, before any regression
+runs.</p>
+<p>A <strong>path</strong> between two nodes is any sequence of arrows connecting them,
+regardless of direction. Some paths are <strong>causal paths</strong>: every arrow
+along the way points forward, from the exposure toward the outcome,
+tracing an actual mechanism by which the exposure could affect the
+outcome. Other paths are <strong>backdoor paths</strong>: they connect exposure to
+outcome but enter the exposure node through an arrow pointing <em>into</em>
+it, meaning they trace a route through some third variable that causes
+both, rather than an effect of the exposure itself. A crude comparison
+of exposed and unexposed patients pools every open path between them,
+causal and backdoor alike, which is exactly why Chapter 1’s comparison
+of Cox-2 initiators and nonselective initiators mixed whatever real
+effect Cox-2 selectivity has on ulcer risk with whatever backdoor paths
+ran through GI risk, age, and steroid use. The goal of adjustment,
+translated into this graphical language, is to close every backdoor
+path while leaving every causal path open — a criterion precise enough
+that software can check it, as we’ll see directly when we turn to the
+NSAID question in the next section. The formal name for the state we are
+aiming at is <strong>d-separation</strong>: two variables are d-separated, given a set
+of conditioning variables, when every path between them is blocked. It is
+the term used in the course’s DAG workshop and throughout the
+graphical-models literature, and it is what <code>dagitty</code> is checking when we
+ask it whether an adjustment set suffices.</p>
+</div>
+<div id="the-nsaidpud-diagram" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> The NSAID–PUD diagram<a href="causal-diagrams.html#the-nsaidpud-diagram" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Let’s encode, in a diagram, the causal story Chapters 1 and 3 have been
+telling about Cox-2 selectivity and peptic ulcer disease: GI risk
+factors, age, and corticosteroid use each influence a physician’s choice
+between a Cox-2 selective and a nonselective NSAID, and each also
+influences ulcer risk directly, alongside whatever effect the drug
+itself has.</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="causal-diagrams.html#cb30-1" tabindex="-1"></a><span class="fu">library</span>(ggdag)</span></code></pre></div>
+<pre><code>## Warning: package &#39;ggdag&#39; was built under R version 4.3.3</code></pre>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="causal-diagrams.html#cb32-1" tabindex="-1"></a>dag_nsaid <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb32-2"><a href="causal-diagrams.html#cb32-2" tabindex="-1"></a>  pud <span class="sc">~</span> cox2 <span class="sc">+</span> gi_risk <span class="sc">+</span> age <span class="sc">+</span> steroids,</span>
+<span id="cb32-3"><a href="causal-diagrams.html#cb32-3" tabindex="-1"></a>  cox2 <span class="sc">~</span> gi_risk <span class="sc">+</span> age <span class="sc">+</span> steroids,</span>
+<span id="cb32-4"><a href="causal-diagrams.html#cb32-4" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;cox2&quot;</span>,</span>
+<span id="cb32-5"><a href="causal-diagrams.html#cb32-5" tabindex="-1"></a>  <span class="at">outcome =</span> <span class="st">&quot;pud&quot;</span>,</span>
+<span id="cb32-6"><a href="causal-diagrams.html#cb32-6" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">cox2 =</span> <span class="st">&quot;Cox-2 selective&quot;</span>, <span class="at">pud =</span> <span class="st">&quot;Peptic ulcer&quot;</span>,</span>
+<span id="cb32-7"><a href="causal-diagrams.html#cb32-7" tabindex="-1"></a>             <span class="at">gi_risk =</span> <span class="st">&quot;GI risk factors&quot;</span>, <span class="at">age =</span> <span class="st">&quot;Age&quot;</span>,</span>
+<span id="cb32-8"><a href="causal-diagrams.html#cb32-8" tabindex="-1"></a>             <span class="at">steroids =</span> <span class="st">&quot;Corticosteroids&quot;</span>)</span>
+<span id="cb32-9"><a href="causal-diagrams.html#cb32-9" tabindex="-1"></a>)</span>
+<span id="cb32-10"><a href="causal-diagrams.html#cb32-10" tabindex="-1"></a><span class="fu">ggdag</span>(dag_nsaid, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/nsaid-dag-1.png" width="672" /></p>
+<p>The picture makes the confounding structure literal: <code>gi_risk</code>, <code>age</code>,
+and <code>steroids</code> each sit upstream of both <code>cox2</code> and <code>pud</code>, so each one
+opens a backdoor path from <code>cox2</code> to <code>pud</code> that has nothing to do with
+the drug’s own effect — <code>cox2 &lt;- gi_risk -&gt; pud</code>, <code>cox2 &lt;- age -&gt; pud</code>,
+and <code>cox2 &lt;- steroids -&gt; pud</code>, alongside the single causal path
+<code>cox2 -&gt; pud</code> that is the object of interest. Rather than reason through
+each backdoor path by hand, we can let <code>dagitty</code> do it directly:</p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="causal-diagrams.html#cb33-1" tabindex="-1"></a>dagitty<span class="sc">::</span><span class="fu">adjustmentSets</span>(dag_nsaid)</span></code></pre></div>
+<pre><code>## { age, gi_risk, steroids }</code></pre>
+<p><code>adjustmentSets()</code> reports exactly one minimal set here: <code>{age, gi_risk, steroids}</code>. That result tells us two things at once. First, adjusting for
+all three variables together closes every backdoor path in the diagram,
+so a comparison of Cox-2 and nonselective initiators that conditions on
+age, GI risk factors, and steroid use — by stratification,
+standardization, or a propensity score built from them, the subjects of
+Chapters 7 through 9 — is no longer contaminated by the confounding this
+diagram encodes. Second, and just as informative, no smaller set will
+do: because each of the three variables opens its own separate backdoor
+path with no shared intermediate node, dropping any one of them leaves
+that path open, and the comparison stays confounded through whichever
+variable was left out. This is precisely the graphical version of the
+conditional exchangeability condition from Chapter 3 — <span class="math inline">\(Y^a
+\perp A \mid L\)</span> for <span class="math inline">\(L\)</span> equal to this adjustment set — except that here
+we read the set off a picture instead of asserting it by fiat, and we
+leave the diagram open for a colleague to challenge by redrawing an
+arrow rather than by re-deriving an equation.</p>
+</div>
+<div id="confounders-colliders-and-mediators" class="section level2 hasAnchor" number="5.3">
+<h2><span class="header-section-number">5.3</span> Confounders, colliders, and mediators<a href="causal-diagrams.html#confounders-colliders-and-mediators" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Real diagrams can have dozens of nodes, but nearly everything about how
+adjustment behaves comes down to three small structures repeated
+throughout. Getting the direction of each one right, and learning to
+adjust only for the first, is most of what we set out to do in this
+chapter.</p>
+<p>A <strong>confounder</strong> is a common cause of exposure and outcome, the pattern
+<code>gi_risk</code>, <code>age</code>, and <code>steroids</code> all instantiate above: a variable with
+arrows pointing into both the exposure and the outcome, opening a
+backdoor path that adjustment is meant to close.</p>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="causal-diagrams.html#cb35-1" tabindex="-1"></a>dag_confounder <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb35-2"><a href="causal-diagrams.html#cb35-2" tabindex="-1"></a>  y <span class="sc">~</span> x <span class="sc">+</span> c,</span>
+<span id="cb35-3"><a href="causal-diagrams.html#cb35-3" tabindex="-1"></a>  x <span class="sc">~</span> c,</span>
+<span id="cb35-4"><a href="causal-diagrams.html#cb35-4" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;x&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;y&quot;</span>,</span>
+<span id="cb35-5"><a href="causal-diagrams.html#cb35-5" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">x =</span> <span class="st">&quot;Exposure&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Outcome&quot;</span>, <span class="at">c =</span> <span class="st">&quot;Confounder&quot;</span>)</span>
+<span id="cb35-6"><a href="causal-diagrams.html#cb35-6" tabindex="-1"></a>)</span>
+<span id="cb35-7"><a href="causal-diagrams.html#cb35-7" tabindex="-1"></a><span class="fu">ggdag</span>(dag_confounder, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/confounder-dag-1.png" width="672" /></p>
+<p>A <strong>collider</strong> is the mirror image: a common <em>effect</em> of two other
+variables, with arrows pointing <em>into</em> it from both sides rather than
+out of it.</p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="causal-diagrams.html#cb36-1" tabindex="-1"></a>dag_collider <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb36-2"><a href="causal-diagrams.html#cb36-2" tabindex="-1"></a>  m <span class="sc">~</span> x <span class="sc">+</span> z,</span>
+<span id="cb36-3"><a href="causal-diagrams.html#cb36-3" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;x&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;z&quot;</span>,</span>
+<span id="cb36-4"><a href="causal-diagrams.html#cb36-4" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">x =</span> <span class="st">&quot;Cause 1&quot;</span>, <span class="at">z =</span> <span class="st">&quot;Cause 2&quot;</span>, <span class="at">m =</span> <span class="st">&quot;Collider&quot;</span>)</span>
+<span id="cb36-5"><a href="causal-diagrams.html#cb36-5" tabindex="-1"></a>)</span>
+<span id="cb36-6"><a href="causal-diagrams.html#cb36-6" tabindex="-1"></a><span class="fu">ggdag</span>(dag_collider, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/collider-dag-1.png" width="672" /></p>
+<p>Left alone, a collider does nothing to the association between its two
+causes — if <code>x</code> and <code>z</code> are independent, they stay independent whether
+or not anyone ever looks at <code>m</code>. The trouble starts the moment <code>m</code> is
+conditioned on, whether deliberately, by restricting a sample to
+<code>m</code>’s observed value, or invisibly, by studying only the patients who
+survived to be observed at all. Conditioning on a common effect
+manufactures an association between its causes where none existed,
+because within any fixed value of <code>m</code>, learning that one cause was
+small makes the other cause more likely to have been large enough to
+produce that value of <code>m</code> on its own. Let’s make this concrete with a
+short simulation: we draw two variables that are causally unrelated to
+each other, build a third variable as their common effect, and compare
+the association between the first two before and after restricting to
+one level of the third.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="causal-diagrams.html#cb37-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>)</span>
+<span id="cb37-2"><a href="causal-diagrams.html#cb37-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
+<span id="cb37-3"><a href="causal-diagrams.html#cb37-3" tabindex="-1"></a>gi_risk_indep <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)    <span class="co"># cause 1, unrelated to cause 2 by construction</span></span>
+<span id="cb37-4"><a href="causal-diagrams.html#cb37-4" tabindex="-1"></a>frailty       <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)    <span class="co"># cause 2, unrelated to cause 1 by construction</span></span>
+<span id="cb37-5"><a href="causal-diagrams.html#cb37-5" tabindex="-1"></a></span>
+<span id="cb37-6"><a href="causal-diagrams.html#cb37-6" tabindex="-1"></a><span class="co"># collider: a variable such as &quot;hospitalized&quot; driven by both causes plus noise</span></span>
+<span id="cb37-7"><a href="causal-diagrams.html#cb37-7" tabindex="-1"></a>hosp_score   <span class="ot">&lt;-</span> gi_risk_indep <span class="sc">+</span> frailty <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb37-8"><a href="causal-diagrams.html#cb37-8" tabindex="-1"></a>hospitalized <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(hosp_score <span class="sc">&gt;</span> <span class="fu">quantile</span>(hosp_score, <span class="fl">0.75</span>))</span>
+<span id="cb37-9"><a href="causal-diagrams.html#cb37-9" tabindex="-1"></a></span>
+<span id="cb37-10"><a href="causal-diagrams.html#cb37-10" tabindex="-1"></a>collider_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(gi_risk_indep, frailty, hospitalized)</span>
+<span id="cb37-11"><a href="causal-diagrams.html#cb37-11" tabindex="-1"></a></span>
+<span id="cb37-12"><a href="causal-diagrams.html#cb37-12" tabindex="-1"></a>fit_full <span class="ot">&lt;-</span> <span class="fu">lm</span>(frailty <span class="sc">~</span> gi_risk_indep, <span class="at">data =</span> collider_df)</span>
+<span id="cb37-13"><a href="causal-diagrams.html#cb37-13" tabindex="-1"></a>fit_cond <span class="ot">&lt;-</span> <span class="fu">lm</span>(frailty <span class="sc">~</span> gi_risk_indep, <span class="at">data =</span> collider_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(hospitalized <span class="sc">==</span> <span class="dv">1</span>))</span></code></pre></div>
+<p>We simulated <code>gi_risk_indep</code> and <code>frailty</code> as independent draws, so the
+true association between them is zero by construction, and the
+regression run on the full sample confirms it: the slope is
+0.014 (p = 0.34),
+indistinguishable from no relationship at all. When we restrict that
+same regression to the 1250 patients in the
+top quartile of the collider score — patients who were “hospitalized”
+in this simulation — we turn that null slope into
+-0.306 (p &lt; 0.001),
+a strong, highly significant, entirely artificial association between
+two variables that never had any causal connection. Nothing about the
+world changed between the two regressions; only the sample did. That is
+collider bias: adjustment applied to the wrong kind of node does not
+merely fail to help, it manufactures exactly the kind of spurious
+association we have spent this whole book trying to avoid.</p>
+<p>The third structure is a <strong>mediator</strong>: a variable that sits on the
+causal path itself, transmitting some or all of the exposure’s effect
+on the way to the outcome rather than confounding it.</p>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="causal-diagrams.html#cb38-1" tabindex="-1"></a>dag_mediator <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb38-2"><a href="causal-diagrams.html#cb38-2" tabindex="-1"></a>  y <span class="sc">~</span> m,</span>
+<span id="cb38-3"><a href="causal-diagrams.html#cb38-3" tabindex="-1"></a>  m <span class="sc">~</span> x,</span>
+<span id="cb38-4"><a href="causal-diagrams.html#cb38-4" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;x&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;y&quot;</span>,</span>
+<span id="cb38-5"><a href="causal-diagrams.html#cb38-5" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">x =</span> <span class="st">&quot;Exposure&quot;</span>, <span class="at">m =</span> <span class="st">&quot;Mediator&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Outcome&quot;</span>)</span>
+<span id="cb38-6"><a href="causal-diagrams.html#cb38-6" tabindex="-1"></a>)</span>
+<span id="cb38-7"><a href="causal-diagrams.html#cb38-7" tabindex="-1"></a><span class="fu">ggdag</span>(dag_mediator, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/mediator-dag-1.png" width="672" /></p>
+<p>Adjusting for a mediator is not the same mistake as adjusting for a
+collider — a mediator really is caused by the exposure, and really does
+cause the outcome — but it is still the wrong move for the question we
+ask throughout this book, the <em>total</em> effect of exposure on outcome.
+Conditioning on <code>m</code> blocks the very causal path <code>x -&gt; m -&gt; y</code> that
+carries the effect we are trying to estimate, so a regression of <code>y</code> on
+<code>x</code> that also includes <code>m</code> answers a narrower question (how much of the
+effect survives independent of that pathway) while looking,
+superficially, like the same kind of adjusted analysis that closes a
+backdoor path. We put confounders in the adjustment set; colliders and
+mediators, in their different ways, we leave out of it.</p>
+</div>
+<div id="selection-bias-as-collider-stratification" class="section level2 hasAnchor" number="5.4">
+<h2><span class="header-section-number">5.4</span> Selection bias as collider stratification<a href="causal-diagrams.html#selection-bias-as-collider-stratification" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The collider simulation above used “hospitalized” as a placeholder, but
+the same mechanism drives a problem we know by a more familiar name:
+selection bias. Reading selection bias structurally — as conditioning
+on a collider, rather than as a catalog of study-design mishaps — is
+the account Hernán, Hernández-Díaz, and Robins (2004) gave, and it is
+the one the rest of this section follows. Suppose Cox-2 selectivity has
+some effect on the chance a patient tolerates therapy long enough to
+stay in a study, and, independently,
+that some unmeasured element of a patient’s underlying prognosis also
+affects whether they remain in follow-up long enough to have their
+outcome observed. “Remained in the study” is then a collider: an
+arrow into it from treatment, and an arrow into it from unmeasured
+prognosis.</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="causal-diagrams.html#cb39-1" tabindex="-1"></a>dag_selection <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb39-2"><a href="causal-diagrams.html#cb39-2" tabindex="-1"></a>  pud <span class="sc">~</span> u,</span>
+<span id="cb39-3"><a href="causal-diagrams.html#cb39-3" tabindex="-1"></a>  s <span class="sc">~</span> cox2 <span class="sc">+</span> u,</span>
+<span id="cb39-4"><a href="causal-diagrams.html#cb39-4" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;cox2&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;pud&quot;</span>,</span>
+<span id="cb39-5"><a href="causal-diagrams.html#cb39-5" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">cox2 =</span> <span class="st">&quot;Cox-2 selective&quot;</span>, <span class="at">pud =</span> <span class="st">&quot;Peptic ulcer&quot;</span>,</span>
+<span id="cb39-6"><a href="causal-diagrams.html#cb39-6" tabindex="-1"></a>             <span class="at">u =</span> <span class="st">&quot;Unmeasured prognosis&quot;</span>, <span class="at">s =</span> <span class="st">&quot;Remained in study&quot;</span>)</span>
+<span id="cb39-7"><a href="causal-diagrams.html#cb39-7" tabindex="-1"></a>)</span>
+<span id="cb39-8"><a href="causal-diagrams.html#cb39-8" tabindex="-1"></a><span class="fu">ggdag</span>(dag_selection, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/selection-dag-1.png" width="672" /></p>
+<p>Any analysis that only ever sees patients who remained in the study —
+which is every analysis we run on complete cases, unless we do
+something deliberate about it — is conditioning on <code>s</code> whether or not
+we ever typed a <code>filter()</code> call to do it, simply because patients who
+were lost to follow-up never show up in the rows being summed. By the
+same logic as the simulation above, that conditioning can open an
+association between <code>cox2</code> and <code>pud</code> running through <code>u</code>, even in a
+world where the diagram already grants that GI risk, age, and steroid
+use have been fully adjusted for and the drug has no true effect on
+ulcer risk whatsoever. The bias is not fixed by measuring more baseline
+covariates, because it is not a confounding problem — it is created by
+which patients are present to be analyzed in the first place, after
+treatment has already had a chance to influence who stays and who
+leaves. Chapter 11 takes up exactly this failure mode under its
+clinical name, informative censoring, and there we build inverse
+probability of censoring weights as the fix: reweighting the patients
+who remain so that they stand in, on average, for everyone who should
+have been followed, treated and untreated alike.</p>
+</div>
+<div id="exercises-3" class="section level2 hasAnchor" number="5.5">
+<h2><span class="header-section-number">5.5</span> Exercises<a href="causal-diagrams.html#exercises-3" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li>Add a node for <code>otc_nsaid</code> (over-the-counter NSAID use, unmeasured in
+<code>ns</code>) to <code>dag_nsaid</code>, with arrows into both <code>cox2</code> and <code>pud</code>, and
+re-run <code>dagitty::adjustmentSets()</code> on the result. Does an adjustment
+set still exist? If <code>otc_nsaid</code> cannot be included because it is
+never recorded, what does that imply about the conditional
+exchangeability assumption from Chapter 3 as applied to the <code>ns</code>
+cohort?</li>
+<li>Draw a DAG for the statin question using <code>dagify()</code>, with <code>statin</code>
+as the exposure and cardiovascular event as the outcome, that
+includes a node for the healthy-user behaviors described in Chapter 1
+(exercise, diet, medication adherence generally) as a common cause of
+both statin initiation and the outcome. Run <code>adjustmentSets()</code> on
+your diagram and compare the set it returns to <code>sta_covs</code>.</li>
+<li>Modify <code>collider_df</code> in the <code>collider-sim</code> chunk so that
+<code>hospitalized</code> is defined by restricting to the <em>bottom</em> quartile of
+<code>hosp_score</code> instead of the top quartile. Re-fit the conditional
+regression and report the new slope. Is the sign the same as in the
+chapter? Explain, in terms of the collider mechanism, why
+conditioning on either tail of a common effect induces an
+association, while conditioning on nothing (the full sample) does
+not.</li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="the-randomized-trial-as-the-benchmark.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="study-design-for-causal-questions.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": null,
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

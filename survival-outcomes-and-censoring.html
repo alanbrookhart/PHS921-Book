@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 10 Survival outcomes and censoring | Causal Inference in Epidemiology Using R</title>
+  <meta name="description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 10 Survival outcomes and censoring | Causal Inference in Epidemiology Using R" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 10 Survival outcomes and censoring | Causal Inference in Epidemiology Using R" />
+  
+  <meta name="twitter:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+<meta name="author" content="M. Alan Brookhart" />
+
+
+<meta name="date" content="2026-08-23" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="inverse-probability-of-treatment-weighting.html"/>
+<link rel="next" href="inverse-probability-of-censoring-weights.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Causal Inference in Epidemiology Using R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+</ul></li>
+<li class="part"><span><b>I Foundations</b></span></li>
+<li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="why.html"><a href="why.html#questions-epidemiology-cannot-answer-with-association-alone"><i class="fa fa-check"></i><b>1.1</b> Questions epidemiology cannot answer with association alone</a></li>
+<li class="chapter" data-level="1.2" data-path="why.html"><a href="why.html#a-first-look-at-the-data"><i class="fa fa-check"></i><b>1.2</b> A first look at the data</a></li>
+<li class="chapter" data-level="1.3" data-path="why.html"><a href="why.html#what-this-book-covers"><i class="fa fa-check"></i><b>1.3</b> What this book covers</a></li>
+<li class="chapter" data-level="1.4" data-path="why.html"><a href="why.html#how-to-read-this-book"><i class="fa fa-check"></i><b>1.4</b> How to read this book</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html"><i class="fa fa-check"></i><b>2</b> Getting started with R and the NAMCS data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#r-rstudio-and-the-tidyverse"><i class="fa fa-check"></i><b>2.1</b> R, RStudio, and the tidyverse</a></li>
+<li class="chapter" data-level="2.2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-teaching-cohorts"><i class="fa fa-check"></i><b>2.2</b> The NAMCS teaching cohorts</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#plotting-with-ggplot2"><i class="fa fa-check"></i><b>2.3</b> Plotting with ggplot2</a></li>
+<li class="chapter" data-level="2.4" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1"><i class="fa fa-check"></i><b>2.4</b> Your first reusable functions: Table 1</a></li>
+<li class="chapter" data-level="2.5" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#exercises"><i class="fa fa-check"></i><b>2.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html"><i class="fa fa-check"></i><b>3</b> Potential outcomes and causal effects</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#two-futures-for-every-patient"><i class="fa fa-check"></i><b>3.1</b> Two futures for every patient</a></li>
+<li class="chapter" data-level="3.2" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#a-gods-eye-view-simulation"><i class="fa fa-check"></i><b>3.2</b> A god’s-eye view: simulation</a></li>
+<li class="chapter" data-level="3.3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#average-causal-effects-and-estimands"><i class="fa fa-check"></i><b>3.3</b> Average causal effects and estimands</a></li>
+<li class="chapter" data-level="3.4" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#the-identification-conditions"><i class="fa fa-check"></i><b>3.4</b> The identification conditions</a></li>
+<li class="chapter" data-level="3.5" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html"><i class="fa fa-check"></i><b>4</b> The randomized trial as the benchmark</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#why-randomization-works"><i class="fa fa-check"></i><b>4.1</b> Why randomization works</a></li>
+<li class="chapter" data-level="4.2" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#intention-to-treat-and-per-protocol"><i class="fa fa-check"></i><b>4.2</b> Intention-to-treat and per-protocol</a></li>
+<li class="chapter" data-level="4.3" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#the-target-trial"><i class="fa fa-check"></i><b>4.3</b> The target trial</a></li>
+<li class="chapter" data-level="4.4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#exercises-2"><i class="fa fa-check"></i><b>4.4</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="causal-diagrams.html"><a href="causal-diagrams.html"><i class="fa fa-check"></i><b>5</b> Causal diagrams</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="causal-diagrams.html"><a href="causal-diagrams.html#drawing-causal-assumptions"><i class="fa fa-check"></i><b>5.1</b> Drawing causal assumptions</a></li>
+<li class="chapter" data-level="5.2" data-path="causal-diagrams.html"><a href="causal-diagrams.html#the-nsaidpud-diagram"><i class="fa fa-check"></i><b>5.2</b> The NSAID–PUD diagram</a></li>
+<li class="chapter" data-level="5.3" data-path="causal-diagrams.html"><a href="causal-diagrams.html#confounders-colliders-and-mediators"><i class="fa fa-check"></i><b>5.3</b> Confounders, colliders, and mediators</a></li>
+<li class="chapter" data-level="5.4" data-path="causal-diagrams.html"><a href="causal-diagrams.html#selection-bias-as-collider-stratification"><i class="fa fa-check"></i><b>5.4</b> Selection bias as collider stratification</a></li>
+<li class="chapter" data-level="5.5" data-path="causal-diagrams.html"><a href="causal-diagrams.html#exercises-3"><i class="fa fa-check"></i><b>5.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html"><i class="fa fa-check"></i><b>6</b> Study design for causal questions</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#design-before-analysis"><i class="fa fa-check"></i><b>6.1</b> Design before analysis</a></li>
+<li class="chapter" data-level="6.2" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#new-user-designs"><i class="fa fa-check"></i><b>6.2</b> New-user designs</a></li>
+<li class="chapter" data-level="6.3" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#active-comparator-designs"><i class="fa fa-check"></i><b>6.3</b> Active-comparator designs</a></li>
+<li class="chapter" data-level="6.4" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#immortal-time-and-other-time-zero-problems"><i class="fa fa-check"></i><b>6.4</b> Immortal time and other time-zero problems</a></li>
+<li class="chapter" data-level="6.5" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#exercises-4"><i class="fa fa-check"></i><b>6.5</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>II Core Methods</b></span></li>
+<li class="chapter" data-level="7" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html"><i class="fa fa-check"></i><b>7</b> Outcome regression and standardization</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#adjusting-with-regression"><i class="fa fa-check"></i><b>7.1</b> Adjusting with regression</a></li>
+<li class="chapter" data-level="7.2" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#standardization-predict-then-average"><i class="fa fa-check"></i><b>7.2</b> Standardization: predict, then average</a></li>
+<li class="chapter" data-level="7.3" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#the-bootstrap"><i class="fa fa-check"></i><b>7.3</b> The bootstrap</a></li>
+<li class="chapter" data-level="7.4" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#effect-modification"><i class="fa fa-check"></i><b>7.4</b> Effect modification</a></li>
+<li class="chapter" data-level="7.5" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="propensity-scores.html"><a href="propensity-scores.html"><i class="fa fa-check"></i><b>8</b> Propensity scores</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="propensity-scores.html"><a href="propensity-scores.html#one-number-that-summarizes-confounding"><i class="fa fa-check"></i><b>8.1</b> One number that summarizes confounding</a></li>
+<li class="chapter" data-level="8.2" data-path="propensity-scores.html"><a href="propensity-scores.html#estimating-the-score"><i class="fa fa-check"></i><b>8.2</b> Estimating the score</a></li>
+<li class="chapter" data-level="8.3" data-path="propensity-scores.html"><a href="propensity-scores.html#stratification"><i class="fa fa-check"></i><b>8.3</b> Stratification</a></li>
+<li class="chapter" data-level="8.4" data-path="propensity-scores.html"><a href="propensity-scores.html#matching"><i class="fa fa-check"></i><b>8.4</b> Matching</a></li>
+<li class="chapter" data-level="8.5" data-path="propensity-scores.html"><a href="propensity-scores.html#choosing-the-ps-model"><i class="fa fa-check"></i><b>8.5</b> Choosing the PS model</a></li>
+<li class="chapter" data-level="8.6" data-path="propensity-scores.html"><a href="propensity-scores.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html"><i class="fa fa-check"></i><b>9</b> Inverse probability of treatment weighting</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#reweighting-to-a-pseudo-population"><i class="fa fa-check"></i><b>9.1</b> Reweighting to a pseudo-population</a></li>
+<li class="chapter" data-level="9.2" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#building-the-weights"><i class="fa fa-check"></i><b>9.2</b> Building the weights</a></li>
+<li class="chapter" data-level="9.3" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#estimating-the-effect"><i class="fa fa-check"></i><b>9.3</b> Estimating the effect</a></li>
+<li class="chapter" data-level="9.4" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#truncation-and-diagnostics"><i class="fa fa-check"></i><b>9.4</b> Truncation and diagnostics</a></li>
+<li class="chapter" data-level="9.5" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#standardized-mortality-ratio-weights"><i class="fa fa-check"></i><b>9.5</b> Standardized mortality ratio weights</a></li>
+<li class="chapter" data-level="9.6" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#msms-and-where-weighting-shines"><i class="fa fa-check"></i><b>9.6</b> MSMs and where weighting shines</a></li>
+<li class="chapter" data-level="9.7" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#three-estimators-one-estimand"><i class="fa fa-check"></i><b>9.7</b> Three estimators, one estimand</a></li>
+<li class="chapter" data-level="9.8" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#exercises-7"><i class="fa fa-check"></i><b>9.8</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>III Time, Censoring, and Survival</b></span></li>
+<li class="chapter" data-level="10" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html"><i class="fa fa-check"></i><b>10</b> Survival outcomes and censoring</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#the-statin-question"><i class="fa fa-check"></i><b>10.1</b> The statin question</a></li>
+<li class="chapter" data-level="10.2" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#anatomy-of-time-to-event-data"><i class="fa fa-check"></i><b>10.2</b> Anatomy of time-to-event data</a></li>
+<li class="chapter" data-level="10.3" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#kaplanmeier"><i class="fa fa-check"></i><b>10.3</b> Kaplan–Meier</a></li>
+<li class="chapter" data-level="10.4" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#death-as-a-competing-risk"><i class="fa fa-check"></i><b>10.4</b> Death as a competing risk</a></li>
+<li class="chapter" data-level="10.5" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#risks-versus-hazards"><i class="fa fa-check"></i><b>10.5</b> Risks versus hazards</a></li>
+<li class="chapter" data-level="10.6" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#when-censoring-lies"><i class="fa fa-check"></i><b>10.6</b> When censoring lies</a></li>
+<li class="chapter" data-level="10.7" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#exercises-8"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html"><i class="fa fa-check"></i><b>11</b> Inverse probability of censoring weights</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weighting-returns"><i class="fa fa-check"></i><b>11.1</b> Weighting returns</a></li>
+<li class="chapter" data-level="11.2" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#person-period-data"><i class="fa fa-check"></i><b>11.2</b> Person-period data</a></li>
+<li class="chapter" data-level="11.3" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#building-censoring-weights"><i class="fa fa-check"></i><b>11.3</b> Building censoring weights</a></li>
+<li class="chapter" data-level="11.4" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weight-diagnostics"><i class="fa fa-check"></i><b>11.4</b> Weight diagnostics</a></li>
+<li class="chapter" data-level="11.5" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#did-it-matter"><i class="fa fa-check"></i><b>11.5</b> Did it matter?</a></li>
+<li class="chapter" data-level="11.6" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#exercises-9"><i class="fa fa-check"></i><b>11.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html"><i class="fa fa-check"></i><b>12</b> Clone-censor-weight</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#from-point-treatments-to-treatment-strategies"><i class="fa fa-check"></i><b>12.1</b> From point treatments to treatment strategies</a></li>
+<li class="chapter" data-level="12.2" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#the-clone-censor-weight-recipe"><i class="fa fa-check"></i><b>12.2</b> The clone-censor-weight recipe</a></li>
+<li class="chapter" data-level="12.3" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#deviation-in-the-statin-cohort"><i class="fa fa-check"></i><b>12.3</b> Deviation in the statin cohort</a></li>
+<li class="chapter" data-level="12.4" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#estimating-per-protocol-risk-curves"><i class="fa fa-check"></i><b>12.4</b> Estimating per-protocol risk curves</a></li>
+<li class="chapter" data-level="12.5" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#interpreting-the-per-protocol-effect"><i class="fa fa-check"></i><b>12.5</b> Interpreting the per-protocol effect</a></li>
+<li class="chapter" data-level="12.6" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#exercises-10"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>IV Beyond Exchangeability</b></span></li>
+<li class="chapter" data-level="13" data-path="instrumental-variables.html"><a href="instrumental-variables.html"><i class="fa fa-check"></i><b>13</b> Instrumental variables</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="instrumental-variables.html"><a href="instrumental-variables.html#when-exchangeability-fails"><i class="fa fa-check"></i><b>13.1</b> When exchangeability fails</a></li>
+<li class="chapter" data-level="13.2" data-path="instrumental-variables.html"><a href="instrumental-variables.html#provider-preference-as-an-instrument"><i class="fa fa-check"></i><b>13.2</b> Provider preference as an instrument</a></li>
+<li class="chapter" data-level="13.3" data-path="instrumental-variables.html"><a href="instrumental-variables.html#the-wald-and-two-stage-estimators"><i class="fa fa-check"></i><b>13.3</b> The Wald and two-stage estimators</a></li>
+<li class="chapter" data-level="13.4" data-path="instrumental-variables.html"><a href="instrumental-variables.html#interpreting-the-late"><i class="fa fa-check"></i><b>13.4</b> Interpreting the LATE</a></li>
+<li class="chapter" data-level="13.5" data-path="instrumental-variables.html"><a href="instrumental-variables.html#exercises-11"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html"><i class="fa fa-check"></i><b>14</b> Sensitivity analysis</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#what-we-assumed-and-cannot-check"><i class="fa fa-check"></i><b>14.1</b> What we assumed and cannot check</a></li>
+<li class="chapter" data-level="14.2" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#external-adjustment"><i class="fa fa-check"></i><b>14.2</b> External adjustment</a></li>
+<li class="chapter" data-level="14.3" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#the-e-value"><i class="fa fa-check"></i><b>14.3</b> The E-value</a></li>
+<li class="chapter" data-level="14.4" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#negative-control-outcomes"><i class="fa fa-check"></i><b>14.4</b> Negative control outcomes</a></li>
+<li class="chapter" data-level="14.5" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#reporting-a-causal-analysis"><i class="fa fa-check"></i><b>14.5</b> Reporting a causal analysis</a></li>
+<li class="chapter" data-level="14.6" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#exercises-12"><i class="fa fa-check"></i><b>14.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendices</b></span></li>
+<li class="chapter" data-level="A" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html"><i class="fa fa-check"></i><b>A</b> R and RStudio setup</a>
+<ul>
+<li class="chapter" data-level="A.1" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-r-and-rstudio"><i class="fa fa-check"></i><b>A.1</b> Installing R and RStudio</a></li>
+<li class="chapter" data-level="A.2" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-packages-this-book-uses"><i class="fa fa-check"></i><b>A.2</b> Installing the packages this book uses</a></li>
+<li class="chapter" data-level="A.3" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-namcs-teaching-package"><i class="fa fa-check"></i><b>A.3</b> Installing the NAMCS teaching package</a></li>
+<li class="chapter" data-level="A.4" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#loading-everything-a-chapter-needs"><i class="fa fa-check"></i><b>A.4</b> Loading everything a chapter needs</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="namcs-codebook.html"><a href="namcs-codebook.html"><i class="fa fa-check"></i><b>B</b> NAMCS codebook</a>
+<ul>
+<li class="chapter" data-level="B.1" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-nsaid-cohort-ns"><i class="fa fa-check"></i><b>B.1</b> The NSAID cohort (<code>ns</code>)</a></li>
+<li class="chapter" data-level="B.2" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-statin-cohort-sta"><i class="fa fa-check"></i><b>B.2</b> The statin cohort (<code>sta</code>)</a></li>
+<li class="chapter" data-level="B.3" data-path="namcs-codebook.html"><a href="namcs-codebook.html#a-note-on-the-outcomes"><i class="fa fa-check"></i><b>B.3</b> A note on the outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="C" data-path="the-estimator-toolkit.html"><a href="the-estimator-toolkit.html"><i class="fa fa-check"></i><b>C</b> The estimator toolkit</a></li>
+<li class="chapter" data-level="D" data-path="course-map-phs-921.html"><a href="course-map-phs-921.html"><i class="fa fa-check"></i><b>D</b> Course map: PHS 921</a></li>
+<li class="chapter" data-level="E" data-path="further-reading.html"><a href="further-reading.html"><i class="fa fa-check"></i><b>E</b> Further reading</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Causal Inference in Epidemiology Using R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="survival-outcomes-and-censoring" class="section level1 hasAnchor" number="10">
+<h1><span class="header-section-number">Chapter 10</span> Survival outcomes and censoring<a href="survival-outcomes-and-censoring.html#survival-outcomes-and-censoring" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Part II asked one question three ways and got one answer: whatever Cox-2
+selectivity does to ulcer risk, the <code>ns</code> cohort cannot see it clearly,
+and the crude signal of harm was confounding by indication. That question
+had a convenient shape — one row, one treatment, and one binary outcome
+per patient, so a risk was a proportion and an adjusted risk a weighted
+proportion. Part III gives the convenience up. We move to <code>sta</code>, the
+statin cohort, where the outcome is a cardiovascular event that may occur
+at any point over a decade and where patients stop being observed at
+wildly different times: because they die, because they disappear from the
+data, or because the study ends. Confounding does not go away; a second
+problem is layered on top of it, and this chapter is about learning to
+see that second problem before adjusting for either.</p>
+<div id="the-statin-question" class="section level2 hasAnchor" number="10.1">
+<h2><span class="header-section-number">10.1</span> The statin question<a href="survival-outcomes-and-censoring.html#the-statin-question" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The target trial discipline of Chapter 4 works exactly as before; only
+some of the rows change.</p>
+<table>
+<colgroup>
+<col width="33%" />
+<col width="33%" />
+<col width="33%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Protocol component</th>
+<th>Target trial</th>
+<th>Emulation using <code>sta</code></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Eligibility</td>
+<td>Adults with an indication for lipid lowering and not already taking a statin</td>
+<td>The patients assembled into <code>sta</code>, each entering at a qualifying visit (Chapter 6’s new-user question)</td>
+</tr>
+<tr class="even">
+<td>Treatment strategies</td>
+<td>(1) Initiate a statin; (2) do not initiate</td>
+<td><code>statin == 1</code> versus <code>statin == 0</code></td>
+</tr>
+<tr class="odd">
+<td>Assignment</td>
+<td>Random allocation</td>
+<td>Not randomized; conditioning on <code>sta_covs</code> under conditional exchangeability</td>
+</tr>
+<tr class="even">
+<td>Follow-up</td>
+<td>Time zero at randomization, to the event, death, loss to follow-up, or 10 years</td>
+<td>Time zero at the qualifying visit; <code>event_time</code></td>
+</tr>
+<tr class="odd">
+<td>Outcome</td>
+<td>First cardiovascular event</td>
+<td><code>cv_event == 1</code> at <code>event_time</code></td>
+</tr>
+<tr class="even">
+<td>Causal contrast</td>
+<td>Intention-to-treat difference in risk at a stated horizon</td>
+<td>Same, at 5 and 10 years</td>
+</tr>
+<tr class="odd">
+<td>Analysis plan</td>
+<td>Kaplan–Meier risk in each arm, contrasted at the horizon</td>
+<td>Same, with adjustment standing in for randomization</td>
+</tr>
+</tbody>
+</table>
+<p>The two rows that changed, Follow-up and Causal contrast, changed
+together. In Part II “risk” needed no qualifier because everyone was
+followed for the same nominal period. Here it does: a risk is always a
+risk <em>by some time</em>, and the trial must name the horizon before the
+analysis can estimate anything. Ignore that and the Part II machinery
+still runs, which is the danger — there is a <code>cv_event</code> column of zeros
+and ones, and <code>mean(cv_event)</code> will happily return a number.</p>
+<div class="sourceCode" id="cb82"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb82-1"><a href="survival-outcomes-and-censoring.html#cb82-1" tabindex="-1"></a>sta <span class="sc">|&gt;</span></span>
+<span id="cb82-2"><a href="survival-outcomes-and-censoring.html#cb82-2" tabindex="-1"></a>  <span class="fu">group_by</span>(statin) <span class="sc">|&gt;</span></span>
+<span id="cb82-3"><a href="survival-outcomes-and-censoring.html#cb82-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">events =</span> <span class="fu">sum</span>(cv_event), <span class="at">proportion =</span> <span class="fu">mean</span>(cv_event),</span>
+<span id="cb82-4"><a href="survival-outcomes-and-censoring.html#cb82-4" tabindex="-1"></a>            <span class="at">median_followup =</span> <span class="fu">median</span>(event_time), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 2 x 5
+##   statin     n events proportion median_followup
+##    &lt;int&gt; &lt;int&gt;  &lt;int&gt;      &lt;dbl&gt;           &lt;dbl&gt;
+## 1      0  5327    431     0.0809             8.4
+## 2      1   838     29     0.0346             8.9</code></pre>
+<p>The two proportions are 8.1% and
+3.5%, and neither is a risk. They are
+counts of events divided by counts of people who were watched for
+different lengths of time: median follow-up is
+8.4 years in one arm and
+8.9 in the other, only
+42% of the cohort is followed the full
+10 years, and 13% leave within
+two. A logistic regression of <code>cv_event</code> on <code>statin</code> and <code>sta_covs</code> would
+produce a tidy odds ratio for a quantity with no definition, since the
+denominator of each “risk” mixes people observed for one year with people
+observed for ten. Nor can the problem be cleaned up by restricting to
+patients with complete follow-up: staying under observation for ten years
+is not a baseline characteristic but something that happens after time
+zero, and Chapter 5 named the cost of selecting on such a variable. We
+need estimators built for unequal follow-up.</p>
+</div>
+<div id="anatomy-of-time-to-event-data" class="section level2 hasAnchor" number="10.2">
+<h2><span class="header-section-number">10.2</span> Anatomy of time-to-event data<a href="survival-outcomes-and-censoring.html#anatomy-of-time-to-event-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Time-to-event data have exactly two columns at their core: a time and an
+indicator of what happened at that time. <code>R/setup.R</code> builds both, and it
+is worth reading that code as the substantive statement it is rather than
+as boilerplate.</p>
+<div class="sourceCode" id="cb84"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb84-1"><a href="survival-outcomes-and-censoring.html#cb84-1" tabindex="-1"></a>admin_end <span class="ot">&lt;-</span> <span class="dv">10</span>  <span class="co"># administrative end of follow-up (years)</span></span>
+<span id="cb84-2"><a href="survival-outcomes-and-censoring.html#cb84-2" tabindex="-1"></a></span>
+<span id="cb84-3"><a href="survival-outcomes-and-censoring.html#cb84-3" tabindex="-1"></a>sta <span class="ot">&lt;-</span> sta <span class="sc">|&gt;</span></span>
+<span id="cb84-4"><a href="survival-outcomes-and-censoring.html#cb84-4" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb84-5"><a href="survival-outcomes-and-censoring.html#cb84-5" tabindex="-1"></a>    <span class="at">statin     =</span> <span class="fu">as.integer</span>(statin_use <span class="sc">==</span> <span class="st">&quot;Statin&quot;</span>),</span>
+<span id="cb84-6"><a href="survival-outcomes-and-censoring.html#cb84-6" tabindex="-1"></a>    <span class="at">event_time =</span> <span class="fu">pmin</span>(cv_time, death_time, loss_fu_time, admin_end, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb84-7"><a href="survival-outcomes-and-censoring.html#cb84-7" tabindex="-1"></a>    <span class="at">cv_event   =</span> <span class="fu">as.integer</span>(<span class="sc">!</span><span class="fu">is.na</span>(cv_time) <span class="sc">&amp;</span> cv_time <span class="sc">&lt;=</span> event_time)</span>
+<span id="cb84-8"><a href="survival-outcomes-and-censoring.html#cb84-8" tabindex="-1"></a>  )</span></code></pre></div>
+<p>The raw cohort supplies three latent times. <code>cv_time</code> is when a
+cardiovascular event occurred, and is <code>NA</code> for the
+93% of patients in whom
+one never did; <code>death_time</code> and <code>loss_fu_time</code> are the analogous times of
+death and of dropping out of observation, each <code>NA</code> for patients to whom
+that never happened. No patient’s data continue past the earliest of
+these, so <code>pmin(..., na.rm = TRUE)</code> — with <code>admin_end</code> as a fourth
+competitor that every patient always faces — gives <code>event_time</code>, the
+moment observation stops. Then <code>cv_event</code> asks a single question about
+that moment: was the thing that stopped observation the outcome itself?
+When it was not, the patient is <strong>censored</strong> — we know only that no
+cardiovascular event had occurred by <code>event_time</code>, not that none ever
+will. Tabulating which of the four possibilities came first shows what
+the cohort is made of.</p>
+<div class="sourceCode" id="cb85"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb85-1"><a href="survival-outcomes-and-censoring.html#cb85-1" tabindex="-1"></a>ended <span class="ot">&lt;-</span> sta <span class="sc">|&gt;</span></span>
+<span id="cb85-2"><a href="survival-outcomes-and-censoring.html#cb85-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ended_by =</span> <span class="fu">case_when</span>(</span>
+<span id="cb85-3"><a href="survival-outcomes-and-censoring.html#cb85-3" tabindex="-1"></a>    cv_event <span class="sc">==</span> <span class="dv">1</span>                                     <span class="sc">~</span> <span class="st">&quot;CV event&quot;</span>,</span>
+<span id="cb85-4"><a href="survival-outcomes-and-censoring.html#cb85-4" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(death_time)   <span class="sc">&amp;</span> death_time   <span class="sc">&lt;=</span> event_time <span class="sc">~</span> <span class="st">&quot;Death&quot;</span>,</span>
+<span id="cb85-5"><a href="survival-outcomes-and-censoring.html#cb85-5" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(loss_fu_time) <span class="sc">&amp;</span> loss_fu_time <span class="sc">&lt;=</span> event_time <span class="sc">~</span> <span class="st">&quot;Lost to follow-up&quot;</span>,</span>
+<span id="cb85-6"><a href="survival-outcomes-and-censoring.html#cb85-6" tabindex="-1"></a>    <span class="cn">TRUE</span>                                              <span class="sc">~</span> <span class="st">&quot;Administrative end&quot;</span></span>
+<span id="cb85-7"><a href="survival-outcomes-and-censoring.html#cb85-7" tabindex="-1"></a>  ))</span>
+<span id="cb85-8"><a href="survival-outcomes-and-censoring.html#cb85-8" tabindex="-1"></a></span>
+<span id="cb85-9"><a href="survival-outcomes-and-censoring.html#cb85-9" tabindex="-1"></a>ended <span class="sc">|&gt;</span></span>
+<span id="cb85-10"><a href="survival-outcomes-and-censoring.html#cb85-10" tabindex="-1"></a>  <span class="fu">count</span>(statin, ended_by) <span class="sc">|&gt;</span></span>
+<span id="cb85-11"><a href="survival-outcomes-and-censoring.html#cb85-11" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> statin, <span class="at">values_from =</span> n, <span class="at">names_prefix =</span> <span class="st">&quot;statin_&quot;</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 4 x 3
+##   ended_by           statin_0 statin_1
+##   &lt;chr&gt;                 &lt;int&gt;    &lt;int&gt;
+## 1 Administrative end     2204      371
+## 2 CV event                431       29
+## 3 Death                   221       64
+## 4 Lost to follow-up      2471      374</code></pre>
+<p>460 patients of 6165 have an observed cardiovascular event;
+everyone else is censored, most of them by loss to follow-up or by the
+administrative end. Censoring at the administrative end is the benign
+kind. It happens at a calendar boundary that has nothing to do with any
+patient’s prognosis, and every estimator in this chapter handles it
+without complaint.</p>
+<p>Death is the uncomfortable case. 285 patients died before having a
+cardiovascular event, and the code above treats them exactly like the
+patients who moved away: censored, contributing follow-up up to the
+moment of death and nothing after. That is a substantive assumption, and
+a strong one. A patient who dies has not merely become unobservable — she
+can never have the outcome, so treating her as though she were still at
+risk in some unseen continuation of the study makes the estimated risk a
+risk in a hypothetical world where death from other causes has been
+removed. Worse, death is not evenly distributed here: it ends follow-up for
+7.6% of statin initiators against
+4.1% of non-initiators, so whatever
+distortion the assumption introduces is not the same in the two arms.
+The honest treatments of a <strong>competing risk</strong> are to report the
+cumulative incidence function, which gives the fraction who actually
+experience a cardiovascular event first and leaves the deaths where they
+are, or to define a composite outcome of cardiovascular event or death.
+We take the conventional route in this book because it keeps the
+censoring machinery of Chapter 11 in one piece, and we flag it as a
+limitation rather than a solution — though not before returning to it
+below, once the Kaplan–Meier estimator has given us something to compare
+against.</p>
+</div>
+<div id="kaplanmeier" class="section level2 hasAnchor" number="10.3">
+<h2><span class="header-section-number">10.3</span> Kaplan–Meier<a href="survival-outcomes-and-censoring.html#kaplanmeier" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The Kaplan–Meier estimator solves the unequal-follow-up problem by
+refusing to compute a single proportion. It walks forward through the
+observed event times, asking at each one what fraction of the patients
+<em>still under observation just before that instant</em> survived it, and
+multiplies those conditional fractions together. A patient censored at
+2.3 years contributes to every factor up to 2.3 years and then quietly
+leaves the denominator, so her partial information is used without her
+absence being mistaken for good news. The product is the survival curve
+<span class="math inline">\(S(t)\)</span>, and one minus it is the cumulative incidence — the risk by time
+<span class="math inline">\(t\)</span> — which is what we want to contrast.</p>
+<div class="sourceCode" id="cb87"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb87-1"><a href="survival-outcomes-and-censoring.html#cb87-1" tabindex="-1"></a><span class="fu">library</span>(survival)</span></code></pre></div>
+<pre><code>## Warning: package &#39;survival&#39; was built under R version 4.3.3</code></pre>
+<div class="sourceCode" id="cb89"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb89-1"><a href="survival-outcomes-and-censoring.html#cb89-1" tabindex="-1"></a>km <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(event_time, cv_event) <span class="sc">~</span> statin, <span class="at">data =</span> sta)</span>
+<span id="cb89-2"><a href="survival-outcomes-and-censoring.html#cb89-2" tabindex="-1"></a>km_tidy <span class="ot">&lt;-</span> broom<span class="sc">::</span><span class="fu">tidy</span>(km) <span class="sc">|&gt;</span></span>
+<span id="cb89-3"><a href="survival-outcomes-and-censoring.html#cb89-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">statin =</span> <span class="fu">if_else</span>(<span class="fu">str_detect</span>(strata, <span class="st">&quot;=1&quot;</span>), <span class="st">&quot;Statin&quot;</span>, <span class="st">&quot;No statin&quot;</span>),</span>
+<span id="cb89-4"><a href="survival-outcomes-and-censoring.html#cb89-4" tabindex="-1"></a>         <span class="at">risk =</span> <span class="dv">1</span> <span class="sc">-</span> estimate)</span>
+<span id="cb89-5"><a href="survival-outcomes-and-censoring.html#cb89-5" tabindex="-1"></a><span class="fu">ggplot</span>(km_tidy, <span class="fu">aes</span>(time, risk, <span class="at">color =</span> statin)) <span class="sc">+</span></span>
+<span id="cb89-6"><a href="survival-outcomes-and-censoring.html#cb89-6" tabindex="-1"></a>  <span class="fu">geom_step</span>() <span class="sc">+</span> <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Years&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Cumulative incidence of CV event&quot;</span>)</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/km-1.png" width="672" /></p>
+<p><code>survfit()</code> fits one curve per level of the right-hand side, and
+<code>broom::tidy()</code> returns it as a data frame with one row per event time —
+<code>time</code>, <code>estimate</code> for <span class="math inline">\(S(t)\)</span>, pointwise confidence limits, and a
+<code>strata</code> label from which the arm is recovered with <code>str_detect()</code>. Since
+this picture recurs throughout survival analysis, it is worth wrapping
+once, with confidence bands added and an argument for weights that a
+weighted analysis can supply.</p>
+<div class="sourceCode" id="cb90"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb90-1"><a href="survival-outcomes-and-censoring.html#cb90-1" tabindex="-1"></a>plot_km <span class="ot">&lt;-</span> <span class="cf">function</span>(data, treat, <span class="at">time =</span> <span class="st">&quot;event_time&quot;</span>, <span class="at">event =</span> <span class="st">&quot;cv_event&quot;</span>,</span>
+<span id="cb90-2"><a href="survival-outcomes-and-censoring.html#cb90-2" tabindex="-1"></a>                    <span class="at">wt =</span> <span class="cn">NULL</span>, <span class="at">labels =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb90-3"><a href="survival-outcomes-and-censoring.html#cb90-3" tabindex="-1"></a>  form <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(treat, <span class="fu">sprintf</span>(<span class="st">&quot;Surv(%s, %s)&quot;</span>, time, event))</span>
+<span id="cb90-4"><a href="survival-outcomes-and-censoring.html#cb90-4" tabindex="-1"></a>  fit  <span class="ot">&lt;-</span> <span class="fu">survfit</span>(form, <span class="at">data =</span> data,</span>
+<span id="cb90-5"><a href="survival-outcomes-and-censoring.html#cb90-5" tabindex="-1"></a>                  <span class="at">weights =</span> <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(wt)) data[[wt]])</span>
+<span id="cb90-6"><a href="survival-outcomes-and-censoring.html#cb90-6" tabindex="-1"></a>  curves <span class="ot">&lt;-</span> broom<span class="sc">::</span><span class="fu">tidy</span>(fit) <span class="sc">|&gt;</span></span>
+<span id="cb90-7"><a href="survival-outcomes-and-censoring.html#cb90-7" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">arm  =</span> <span class="fu">str_remove</span>(strata, <span class="st">&quot;.*=&quot;</span>),</span>
+<span id="cb90-8"><a href="survival-outcomes-and-censoring.html#cb90-8" tabindex="-1"></a>           <span class="at">arm  =</span> <span class="cf">if</span> (<span class="fu">is.null</span>(labels)) arm <span class="cf">else</span> <span class="fu">unname</span>(labels[arm]),</span>
+<span id="cb90-9"><a href="survival-outcomes-and-censoring.html#cb90-9" tabindex="-1"></a>           <span class="at">risk =</span> <span class="dv">1</span> <span class="sc">-</span> estimate)</span>
+<span id="cb90-10"><a href="survival-outcomes-and-censoring.html#cb90-10" tabindex="-1"></a>  <span class="fu">ggplot</span>(curves, <span class="fu">aes</span>(time, risk, <span class="at">colour =</span> arm, <span class="at">fill =</span> arm)) <span class="sc">+</span></span>
+<span id="cb90-11"><a href="survival-outcomes-and-censoring.html#cb90-11" tabindex="-1"></a>    <span class="fu">geom_ribbon</span>(<span class="fu">aes</span>(<span class="at">ymin =</span> <span class="dv">1</span> <span class="sc">-</span> conf.high, <span class="at">ymax =</span> <span class="dv">1</span> <span class="sc">-</span> conf.low),</span>
+<span id="cb90-12"><a href="survival-outcomes-and-censoring.html#cb90-12" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="fl">0.15</span>, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb90-13"><a href="survival-outcomes-and-censoring.html#cb90-13" tabindex="-1"></a>    <span class="fu">geom_step</span>() <span class="sc">+</span></span>
+<span id="cb90-14"><a href="survival-outcomes-and-censoring.html#cb90-14" tabindex="-1"></a>    <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
+<span id="cb90-15"><a href="survival-outcomes-and-censoring.html#cb90-15" tabindex="-1"></a>    <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Years since time zero&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Cumulative incidence of CV event&quot;</span>,</span>
+<span id="cb90-16"><a href="survival-outcomes-and-censoring.html#cb90-16" tabindex="-1"></a>         <span class="at">colour =</span> <span class="cn">NULL</span>, <span class="at">fill =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb90-17"><a href="survival-outcomes-and-censoring.html#cb90-17" tabindex="-1"></a>    <span class="fu">theme_minimal</span>()</span>
+<span id="cb90-18"><a href="survival-outcomes-and-censoring.html#cb90-18" tabindex="-1"></a>}</span></code></pre></div>
+<p>That code lives in <code>R/km.R</code>, so later analyses can source it rather than
+redefine it. The <code>wt</code> argument names a column of weights and is inert
+unless one is supplied; it is how a weighted analysis would pass
+censoring weights.</p>
+<div class="sourceCode" id="cb91"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb91-1"><a href="survival-outcomes-and-censoring.html#cb91-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/km.R&quot;</span>)</span>
+<span id="cb91-2"><a href="survival-outcomes-and-censoring.html#cb91-2" tabindex="-1"></a></span>
+<span id="cb91-3"><a href="survival-outcomes-and-censoring.html#cb91-3" tabindex="-1"></a><span class="fu">plot_km</span>(sta, <span class="st">&quot;statin&quot;</span>, <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;0&quot;</span> <span class="ot">=</span> <span class="st">&quot;No statin&quot;</span>, <span class="st">&quot;1&quot;</span> <span class="ot">=</span> <span class="st">&quot;Statin&quot;</span>))</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/ch10-plot-km-1.png" width="672" /></p>
+<p>Read the curves at a horizon and the contrast becomes a statement someone
+could act on. At five years the estimated risk is
+5.7% without a statin against
+2.9% with one; at
+10 years, 11.0%
+against 4.5%. Both
+10-year risks exceed the naive proportions we started with,
+for the obvious reason: the naive calculation charged each arm only with
+the events its censored patients stayed under observation long enough to
+have. These are crude curves, mind — nothing has been adjusted, the arms
+differ at baseline, and the outcomes in <code>sta</code> are simulated. Treat the
+numbers as an illustration of what the estimator computes, not as
+evidence about statins.</p>
+</div>
+<div id="death-as-a-competing-risk" class="section level2 hasAnchor" number="10.4">
+<h2><span class="header-section-number">10.4</span> Death as a competing risk<a href="survival-outcomes-and-censoring.html#death-as-a-competing-risk" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Now return to the deaths. Every risk above is a <strong>net</strong> risk: a risk in a
+hypothetical world where the cardiovascular event is the only thing that
+can happen to a patient, death from other causes having been abolished.
+The alternative leaves the deaths where they fall and estimates the
+<strong>cumulative incidence function</strong> — the fraction of patients who actually
+experience a cardiovascular event first, in a world that still contains
+death. That is a <strong>crude</strong> risk. Neither quantity is the wrong one; they
+answer different questions, and which to report depends on whether the
+reader wants to know what treatment would do absent competing mortality
+or what will happen to patients like these.</p>
+<p>Coding it needs a three-valued status rather than a yes-or-no one. Death
+competes only when it arrives first: a patient who has a cardiovascular
+event and dies a year later is a cardiovascular event and nothing else.</p>
+<div class="sourceCode" id="cb92"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb92-1"><a href="survival-outcomes-and-censoring.html#cb92-1" tabindex="-1"></a>sta_cr <span class="ot">&lt;-</span> sta <span class="sc">|&gt;</span></span>
+<span id="cb92-2"><a href="survival-outcomes-and-censoring.html#cb92-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">event_type =</span> <span class="fu">case_when</span>(</span>
+<span id="cb92-3"><a href="survival-outcomes-and-censoring.html#cb92-3" tabindex="-1"></a>    cv_event <span class="sc">==</span> <span class="dv">1</span>                                 <span class="sc">~</span> <span class="dv">1</span><span class="dt">L</span>,  <span class="co"># CV event first</span></span>
+<span id="cb92-4"><a href="survival-outcomes-and-censoring.html#cb92-4" tabindex="-1"></a>    <span class="sc">!</span><span class="fu">is.na</span>(death_time) <span class="sc">&amp;</span> death_time <span class="sc">&lt;=</span> event_time <span class="sc">~</span> <span class="dv">2</span><span class="dt">L</span>,  <span class="co"># death first</span></span>
+<span id="cb92-5"><a href="survival-outcomes-and-censoring.html#cb92-5" tabindex="-1"></a>    <span class="cn">TRUE</span>                                          <span class="sc">~</span> <span class="dv">0</span><span class="dt">L</span>   <span class="co"># still censored</span></span>
+<span id="cb92-6"><a href="survival-outcomes-and-censoring.html#cb92-6" tabindex="-1"></a>  ))</span>
+<span id="cb92-7"><a href="survival-outcomes-and-censoring.html#cb92-7" tabindex="-1"></a></span>
+<span id="cb92-8"><a href="survival-outcomes-and-censoring.html#cb92-8" tabindex="-1"></a><span class="fu">table</span>(sta_cr<span class="sc">$</span>event_type, sta_cr<span class="sc">$</span>statin)</span></code></pre></div>
+<pre><code>##    
+##        0    1
+##   0 4675  745
+##   1  431   29
+##   2  221   64</code></pre>
+<p>The <code>1</code> row recovers the 460 cardiovascular events exactly, and the
+<code>2</code> row isolates the 285 patients whose follow-up ended in death
+with no cardiovascular event before it — the patients the Kaplan–Meier
+analysis quietly treated as though they had merely moved away. Handing
+<code>survfit()</code> a <em>factor</em> status instead of an indicator switches it into
+multi-state mode: the first level is censoring, and each remaining level
+gets a curve of its own. The cardiovascular curve is the
+<strong>Aalen–Johansen</strong> estimate, which for a single competing event is the
+cumulative incidence function we are after.</p>
+<div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="survival-outcomes-and-censoring.html#cb94-1" tabindex="-1"></a>cr   <span class="ot">&lt;-</span> <span class="fu">survfit</span>(<span class="fu">Surv</span>(event_time, <span class="fu">factor</span>(event_type)) <span class="sc">~</span> statin, <span class="at">data =</span> sta_cr)</span>
+<span id="cb94-2"><a href="survival-outcomes-and-censoring.html#cb94-2" tabindex="-1"></a>cr_h <span class="ot">&lt;-</span> <span class="fu">summary</span>(cr, <span class="at">times =</span> <span class="fu">c</span>(<span class="dv">5</span>, admin_end))</span>
+<span id="cb94-3"><a href="survival-outcomes-and-censoring.html#cb94-3" tabindex="-1"></a>cif  <span class="ot">&lt;-</span> <span class="fu">matrix</span>(cr_h<span class="sc">$</span>pstate[, <span class="st">&quot;1&quot;</span>], <span class="at">nrow =</span> <span class="dv">2</span>, <span class="at">byrow =</span> <span class="cn">TRUE</span>,</span>
+<span id="cb94-4"><a href="survival-outcomes-and-censoring.html#cb94-4" tabindex="-1"></a>               <span class="at">dimnames =</span> <span class="fu">list</span>(<span class="fu">c</span>(<span class="st">&quot;no&quot;</span>, <span class="st">&quot;statin&quot;</span>), <span class="fu">c</span>(<span class="st">&quot;y5&quot;</span>, <span class="st">&quot;y10&quot;</span>)))</span>
+<span id="cb94-5"><a href="survival-outcomes-and-censoring.html#cb94-5" tabindex="-1"></a><span class="fu">round</span>(<span class="dv">100</span> <span class="sc">*</span> cif, <span class="dv">2</span>)</span></code></pre></div>
+<pre><code>##          y5   y10
+## no     5.58 10.65
+## statin 2.83  4.33</code></pre>
+<p>At five years the crude risk is
+5.58% without a statin against the
+net 5.66%, and
+2.83% with a statin against the
+net 2.90%. The crude risk is
+lower in both arms, and it must be: some patients die before they can have
+the event, and the cumulative incidence function counts them among those
+who did not have it while the Kaplan–Meier estimator removes them from the
+denominator and lets the remaining patients speak for them. Here the two
+differ by less than a tenth of a percentage point, because death before a
+cardiovascular event is uncommon in the first five years. By
+10 years the gap has grown, to
+0.31 points
+in the untreated arm and
+0.21
+in the treated — still small, but moving as the mechanism predicts once
+more of the cohort has died. The size of the discrepancy is governed by
+how much competing death accumulates over the horizon, so the same code
+applied to an older cohort followed for twenty years would separate the
+two curves visibly.</p>
+<p>The regression analog of this estimator is <strong>Fine–Gray</strong> subdistribution
+hazards regression, which models the cumulative incidence function
+directly the way Cox regression models the cause-specific hazard. We do
+not pursue it here; the point of this section is to make the assumption
+behind the rest of the chapter visible and quantified rather than merely
+disclosed.</p>
+</div>
+<div id="risks-versus-hazards" class="section level2 hasAnchor" number="10.5">
+<h2><span class="header-section-number">10.5</span> Risks versus hazards<a href="survival-outcomes-and-censoring.html#risks-versus-hazards" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The Kaplan–Meier curve is built from conditional pieces, and those pieces
+have a name of their own. The <strong>hazard</strong> at time <span class="math inline">\(t\)</span> is the instantaneous
+rate of the event among those still event-free and still under
+observation at <span class="math inline">\(t\)</span>; the <strong>cumulative risk</strong> by <span class="math inline">\(t\)</span> is the probability of
+having had the event by then, starting from time zero. Cox proportional
+hazards regression, the default survival model in most of applied
+epidemiology, estimates a ratio of hazards.</p>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="survival-outcomes-and-censoring.html#cb96-1" tabindex="-1"></a><span class="fu">coxph</span>(<span class="fu">Surv</span>(event_time, cv_event) <span class="sc">~</span> statin, <span class="at">data =</span> sta) <span class="sc">|&gt;</span></span>
+<span id="cb96-2"><a href="survival-outcomes-and-censoring.html#cb96-2" tabindex="-1"></a>  broom<span class="sc">::</span><span class="fu">tidy</span>(<span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 1 x 7
+##   term   estimate std.error statistic    p.value conf.low conf.high
+##   &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 statin    0.424     0.192     -4.48 0.00000758    0.291     0.617</code></pre>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="survival-outcomes-and-censoring.html#cb98-1" tabindex="-1"></a>early <span class="ot">&lt;-</span> sta <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">t =</span> <span class="fu">pmin</span>(event_time, <span class="dv">2</span>),</span>
+<span id="cb98-2"><a href="survival-outcomes-and-censoring.html#cb98-2" tabindex="-1"></a>                       <span class="at">e =</span> cv_event <span class="sc">*</span> (event_time <span class="sc">&lt;=</span> <span class="dv">2</span>))</span>
+<span id="cb98-3"><a href="survival-outcomes-and-censoring.html#cb98-3" tabindex="-1"></a>late  <span class="ot">&lt;-</span> sta <span class="sc">|&gt;</span> <span class="fu">filter</span>(event_time <span class="sc">&gt;</span> <span class="dv">2</span>)</span>
+<span id="cb98-4"><a href="survival-outcomes-and-censoring.html#cb98-4" tabindex="-1"></a></span>
+<span id="cb98-5"><a href="survival-outcomes-and-censoring.html#cb98-5" tabindex="-1"></a><span class="fu">bind_rows</span>(</span>
+<span id="cb98-6"><a href="survival-outcomes-and-censoring.html#cb98-6" tabindex="-1"></a>  <span class="st">&quot;0-2 years&quot;</span>  <span class="ot">=</span> broom<span class="sc">::</span><span class="fu">tidy</span>(<span class="fu">coxph</span>(<span class="fu">Surv</span>(t, e) <span class="sc">~</span> statin, <span class="at">data =</span> early),</span>
+<span id="cb98-7"><a href="survival-outcomes-and-censoring.html#cb98-7" tabindex="-1"></a>                             <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb98-8"><a href="survival-outcomes-and-censoring.html#cb98-8" tabindex="-1"></a>  <span class="st">&quot;after 2 years&quot;</span> <span class="ot">=</span> broom<span class="sc">::</span><span class="fu">tidy</span>(<span class="fu">coxph</span>(<span class="fu">Surv</span>(event_time, cv_event) <span class="sc">~</span> statin,</span>
+<span id="cb98-9"><a href="survival-outcomes-and-censoring.html#cb98-9" tabindex="-1"></a>                                      <span class="at">data =</span> late),</span>
+<span id="cb98-10"><a href="survival-outcomes-and-censoring.html#cb98-10" tabindex="-1"></a>                                <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb98-11"><a href="survival-outcomes-and-censoring.html#cb98-11" tabindex="-1"></a>  <span class="at">.id =</span> <span class="st">&quot;period&quot;</span></span>
+<span id="cb98-12"><a href="survival-outcomes-and-censoring.html#cb98-12" tabindex="-1"></a>)</span></code></pre></div>
+<pre><code>## # A tibble: 2 x 8
+##   period        term   estimate std.error statistic   p.value conf.low conf.high
+##   &lt;chr&gt;         &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 0-2 years     statin    0.695     0.292     -1.25   2.12e-1    0.392     1.23 
+## 2 after 2 years statin    0.322     0.256     -4.43   9.62e-6    0.195     0.532</code></pre>
+<p>One hazard ratio for the whole decade comes out at
+0.42. Split the decade in two and the first
+interval gives 0.69 and the remainder
+0.32. The single number was an average over periods
+that do not agree, which is the mildest of the interpretive problems.</p>
+<p>The serious one is what the second interval conditions on. Its risk set
+holds only patients who reached two years event-free and still observed,
+and surviving two years is not a baseline characteristic — it is an
+outcome, influenced by treatment and by every unmeasured prognostic
+factor a patient carries. Comparing arms within that risk set conditions
+on a post-treatment common effect: the collider stratification of Chapter
+5, arriving uninvited. If a statin genuinely prevents early events, the
+statin patients still at risk at two years include people the other arm
+has already lost, and the arms are no longer exchangeable however
+carefully we adjusted at time zero. This is what Hernán (2010) called
+the hazard ratio’s <strong>built-in selection bias</strong>, and the reasoning above
+follows his “The hazards of hazard ratios” editorial. Every hazard
+beyond the first instant is conditional on survival, so a hazard ratio
+is not a contrast of two potential outcomes
+in a common population, and our two period-specific estimates cannot
+distinguish a truly time-varying effect from selection. Nor is
+proportional hazards a technical detail a test can rescue; the assumption
+is that this awkward ratio happens to be constant.</p>
+<p>Risks do not have this problem. <span class="math inline">\(\Pr(Y^{a=1} \le t)\)</span> and
+<span class="math inline">\(\Pr(Y^{a=0} \le t)\)</span> are both defined over everyone who started, so their
+difference or ratio is a causal contrast in the sense of Chapter 3. This
+book therefore reports risks at named horizons — five years and
+10 years for <code>sta</code> — and treats hazard ratios, when they
+appear at all, as a modeling device on the way to a risk curve rather
+than as the estimand.</p>
+</div>
+<div id="when-censoring-lies" class="section level2 hasAnchor" number="10.6">
+<h2><span class="header-section-number">10.6</span> When censoring lies<a href="survival-outcomes-and-censoring.html#when-censoring-lies" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Kaplan–Meier removes a censored patient from the denominator and carries
+on with the rest, which is a fair thing to do only if the patients who
+remain represent the patients who left. Formally, censoring must be
+<strong>non-informative</strong>: at each time, those still under observation must
+have the same hazard as those censored just before, conditional on
+whatever we have adjusted for. Administrative censoring satisfies this by
+construction. Loss to follow-up need not, and in <code>sta</code> it is the largest
+single reason follow-up ends.</p>
+<p>Since censoring is not random by design, the first thing to do is look at
+who leaves. We compare patients censored by loss to follow-up in the
+first two years against everyone else on the baseline covariates we have.</p>
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="survival-outcomes-and-censoring.html#cb100-1" tabindex="-1"></a>loss <span class="ot">&lt;-</span> sta <span class="sc">|&gt;</span></span>
+<span id="cb100-2"><a href="survival-outcomes-and-censoring.html#cb100-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">early_loss =</span> <span class="fu">as.integer</span>(<span class="sc">!</span><span class="fu">is.na</span>(loss_fu_time) <span class="sc">&amp;</span></span>
+<span id="cb100-3"><a href="survival-outcomes-and-censoring.html#cb100-3" tabindex="-1"></a>                                 loss_fu_time <span class="sc">&lt;=</span> <span class="dv">2</span> <span class="sc">&amp;</span></span>
+<span id="cb100-4"><a href="survival-outcomes-and-censoring.html#cb100-4" tabindex="-1"></a>                                 event_time <span class="sc">==</span> loss_fu_time))</span>
+<span id="cb100-5"><a href="survival-outcomes-and-censoring.html#cb100-5" tabindex="-1"></a></span>
+<span id="cb100-6"><a href="survival-outcomes-and-censoring.html#cb100-6" tabindex="-1"></a>loss <span class="sc">|&gt;</span></span>
+<span id="cb100-7"><a href="survival-outcomes-and-censoring.html#cb100-7" tabindex="-1"></a>  <span class="fu">group_by</span>(early_loss) <span class="sc">|&gt;</span></span>
+<span id="cb100-8"><a href="survival-outcomes-and-censoring.html#cb100-8" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">age =</span> <span class="fu">mean</span>(age), <span class="at">statin =</span> <span class="fu">mean</span>(statin),</span>
+<span id="cb100-9"><a href="survival-outcomes-and-censoring.html#cb100-9" tabindex="-1"></a>            <span class="at">hypertension =</span> <span class="fu">mean</span>(hypertension <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span>),</span>
+<span id="cb100-10"><a href="survival-outcomes-and-censoring.html#cb100-10" tabindex="-1"></a>            <span class="at">heart_failure =</span> <span class="fu">mean</span>(heart_failure <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span>),</span>
+<span id="cb100-11"><a href="survival-outcomes-and-censoring.html#cb100-11" tabindex="-1"></a>            <span class="at">kidney_disease =</span> <span class="fu">mean</span>(chronic_kidney_disease <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span>),</span>
+<span id="cb100-12"><a href="survival-outcomes-and-censoring.html#cb100-12" tabindex="-1"></a>            <span class="at">tobacco_use =</span> <span class="fu">mean</span>(tobacco_use <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span>), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb100-13"><a href="survival-outcomes-and-censoring.html#cb100-13" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="5%" />
+<col width="8%" />
+<col width="8%" />
+<col width="15%" />
+<col width="16%" />
+<col width="17%" />
+<col width="14%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="right">early_loss</th>
+<th align="right">n</th>
+<th align="right">age</th>
+<th align="right">statin</th>
+<th align="right">hypertension</th>
+<th align="right">heart_failure</th>
+<th align="right">kidney_disease</th>
+<th align="right">tobacco_use</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">5547</td>
+<td align="right">54.119</td>
+<td align="right">0.137</td>
+<td align="right">0.301</td>
+<td align="right">0.021</td>
+<td align="right">0.012</td>
+<td align="right">0.123</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">618</td>
+<td align="right">52.487</td>
+<td align="right">0.129</td>
+<td align="right">0.257</td>
+<td align="right">0.011</td>
+<td align="right">0.003</td>
+<td align="right">0.152</td>
+</tr>
+</tbody>
+</table>
+<p>The 618 patients lost early are slightly younger and slightly less
+hypertensive than the rest, but every standardized difference in the
+table is below 0.10 in
+absolute value, and loss is about equally common in the two arms. On the
+measured variables, then, this cohort’s censoring looks close to
+non-informative — a genuinely reassuring finding and a strictly limited
+one. The comparison speaks only to covariates recorded at baseline, while
+the assumption we need concerns whatever drives dropping out at each
+moment of follow-up: a worsening symptom, a change of insurer, a decision
+to stop attending. None of that is in the table.</p>
+<p>The structure of the worry is one we have already drawn. Suppose an
+unmeasured element of prognosis affects both the cardiovascular hazard
+and the chance of staying under observation, and suppose treatment also
+influences whether a patient stays.</p>
+<div class="sourceCode" id="cb101"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb101-1"><a href="survival-outcomes-and-censoring.html#cb101-1" tabindex="-1"></a><span class="fu">library</span>(ggdag)</span>
+<span id="cb101-2"><a href="survival-outcomes-and-censoring.html#cb101-2" tabindex="-1"></a>dag_censor <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb101-3"><a href="survival-outcomes-and-censoring.html#cb101-3" tabindex="-1"></a>  cv <span class="sc">~</span> statin <span class="sc">+</span> u,</span>
+<span id="cb101-4"><a href="survival-outcomes-and-censoring.html#cb101-4" tabindex="-1"></a>  c  <span class="sc">~</span> statin <span class="sc">+</span> u,</span>
+<span id="cb101-5"><a href="survival-outcomes-and-censoring.html#cb101-5" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;statin&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;cv&quot;</span>,</span>
+<span id="cb101-6"><a href="survival-outcomes-and-censoring.html#cb101-6" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">statin =</span> <span class="st">&quot;Statin&quot;</span>, <span class="at">cv =</span> <span class="st">&quot;CV event&quot;</span>,</span>
+<span id="cb101-7"><a href="survival-outcomes-and-censoring.html#cb101-7" tabindex="-1"></a>             <span class="at">u =</span> <span class="st">&quot;Unmeasured prognosis&quot;</span>, <span class="at">c =</span> <span class="st">&quot;Lost to follow-up&quot;</span>)</span>
+<span id="cb101-8"><a href="survival-outcomes-and-censoring.html#cb101-8" tabindex="-1"></a>)</span>
+<span id="cb101-9"><a href="survival-outcomes-and-censoring.html#cb101-9" tabindex="-1"></a><span class="fu">ggdag</span>(dag_censor, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/ch10-censoring-dag-1.png" width="672" /></p>
+<p>Loss to follow-up is a collider: treatment points into it and unmeasured
+prognosis points into it. Every risk set beyond time zero consists of
+patients who have not yet been lost, so the analysis conditions on that
+collider at every step, whether or not anyone wrote a <code>filter()</code> call —
+the same argument Chapter 5 made about selection bias, now indexed by
+time. The consequence is an association between <code>statin</code> and <code>cv</code> running
+through <code>u</code> that no amount of baseline adjustment removes, because the
+bias is created after time zero by who is left to observe.</p>
+<p>The fix follows the logic of Chapter 9 rather than of Chapter 7. If we
+cannot condition our way out of a collider, we can reweight: model the
+probability of remaining uncensored, given treatment and the covariates
+that predict dropping out, and give each patient still under observation
+a weight inversely proportional to that probability, so that those who
+remain stand in for the similar patients who left. Those are inverse
+probability of censoring weights, they multiply cleanly against the
+treatment weights we already know how to build, and Chapter 11 constructs
+them for exactly the curves we have just drawn.</p>
+</div>
+<div id="exercises-8" class="section level2 hasAnchor" number="10.7">
+<h2><span class="header-section-number">10.7</span> Exercises<a href="survival-outcomes-and-censoring.html#exercises-8" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li>Using <code>km_tidy</code> from the <code>km</code> chunk, extract the estimated cumulative
+incidence at five years in each arm — take the last row in each arm
+with <code>time &lt;= 5</code> — and report the risk difference and risk ratio.
+Confirm your answer against <code>summary(km, times = 5)</code>. Why is taking
+the last row at or before the horizon the right way to read a step
+function, rather than interpolating between rows?</li>
+<li>Build a survival outcome for all-cause death. Do not reuse
+<code>event_time</code>, which is already truncated at cardiovascular events:
+build a fresh follow-up time from <code>death_time</code>, <code>loss_fu_time</code>, and
+<code>admin_end</code> only, and set <code>death_event</code> to 1 when <code>death_time</code> is the
+earliest of those three. Pass the new columns to <code>plot_km()</code> through
+its <code>time</code> and <code>event</code> arguments to draw cumulative mortality by
+<code>statin</code>. Which arm has higher mortality, and how does that picture
+change your reading of the cardiovascular curves in this chapter?</li>
+<li>Run <code>plot_km()</code> with <code>treat = "statinpotency_use"</code>, which has three
+levels rather than two. Report the 10-year risk in each of
+the three groups. What would have to be true for the contrast between
+the low- and high-potency groups to be interpretable as a causal
+effect of potency, and which row of this chapter’s target trial table
+is doing the most work in that argument?</li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="inverse-probability-of-treatment-weighting.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="inverse-probability-of-censoring-weights.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": null,
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

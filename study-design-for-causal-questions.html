@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 6 Study design for causal questions | Causal Inference in Epidemiology Using R</title>
+  <meta name="description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 6 Study design for causal questions | Causal Inference in Epidemiology Using R" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 6 Study design for causal questions | Causal Inference in Epidemiology Using R" />
+  
+  <meta name="twitter:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+<meta name="author" content="M. Alan Brookhart" />
+
+
+<meta name="date" content="2026-08-23" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="causal-diagrams.html"/>
+<link rel="next" href="outcome-regression-and-standardization.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Causal Inference in Epidemiology Using R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+</ul></li>
+<li class="part"><span><b>I Foundations</b></span></li>
+<li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="why.html"><a href="why.html#questions-epidemiology-cannot-answer-with-association-alone"><i class="fa fa-check"></i><b>1.1</b> Questions epidemiology cannot answer with association alone</a></li>
+<li class="chapter" data-level="1.2" data-path="why.html"><a href="why.html#a-first-look-at-the-data"><i class="fa fa-check"></i><b>1.2</b> A first look at the data</a></li>
+<li class="chapter" data-level="1.3" data-path="why.html"><a href="why.html#what-this-book-covers"><i class="fa fa-check"></i><b>1.3</b> What this book covers</a></li>
+<li class="chapter" data-level="1.4" data-path="why.html"><a href="why.html#how-to-read-this-book"><i class="fa fa-check"></i><b>1.4</b> How to read this book</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html"><i class="fa fa-check"></i><b>2</b> Getting started with R and the NAMCS data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#r-rstudio-and-the-tidyverse"><i class="fa fa-check"></i><b>2.1</b> R, RStudio, and the tidyverse</a></li>
+<li class="chapter" data-level="2.2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-teaching-cohorts"><i class="fa fa-check"></i><b>2.2</b> The NAMCS teaching cohorts</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#plotting-with-ggplot2"><i class="fa fa-check"></i><b>2.3</b> Plotting with ggplot2</a></li>
+<li class="chapter" data-level="2.4" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1"><i class="fa fa-check"></i><b>2.4</b> Your first reusable functions: Table 1</a></li>
+<li class="chapter" data-level="2.5" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#exercises"><i class="fa fa-check"></i><b>2.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html"><i class="fa fa-check"></i><b>3</b> Potential outcomes and causal effects</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#two-futures-for-every-patient"><i class="fa fa-check"></i><b>3.1</b> Two futures for every patient</a></li>
+<li class="chapter" data-level="3.2" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#a-gods-eye-view-simulation"><i class="fa fa-check"></i><b>3.2</b> A god’s-eye view: simulation</a></li>
+<li class="chapter" data-level="3.3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#average-causal-effects-and-estimands"><i class="fa fa-check"></i><b>3.3</b> Average causal effects and estimands</a></li>
+<li class="chapter" data-level="3.4" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#the-identification-conditions"><i class="fa fa-check"></i><b>3.4</b> The identification conditions</a></li>
+<li class="chapter" data-level="3.5" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html"><i class="fa fa-check"></i><b>4</b> The randomized trial as the benchmark</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#why-randomization-works"><i class="fa fa-check"></i><b>4.1</b> Why randomization works</a></li>
+<li class="chapter" data-level="4.2" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#intention-to-treat-and-per-protocol"><i class="fa fa-check"></i><b>4.2</b> Intention-to-treat and per-protocol</a></li>
+<li class="chapter" data-level="4.3" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#the-target-trial"><i class="fa fa-check"></i><b>4.3</b> The target trial</a></li>
+<li class="chapter" data-level="4.4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#exercises-2"><i class="fa fa-check"></i><b>4.4</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="causal-diagrams.html"><a href="causal-diagrams.html"><i class="fa fa-check"></i><b>5</b> Causal diagrams</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="causal-diagrams.html"><a href="causal-diagrams.html#drawing-causal-assumptions"><i class="fa fa-check"></i><b>5.1</b> Drawing causal assumptions</a></li>
+<li class="chapter" data-level="5.2" data-path="causal-diagrams.html"><a href="causal-diagrams.html#the-nsaidpud-diagram"><i class="fa fa-check"></i><b>5.2</b> The NSAID–PUD diagram</a></li>
+<li class="chapter" data-level="5.3" data-path="causal-diagrams.html"><a href="causal-diagrams.html#confounders-colliders-and-mediators"><i class="fa fa-check"></i><b>5.3</b> Confounders, colliders, and mediators</a></li>
+<li class="chapter" data-level="5.4" data-path="causal-diagrams.html"><a href="causal-diagrams.html#selection-bias-as-collider-stratification"><i class="fa fa-check"></i><b>5.4</b> Selection bias as collider stratification</a></li>
+<li class="chapter" data-level="5.5" data-path="causal-diagrams.html"><a href="causal-diagrams.html#exercises-3"><i class="fa fa-check"></i><b>5.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html"><i class="fa fa-check"></i><b>6</b> Study design for causal questions</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#design-before-analysis"><i class="fa fa-check"></i><b>6.1</b> Design before analysis</a></li>
+<li class="chapter" data-level="6.2" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#new-user-designs"><i class="fa fa-check"></i><b>6.2</b> New-user designs</a></li>
+<li class="chapter" data-level="6.3" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#active-comparator-designs"><i class="fa fa-check"></i><b>6.3</b> Active-comparator designs</a></li>
+<li class="chapter" data-level="6.4" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#immortal-time-and-other-time-zero-problems"><i class="fa fa-check"></i><b>6.4</b> Immortal time and other time-zero problems</a></li>
+<li class="chapter" data-level="6.5" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#exercises-4"><i class="fa fa-check"></i><b>6.5</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>II Core Methods</b></span></li>
+<li class="chapter" data-level="7" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html"><i class="fa fa-check"></i><b>7</b> Outcome regression and standardization</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#adjusting-with-regression"><i class="fa fa-check"></i><b>7.1</b> Adjusting with regression</a></li>
+<li class="chapter" data-level="7.2" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#standardization-predict-then-average"><i class="fa fa-check"></i><b>7.2</b> Standardization: predict, then average</a></li>
+<li class="chapter" data-level="7.3" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#the-bootstrap"><i class="fa fa-check"></i><b>7.3</b> The bootstrap</a></li>
+<li class="chapter" data-level="7.4" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#effect-modification"><i class="fa fa-check"></i><b>7.4</b> Effect modification</a></li>
+<li class="chapter" data-level="7.5" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="propensity-scores.html"><a href="propensity-scores.html"><i class="fa fa-check"></i><b>8</b> Propensity scores</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="propensity-scores.html"><a href="propensity-scores.html#one-number-that-summarizes-confounding"><i class="fa fa-check"></i><b>8.1</b> One number that summarizes confounding</a></li>
+<li class="chapter" data-level="8.2" data-path="propensity-scores.html"><a href="propensity-scores.html#estimating-the-score"><i class="fa fa-check"></i><b>8.2</b> Estimating the score</a></li>
+<li class="chapter" data-level="8.3" data-path="propensity-scores.html"><a href="propensity-scores.html#stratification"><i class="fa fa-check"></i><b>8.3</b> Stratification</a></li>
+<li class="chapter" data-level="8.4" data-path="propensity-scores.html"><a href="propensity-scores.html#matching"><i class="fa fa-check"></i><b>8.4</b> Matching</a></li>
+<li class="chapter" data-level="8.5" data-path="propensity-scores.html"><a href="propensity-scores.html#choosing-the-ps-model"><i class="fa fa-check"></i><b>8.5</b> Choosing the PS model</a></li>
+<li class="chapter" data-level="8.6" data-path="propensity-scores.html"><a href="propensity-scores.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html"><i class="fa fa-check"></i><b>9</b> Inverse probability of treatment weighting</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#reweighting-to-a-pseudo-population"><i class="fa fa-check"></i><b>9.1</b> Reweighting to a pseudo-population</a></li>
+<li class="chapter" data-level="9.2" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#building-the-weights"><i class="fa fa-check"></i><b>9.2</b> Building the weights</a></li>
+<li class="chapter" data-level="9.3" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#estimating-the-effect"><i class="fa fa-check"></i><b>9.3</b> Estimating the effect</a></li>
+<li class="chapter" data-level="9.4" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#truncation-and-diagnostics"><i class="fa fa-check"></i><b>9.4</b> Truncation and diagnostics</a></li>
+<li class="chapter" data-level="9.5" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#standardized-mortality-ratio-weights"><i class="fa fa-check"></i><b>9.5</b> Standardized mortality ratio weights</a></li>
+<li class="chapter" data-level="9.6" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#msms-and-where-weighting-shines"><i class="fa fa-check"></i><b>9.6</b> MSMs and where weighting shines</a></li>
+<li class="chapter" data-level="9.7" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#three-estimators-one-estimand"><i class="fa fa-check"></i><b>9.7</b> Three estimators, one estimand</a></li>
+<li class="chapter" data-level="9.8" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#exercises-7"><i class="fa fa-check"></i><b>9.8</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>III Time, Censoring, and Survival</b></span></li>
+<li class="chapter" data-level="10" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html"><i class="fa fa-check"></i><b>10</b> Survival outcomes and censoring</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#the-statin-question"><i class="fa fa-check"></i><b>10.1</b> The statin question</a></li>
+<li class="chapter" data-level="10.2" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#anatomy-of-time-to-event-data"><i class="fa fa-check"></i><b>10.2</b> Anatomy of time-to-event data</a></li>
+<li class="chapter" data-level="10.3" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#kaplanmeier"><i class="fa fa-check"></i><b>10.3</b> Kaplan–Meier</a></li>
+<li class="chapter" data-level="10.4" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#death-as-a-competing-risk"><i class="fa fa-check"></i><b>10.4</b> Death as a competing risk</a></li>
+<li class="chapter" data-level="10.5" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#risks-versus-hazards"><i class="fa fa-check"></i><b>10.5</b> Risks versus hazards</a></li>
+<li class="chapter" data-level="10.6" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#when-censoring-lies"><i class="fa fa-check"></i><b>10.6</b> When censoring lies</a></li>
+<li class="chapter" data-level="10.7" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#exercises-8"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html"><i class="fa fa-check"></i><b>11</b> Inverse probability of censoring weights</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weighting-returns"><i class="fa fa-check"></i><b>11.1</b> Weighting returns</a></li>
+<li class="chapter" data-level="11.2" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#person-period-data"><i class="fa fa-check"></i><b>11.2</b> Person-period data</a></li>
+<li class="chapter" data-level="11.3" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#building-censoring-weights"><i class="fa fa-check"></i><b>11.3</b> Building censoring weights</a></li>
+<li class="chapter" data-level="11.4" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weight-diagnostics"><i class="fa fa-check"></i><b>11.4</b> Weight diagnostics</a></li>
+<li class="chapter" data-level="11.5" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#did-it-matter"><i class="fa fa-check"></i><b>11.5</b> Did it matter?</a></li>
+<li class="chapter" data-level="11.6" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#exercises-9"><i class="fa fa-check"></i><b>11.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html"><i class="fa fa-check"></i><b>12</b> Clone-censor-weight</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#from-point-treatments-to-treatment-strategies"><i class="fa fa-check"></i><b>12.1</b> From point treatments to treatment strategies</a></li>
+<li class="chapter" data-level="12.2" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#the-clone-censor-weight-recipe"><i class="fa fa-check"></i><b>12.2</b> The clone-censor-weight recipe</a></li>
+<li class="chapter" data-level="12.3" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#deviation-in-the-statin-cohort"><i class="fa fa-check"></i><b>12.3</b> Deviation in the statin cohort</a></li>
+<li class="chapter" data-level="12.4" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#estimating-per-protocol-risk-curves"><i class="fa fa-check"></i><b>12.4</b> Estimating per-protocol risk curves</a></li>
+<li class="chapter" data-level="12.5" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#interpreting-the-per-protocol-effect"><i class="fa fa-check"></i><b>12.5</b> Interpreting the per-protocol effect</a></li>
+<li class="chapter" data-level="12.6" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#exercises-10"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>IV Beyond Exchangeability</b></span></li>
+<li class="chapter" data-level="13" data-path="instrumental-variables.html"><a href="instrumental-variables.html"><i class="fa fa-check"></i><b>13</b> Instrumental variables</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="instrumental-variables.html"><a href="instrumental-variables.html#when-exchangeability-fails"><i class="fa fa-check"></i><b>13.1</b> When exchangeability fails</a></li>
+<li class="chapter" data-level="13.2" data-path="instrumental-variables.html"><a href="instrumental-variables.html#provider-preference-as-an-instrument"><i class="fa fa-check"></i><b>13.2</b> Provider preference as an instrument</a></li>
+<li class="chapter" data-level="13.3" data-path="instrumental-variables.html"><a href="instrumental-variables.html#the-wald-and-two-stage-estimators"><i class="fa fa-check"></i><b>13.3</b> The Wald and two-stage estimators</a></li>
+<li class="chapter" data-level="13.4" data-path="instrumental-variables.html"><a href="instrumental-variables.html#interpreting-the-late"><i class="fa fa-check"></i><b>13.4</b> Interpreting the LATE</a></li>
+<li class="chapter" data-level="13.5" data-path="instrumental-variables.html"><a href="instrumental-variables.html#exercises-11"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html"><i class="fa fa-check"></i><b>14</b> Sensitivity analysis</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#what-we-assumed-and-cannot-check"><i class="fa fa-check"></i><b>14.1</b> What we assumed and cannot check</a></li>
+<li class="chapter" data-level="14.2" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#external-adjustment"><i class="fa fa-check"></i><b>14.2</b> External adjustment</a></li>
+<li class="chapter" data-level="14.3" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#the-e-value"><i class="fa fa-check"></i><b>14.3</b> The E-value</a></li>
+<li class="chapter" data-level="14.4" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#negative-control-outcomes"><i class="fa fa-check"></i><b>14.4</b> Negative control outcomes</a></li>
+<li class="chapter" data-level="14.5" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#reporting-a-causal-analysis"><i class="fa fa-check"></i><b>14.5</b> Reporting a causal analysis</a></li>
+<li class="chapter" data-level="14.6" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#exercises-12"><i class="fa fa-check"></i><b>14.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendices</b></span></li>
+<li class="chapter" data-level="A" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html"><i class="fa fa-check"></i><b>A</b> R and RStudio setup</a>
+<ul>
+<li class="chapter" data-level="A.1" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-r-and-rstudio"><i class="fa fa-check"></i><b>A.1</b> Installing R and RStudio</a></li>
+<li class="chapter" data-level="A.2" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-packages-this-book-uses"><i class="fa fa-check"></i><b>A.2</b> Installing the packages this book uses</a></li>
+<li class="chapter" data-level="A.3" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-namcs-teaching-package"><i class="fa fa-check"></i><b>A.3</b> Installing the NAMCS teaching package</a></li>
+<li class="chapter" data-level="A.4" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#loading-everything-a-chapter-needs"><i class="fa fa-check"></i><b>A.4</b> Loading everything a chapter needs</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="namcs-codebook.html"><a href="namcs-codebook.html"><i class="fa fa-check"></i><b>B</b> NAMCS codebook</a>
+<ul>
+<li class="chapter" data-level="B.1" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-nsaid-cohort-ns"><i class="fa fa-check"></i><b>B.1</b> The NSAID cohort (<code>ns</code>)</a></li>
+<li class="chapter" data-level="B.2" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-statin-cohort-sta"><i class="fa fa-check"></i><b>B.2</b> The statin cohort (<code>sta</code>)</a></li>
+<li class="chapter" data-level="B.3" data-path="namcs-codebook.html"><a href="namcs-codebook.html#a-note-on-the-outcomes"><i class="fa fa-check"></i><b>B.3</b> A note on the outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="C" data-path="the-estimator-toolkit.html"><a href="the-estimator-toolkit.html"><i class="fa fa-check"></i><b>C</b> The estimator toolkit</a></li>
+<li class="chapter" data-level="D" data-path="course-map-phs-921.html"><a href="course-map-phs-921.html"><i class="fa fa-check"></i><b>D</b> Course map: PHS 921</a></li>
+<li class="chapter" data-level="E" data-path="further-reading.html"><a href="further-reading.html"><i class="fa fa-check"></i><b>E</b> Further reading</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Causal Inference in Epidemiology Using R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="study-design-for-causal-questions" class="section level1 hasAnchor" number="6">
+<h1><span class="header-section-number">Chapter 6</span> Study design for causal questions<a href="study-design-for-causal-questions.html#study-design-for-causal-questions" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Chapter 3 gave us estimands, Chapter 4 gave us the target trial as the
+protocol every observational analysis is implicitly compared against,
+and Chapter 5 gave us a way to read a confounding structure off a
+diagram. All three chapters, though, took for granted that the rows of
+the target trial table — who is eligible, what counts as each treatment
+strategy, when follow-up starts — had already been settled before any
+adjustment method entered the picture. This chapter is about settling
+them. We look at three design choices that determine what a causal
+comparison is even capable of estimating, independent of which model
+eventually gets fit to the data: choosing new users over prevalent
+users, choosing an active comparator over no treatment at all, and
+aligning the moment a patient becomes eligible with the moment their
+follow-up clock starts. Get any of the three wrong and no amount of
+standardization, propensity-score weighting, or careful modeling in the
+chapters ahead can put it right, because the bias is baked into which
+rows and which person-time entered the analysis in the first place.</p>
+<div id="design-before-analysis" class="section level2 hasAnchor" number="6.1">
+<h2><span class="header-section-number">6.1</span> Design before analysis<a href="study-design-for-causal-questions.html#design-before-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>An estimand, in the language of Chapter 3, is a contrast between
+potential outcomes in some population — the ATE if we mean everyone,
+the ATT if we mean the patients who were actually treated. Which
+contrast we can identify from a data set is decided well before any
+regression is fit, by choices that belong entirely to design: who is
+eligible to enter the cohort, what exactly distinguishes the treatment
+groups, when each patient’s clock starts, and what serves as the
+yardstick the treated group is measured against. The target trial
+protocol from Chapter 4 is really a checklist of exactly these
+decisions, written out in the same seven rows a trial’s own protocol
+would use, and it is deliberately silent on adjustment: eligibility,
+treatment strategies, and follow-up can all be specified in full before
+we have said a single word about standardization or weighting.</p>
+<p>That ordering matters because no statistical method can repair a
+design that answers the wrong question. If eligibility quietly mixes
+patients who have been on a drug for years with patients just starting
+it, the sample no longer corresponds to any one estimand — not the
+effect of starting the drug, not the effect of continuing it — no
+matter how well the eventual model fits. Standardization, propensity
+scores, and inverse probability weighting, the subjects of Part II, are
+strategies for closing a <em>measured</em> gap in exchangeability once the
+design has already fixed who is compared to whom, at what moment, on
+what scale; they have nothing to offer a design that never posed an
+answerable question in the first place. This chapter works through
+three of the design decisions most responsible for that failure in
+pharmacoepidemiology, and shows how each is already built into the two
+cohorts we have used since Chapter 1.</p>
+</div>
+<div id="new-user-designs" class="section level2 hasAnchor" number="6.2">
+<h2><span class="header-section-number">6.2</span> New-user designs<a href="study-design-for-causal-questions.html#new-user-designs" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Chapter 1 named prevalent-user bias in passing; here we work out why it
+distorts a comparison and how the new-user design fixes it. A
+<strong>prevalent-user</strong> comparison enrolls patients who are already on a
+drug, of whatever duration, and compares them to patients who are not.
+Two problems follow from that choice, and they are different problems
+even though they often travel together. The first is <strong>depletion of
+susceptibles</strong>: patients who could not tolerate a drug, or for whom it
+plainly was not working, tend to stop taking it early and so drop out
+of the pool of “current users” long before anyone samples that pool.
+The current users left behind are enriched for exactly the people who
+tolerated the drug well, which biases any comparison toward the drug
+looking safer and more effective than it is for the population that
+ever started it. The second problem is that covariates measured at the
+same moment as prevalent exposure may already have been changed by the
+treatment itself. A blood pressure reading taken after several years on
+a drug reflects, in part, whatever the drug did to blood pressure; using
+it to “adjust for confounding” adjusts away part of the treatment
+effect, or worse, opens exactly the kind of collider path Chapter 5
+warned against, if some other unmeasured factor also drives both that
+downstream covariate and the outcome.</p>
+<p>The <strong>new-user design</strong> avoids both problems by anchoring the cohort to
+the moment of treatment initiation rather than to some arbitrary later
+moment of observation. A patient enters the cohort only when we observe
+them starting the drug, with no recorded use of that drug or its class
+immediately beforehand, and every covariate used for adjustment is
+measured at or before that same moment — before treatment has had any
+chance to change it. This is exactly how <code>ns</code> was built. Reviewing NAMCS
+office visits from 2005 through 2009, a patient enters <code>ns</code> at the visit
+where they are observed initiating an NSAID, with no current NSAID use
+recorded at that visit, and their initiating prescription — Cox-2
+selective or nonselective — fixes which arm, <code>cox2_initiation</code>, they
+belong to for the rest of the cohort. Of the 2882 patients in
+<code>ns</code>, 240 are captured this way as
+Cox-2 initiators and the rest as nonselective initiators; nobody in
+either group had already been taking an NSAID before the qualifying
+visit, and nobody’s baseline covariates were measured after the drug
+had a chance to act on them. <code>ns</code> is, in other words, already a
+new-user cohort by construction — we have simply not yet named the
+design principle it follows.</p>
+<p>Pharmacoepidemiology has accumulated names for the specific ways these
+comparisons go wrong, and the names are worth knowing because they are how
+reviewers will describe your study. Each is a special case of confounding
+or of misaligned time, and each is answered by some part of the new-user,
+active-comparator design.</p>
+<blockquote>
+<p><strong>Healthy user effect.</strong> People who start and continue preventive
+therapy also exercise, screen, and adhere to other advice, so the drug
+inherits credit for the behavior (Chapter 1). An active comparator helps
+because both arms have consulted a physician and accepted a
+prescription.</p>
+<p><strong>Healthy adherer effect.</strong> The same phenomenon inside a trial or cohort
+arm: adherence itself marks health, so comparing adherent to nonadherent
+patients confounds the drug with the disposition. Chapter 12’s protocol
+weights, not the design, are the answer here.</p>
+<p><strong>Sick stopper effect.</strong> Patients who become ill discontinue treatment,
+so the untreated person-time is enriched for people about to have
+outcomes. New-user follow-up from a fixed time zero keeps the
+discontinuation downstream of the exposure assignment rather than
+allowed to redefine it.</p>
+<p><strong>Protopathic bias.</strong> A drug prescribed for the earliest symptoms of an
+undiagnosed disease appears to cause the disease it was reaching for.
+Anchoring time zero at initiation and, where needed, lagging the outcome
+window prevents the drug from taking credit for what prompted it.</p>
+<p><strong>Depletion of susceptibles.</strong> Described above: prevalent users are the
+survivors of the early attrition, so the pool is enriched for
+tolerators. Enrolling at initiation samples everyone who ever started.</p>
+</blockquote>
+</div>
+<div id="active-comparator-designs" class="section level2 hasAnchor" number="6.3">
+<h2><span class="header-section-number">6.3</span> Active-comparator designs<a href="study-design-for-causal-questions.html#active-comparator-designs" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A new-user design still leaves open a further choice: new users of the
+drug of interest, compared to <em>what</em>? The most obvious comparator is
+patients who did not start any NSAID at all. It is also, for this
+question, a poor one. Whether a physician prescribes an NSAID in the
+first place is itself a treatment decision, driven by whether a patient
+has arthritis, joint pain, or another condition that calls for one — and
+that same decision is entangled with everything connected to needing an
+NSAID at all, most of which has nothing to do with GI risk specifically.
+Comparing Cox-2 initiators to non-initiators folds confounding by
+indication for <em>needing an NSAID</em> together with whatever separately
+drives the choice <em>between</em> the two drug classes, and the resulting
+mixture is much harder to reason about than either piece alone.</p>
+<p>An <strong>active-comparator design</strong> sidesteps the first piece entirely by
+choosing the comparison group from among patients who also started an
+NSAID, just the other class. Every patient in <code>ns</code>, regardless of arm,
+already needed and received NSAID therapy, so whatever led a physician
+to prescribe an NSAID in the first place is held fixed across both
+arms — it cannot be a source of imbalance between them, because it is
+shared by construction. What remains to differ between Cox-2 initiators
+and nonselective initiators is the narrower, more nameable set of
+factors that push a physician toward one NSAID rather than the other
+once the decision to prescribe some NSAID has already been made: age,
+GI risk history, concurrent steroid use — precisely the adjustment set
+<code>{age, gi_risk, steroids}</code> that Chapter 5’s DAG identified. An active
+comparator does not eliminate confounding; it shrinks the dimension we
+have to worry about from “everything connected to needing pain
+treatment” down to “whatever distinguishes one NSAID from the other,”
+which is both more plausible to measure in full and more amenable to
+the adjustment methods in Part II.</p>
+<p>We can see exactly how much confounding remains, and along which
+covariates, by rebuilding Chapter 2’s Table 1 for every covariate in
+<code>ns_covs</code> rather than the handful used there for illustration.
+<code>ns_covs</code> mixes two kinds of variables — <code>age</code> and <code>year</code> are numeric,
+everything else is categorical — so we route each kind through its own
+helper from <code>R/table1.R</code>, casting <code>year</code> to numeric first since it
+arrives from NAMCS as a factor.</p>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="study-design-for-causal-questions.html#cb40-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/table1.R&quot;</span>)</span>
+<span id="cb40-2"><a href="study-design-for-causal-questions.html#cb40-2" tabindex="-1"></a>ns_year_num <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(year)))</span>
+<span id="cb40-3"><a href="study-design-for-causal-questions.html#cb40-3" tabindex="-1"></a><span class="fu">table1_continuous</span>(</span>
+<span id="cb40-4"><a href="study-design-for-causal-questions.html#cb40-4" tabindex="-1"></a>  ns_year_num,</span>
+<span id="cb40-5"><a href="study-design-for-causal-questions.html#cb40-5" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;year&quot;</span>),</span>
+<span id="cb40-6"><a href="study-design-for-causal-questions.html#cb40-6" tabindex="-1"></a>  <span class="at">by =</span> <span class="st">&quot;cox2_initiation&quot;</span></span>
+<span id="cb40-7"><a href="study-design-for-causal-questions.html#cb40-7" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb40-8"><a href="study-design-for-causal-questions.html#cb40-8" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Variable&quot;</span>, <span class="st">&quot;Nonselective (No)&quot;</span>, <span class="st">&quot;Cox-2 (Yes)&quot;</span>),</span>
+<span id="cb40-9"><a href="study-design-for-causal-questions.html#cb40-9" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Table 1, continuous covariates, ns cohort by cox2_initiation&quot;</span></span>
+<span id="cb40-10"><a href="study-design-for-causal-questions.html#cb40-10" tabindex="-1"></a>)</span></code></pre></div>
+<table>
+<caption><span id="tab:ch06-table1-continuous">Table 6.1: </span>Table 1, continuous covariates, ns cohort by cox2_initiation</caption>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Nonselective (No)</th>
+<th align="left">Cox-2 (Yes)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">age</td>
+<td align="left">47.3 (16.6)</td>
+<td align="left">53.4 (15.7)</td>
+</tr>
+<tr class="even">
+<td align="left">year</td>
+<td align="left">2007.1 (1.4)</td>
+<td align="left">2006.8 (1.4)</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="study-design-for-causal-questions.html#cb41-1" tabindex="-1"></a><span class="fu">table1_categorical</span>(</span>
+<span id="cb41-2"><a href="study-design-for-causal-questions.html#cb41-2" tabindex="-1"></a>  ns,</span>
+<span id="cb41-3"><a href="study-design-for-causal-questions.html#cb41-3" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">setdiff</span>(ns_covs, <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;year&quot;</span>)),</span>
+<span id="cb41-4"><a href="study-design-for-causal-questions.html#cb41-4" tabindex="-1"></a>  <span class="at">by =</span> <span class="st">&quot;cox2_initiation&quot;</span></span>
+<span id="cb41-5"><a href="study-design-for-causal-questions.html#cb41-5" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb41-6"><a href="study-design-for-causal-questions.html#cb41-6" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Variable&quot;</span>, <span class="st">&quot;Level&quot;</span>, <span class="st">&quot;Nonselective (No)&quot;</span>, <span class="st">&quot;Cox-2 (Yes)&quot;</span>),</span>
+<span id="cb41-7"><a href="study-design-for-causal-questions.html#cb41-7" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Table 1, categorical covariates, ns cohort by cox2_initiation&quot;</span></span>
+<span id="cb41-8"><a href="study-design-for-causal-questions.html#cb41-8" tabindex="-1"></a>)</span></code></pre></div>
+<table>
+<caption><span id="tab:ch06-table1-categorical">Table 6.2: </span>Table 1, categorical covariates, ns cohort by cox2_initiation</caption>
+<thead>
+<tr class="header">
+<th align="left">Variable</th>
+<th align="left">Level</th>
+<th align="left">Nonselective (No)</th>
+<th align="left">Cox-2 (Yes)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">anti_coagulant_use</td>
+<td align="left">No</td>
+<td align="left">2633 (99.7%)</td>
+<td align="left">238 (99.2%)</td>
+</tr>
+<tr class="even">
+<td align="left">anti_coagulant_use</td>
+<td align="left">Yes</td>
+<td align="left">9 (0.3%)</td>
+<td align="left">2 (0.8%)</td>
+</tr>
+<tr class="odd">
+<td align="left">arthritis</td>
+<td align="left">No</td>
+<td align="left">1849 (70.0%)</td>
+<td align="left">128 (53.3%)</td>
+</tr>
+<tr class="even">
+<td align="left">arthritis</td>
+<td align="left">Yes</td>
+<td align="left">793 (30.0%)</td>
+<td align="left">112 (46.7%)</td>
+</tr>
+<tr class="odd">
+<td align="left">aspirin_use</td>
+<td align="left">No</td>
+<td align="left">2559 (96.9%)</td>
+<td align="left">231 (96.2%)</td>
+</tr>
+<tr class="even">
+<td align="left">aspirin_use</td>
+<td align="left">Yes</td>
+<td align="left">83 (3.1%)</td>
+<td align="left">9 (3.8%)</td>
+</tr>
+<tr class="odd">
+<td align="left">asthma</td>
+<td align="left">No</td>
+<td align="left">2531 (95.8%)</td>
+<td align="left">229 (95.4%)</td>
+</tr>
+<tr class="even">
+<td align="left">asthma</td>
+<td align="left">Yes</td>
+<td align="left">111 (4.2%)</td>
+<td align="left">11 (4.6%)</td>
+</tr>
+<tr class="odd">
+<td align="left">cancer</td>
+<td align="left">No</td>
+<td align="left">2560 (96.9%)</td>
+<td align="left">235 (97.9%)</td>
+</tr>
+<tr class="even">
+<td align="left">cancer</td>
+<td align="left">Yes</td>
+<td align="left">82 (3.1%)</td>
+<td align="left">5 (2.1%)</td>
+</tr>
+<tr class="odd">
+<td align="left">chronic_kidney_disease</td>
+<td align="left">No</td>
+<td align="left">2628 (99.5%)</td>
+<td align="left">238 (99.2%)</td>
+</tr>
+<tr class="even">
+<td align="left">chronic_kidney_disease</td>
+<td align="left">Yes</td>
+<td align="left">14 (0.5%)</td>
+<td align="left">2 (0.8%)</td>
+</tr>
+<tr class="odd">
+<td align="left">coronory_artery_disease</td>
+<td align="left">No</td>
+<td align="left">2590 (98.0%)</td>
+<td align="left">236 (98.3%)</td>
+</tr>
+<tr class="even">
+<td align="left">coronory_artery_disease</td>
+<td align="left">Yes</td>
+<td align="left">52 (2.0%)</td>
+<td align="left">4 (1.7%)</td>
+</tr>
+<tr class="odd">
+<td align="left">corticosteroid_use</td>
+<td align="left">No</td>
+<td align="left">2629 (99.5%)</td>
+<td align="left">235 (97.9%)</td>
+</tr>
+<tr class="even">
+<td align="left">corticosteroid_use</td>
+<td align="left">Yes</td>
+<td align="left">13 (0.5%)</td>
+<td align="left">5 (2.1%)</td>
+</tr>
+<tr class="odd">
+<td align="left">diabetes</td>
+<td align="left">No</td>
+<td align="left">2427 (91.9%)</td>
+<td align="left">209 (87.1%)</td>
+</tr>
+<tr class="even">
+<td align="left">diabetes</td>
+<td align="left">Yes</td>
+<td align="left">215 (8.1%)</td>
+<td align="left">31 (12.9%)</td>
+</tr>
+<tr class="odd">
+<td align="left">h2_antagonist_use</td>
+<td align="left">No</td>
+<td align="left">2614 (98.9%)</td>
+<td align="left">235 (97.9%)</td>
+</tr>
+<tr class="even">
+<td align="left">h2_antagonist_use</td>
+<td align="left">Yes</td>
+<td align="left">28 (1.1%)</td>
+<td align="left">5 (2.1%)</td>
+</tr>
+<tr class="odd">
+<td align="left">heart_failure</td>
+<td align="left">No</td>
+<td align="left">2629 (99.5%)</td>
+<td align="left">239 (99.6%)</td>
+</tr>
+<tr class="even">
+<td align="left">heart_failure</td>
+<td align="left">Yes</td>
+<td align="left">13 (0.5%)</td>
+<td align="left">1 (0.4%)</td>
+</tr>
+<tr class="odd">
+<td align="left">hypertension</td>
+<td align="left">No</td>
+<td align="left">2037 (77.1%)</td>
+<td align="left">169 (70.4%)</td>
+</tr>
+<tr class="even">
+<td align="left">hypertension</td>
+<td align="left">Yes</td>
+<td align="left">605 (22.9%)</td>
+<td align="left">71 (29.6%)</td>
+</tr>
+<tr class="odd">
+<td align="left">osteoporosis</td>
+<td align="left">No</td>
+<td align="left">2580 (97.7%)</td>
+<td align="left">227 (94.6%)</td>
+</tr>
+<tr class="even">
+<td align="left">osteoporosis</td>
+<td align="left">Yes</td>
+<td align="left">62 (2.3%)</td>
+<td align="left">13 (5.4%)</td>
+</tr>
+<tr class="odd">
+<td align="left">ppi_use</td>
+<td align="left">No</td>
+<td align="left">2562 (97.0%)</td>
+<td align="left">229 (95.4%)</td>
+</tr>
+<tr class="even">
+<td align="left">ppi_use</td>
+<td align="left">Yes</td>
+<td align="left">80 (3.0%)</td>
+<td align="left">11 (4.6%)</td>
+</tr>
+<tr class="odd">
+<td align="left">race</td>
+<td align="left">Black</td>
+<td align="left">409 (15.5%)</td>
+<td align="left">31 (12.9%)</td>
+</tr>
+<tr class="even">
+<td align="left">race</td>
+<td align="left">Other</td>
+<td align="left">151 (5.7%)</td>
+<td align="left">16 (6.7%)</td>
+</tr>
+<tr class="odd">
+<td align="left">race</td>
+<td align="left">White</td>
+<td align="left">2082 (78.8%)</td>
+<td align="left">193 (80.4%)</td>
+</tr>
+<tr class="even">
+<td align="left">region</td>
+<td align="left">Midwest</td>
+<td align="left">588 (22.3%)</td>
+<td align="left">51 (21.2%)</td>
+</tr>
+<tr class="odd">
+<td align="left">region</td>
+<td align="left">Northeast</td>
+<td align="left">455 (17.2%)</td>
+<td align="left">34 (14.2%)</td>
+</tr>
+<tr class="even">
+<td align="left">region</td>
+<td align="left">South</td>
+<td align="left">978 (37.0%)</td>
+<td align="left">105 (43.8%)</td>
+</tr>
+<tr class="odd">
+<td align="left">region</td>
+<td align="left">West</td>
+<td align="left">621 (23.5%)</td>
+<td align="left">50 (20.8%)</td>
+</tr>
+<tr class="even">
+<td align="left">sex</td>
+<td align="left">Female</td>
+<td align="left">1552 (58.7%)</td>
+<td align="left">140 (58.3%)</td>
+</tr>
+<tr class="odd">
+<td align="left">sex</td>
+<td align="left">Male</td>
+<td align="left">1090 (41.3%)</td>
+<td align="left">100 (41.7%)</td>
+</tr>
+</tbody>
+</table>
+<p>Even with the comparator restricted to a shared class of drugs, several
+covariates still separate the two arms by a wide margin. The starkest
+gap is arthritis: 30.0% of nonselective
+initiators carry an arthritis diagnosis against
+46.7% of Cox-2 initiators, a
+17-percentage-point gap that
+dwarfs anything else in either table. Age moves the same way — Cox-2
+initiators average 53.4 years against
+47.3 among nonselective initiators, a gap of
+roughly 6 years — and
+corticosteroid use, though rare overall, is more than four times as
+common among Cox-2 initiators (2.1% versus
+0.5%). Hypertension, diabetes, osteoporosis,
+and PPI use all run a few points higher among Cox-2 initiators as well
+(22.9% vs 29.6%,
+8.1% vs 12.9%,
+2.3% vs 5.4%,
+and 3.0% vs 4.6%).</p>
+<p>None of this is a coincidence. Arthritis and the comorbidities that
+travel with it — hypertension, diabetes, osteoporosis, PPI use — are
+the substance behind the diagram’s <code>gi_risk</code> node; age lines up with
+the DAG’s own <code>age</code> node; corticosteroid use lines up with its
+<code>steroids</code> node. Three separate confounders, three separate arrows into
+both <code>cox2</code> and <code>pud</code> in Chapter 5’s diagram, and each still shows up
+here as a real imbalance. Sex (58.7% female
+vs 58.3%) and calendar year
+(2007.1 vs 2006.8)
+sit close to balanced, which fits the diagram: neither has an arrow
+into <code>cox2</code>. Region fits neither pattern:
+37.0% of nonselective initiators are from
+the South against 43.8% of Cox-2
+initiators, a 7-point
+gap on par with hypertension’s — real, but with no node in Chapter 5’s
+diagram and no obvious clinical mechanism tying geography to drug
+choice. A Table 1 gap and a DAG arrow are not the same claim; this one
+more likely reflects regional prescribing habits than confounding by GI
+risk, and it deserves its own scrutiny rather than being waved away as
+either explained or safely ignorable. The gaps that do map onto the
+diagram — arthritis and its fellow travelers, age, and corticosteroid
+use — are what Part II’s adjustment methods exist to close.</p>
+</div>
+<div id="immortal-time-and-other-time-zero-problems" class="section level2 hasAnchor" number="6.4">
+<h2><span class="header-section-number">6.4</span> Immortal time and other time-zero problems<a href="study-design-for-causal-questions.html#immortal-time-and-other-time-zero-problems" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A design can get eligibility and the comparator right and still fail on
+a third dimension: when, exactly, each patient’s follow-up clock starts.
+<strong>Aligned time zero</strong> means that three things happen on the same date
+for every patient: the date they are confirmed eligible, the date they
+are classified into a treatment strategy, and the date their
+person-time starts counting toward the outcome. <code>ns</code> satisfies this
+automatically, because eligibility, drug class, and the start of
+follow-up are all pinned to the same qualifying visit. Aligned time zero
+is easy to state and surprisingly easy to violate the moment a study
+defines “exposed” using any information that could only be known after
+follow-up has already begun.</p>
+<p>Here is a worked hypothetical that shows exactly how the violation
+bites, built around a definition of treatment that shows up constantly
+in pharmacoepidemiology: calling someone a “user” only once they have
+filled a second prescription, some grace period after the first.
+Suppose we simulate 20,000 hypothetical patients, each with a true time
+to death that is, by construction, unrelated to anything about their
+future drug-taking behavior, and suppose “persistent user” status
+requires two things: surviving past a 90-day grace period, and an
+independent adherence habit that is fixed for each patient and has no
+effect on survival whatsoever.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="study-design-for-causal-questions.html#cb42-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">6</span>)</span>
+<span id="cb42-2"><a href="study-design-for-causal-questions.html#cb42-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">20000</span></span>
+<span id="cb42-3"><a href="study-design-for-causal-questions.html#cb42-3" tabindex="-1"></a>grace <span class="ot">&lt;-</span> <span class="dv">90</span></span>
+<span id="cb42-4"><a href="study-design-for-causal-questions.html#cb42-4" tabindex="-1"></a>follow_up <span class="ot">&lt;-</span> <span class="dv">730</span></span>
+<span id="cb42-5"><a href="study-design-for-causal-questions.html#cb42-5" tabindex="-1"></a></span>
+<span id="cb42-6"><a href="study-design-for-causal-questions.html#cb42-6" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb42-7"><a href="study-design-for-causal-questions.html#cb42-7" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span>n,</span>
+<span id="cb42-8"><a href="study-design-for-causal-questions.html#cb42-8" tabindex="-1"></a>  <span class="at">death_time =</span> <span class="fu">rexp</span>(n, <span class="at">rate =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">2000</span>),</span>
+<span id="cb42-9"><a href="study-design-for-causal-questions.html#cb42-9" tabindex="-1"></a>  <span class="at">adherent   =</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="fl">0.6</span>)   <span class="co"># a habit unrelated to survival, by construction</span></span>
+<span id="cb42-10"><a href="study-design-for-causal-questions.html#cb42-10" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb42-11"><a href="study-design-for-causal-questions.html#cb42-11" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb42-12"><a href="study-design-for-causal-questions.html#cb42-12" tabindex="-1"></a>    <span class="at">alive_grace =</span> death_time <span class="sc">&gt;</span> grace,</span>
+<span id="cb42-13"><a href="study-design-for-causal-questions.html#cb42-13" tabindex="-1"></a>    <span class="at">persistent  =</span> <span class="fu">as.integer</span>(alive_grace <span class="sc">&amp;</span> adherent <span class="sc">==</span> <span class="dv">1</span>),</span>
+<span id="cb42-14"><a href="study-design-for-causal-questions.html#cb42-14" tabindex="-1"></a>    <span class="at">died_by_end =</span> <span class="fu">as.integer</span>(death_time <span class="sc">&lt;=</span> follow_up)</span>
+<span id="cb42-15"><a href="study-design-for-causal-questions.html#cb42-15" tabindex="-1"></a>  )</span></code></pre></div>
+<p>A naive analysis, of the kind a misaligned time-zero produces, starts
+every patient’s clock on day zero and simply compares mortality risk
+between “persistent users” and everyone else over the full
+730-day window:</p>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="study-design-for-causal-questions.html#cb43-1" tabindex="-1"></a>naive_tab <span class="ot">&lt;-</span> hyp <span class="sc">|&gt;</span></span>
+<span id="cb43-2"><a href="study-design-for-causal-questions.html#cb43-2" tabindex="-1"></a>  <span class="fu">group_by</span>(persistent) <span class="sc">|&gt;</span></span>
+<span id="cb43-3"><a href="study-design-for-causal-questions.html#cb43-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">risk =</span> <span class="fu">mean</span>(died_by_end), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span>
+<span id="cb43-4"><a href="study-design-for-causal-questions.html#cb43-4" tabindex="-1"></a>naive_tab <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">persistent</th>
+<th align="right">n</th>
+<th align="right">risk</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">8538</td>
+<td align="right">0.349</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">11462</td>
+<td align="right">0.276</td>
+</tr>
+</tbody>
+</table>
+<p>Persistent users appear dramatically protected —
+7.3 percentage points lower mortality
+risk than everyone else — even though nothing in the simulation gave
+adherence any causal effect on survival at all. The reason is
+mechanical rather than clinical: to be labeled “persistent,” a patient
+had to survive at least 90 days, so the persistent group starts
+its 730-day clock with 90 guaranteed event-free days
+already banked, days that could never have contained a death no matter
+who was in that group. That banked, guaranteed-survival stretch is
+<strong>immortal time</strong>, and it is entirely an artifact of letting the
+exposure definition depend on information — surviving the grace
+period — that was not yet available at the true time zero, the date
+treatment actually started.</p>
+<p>The fix is to give every patient the same time zero regardless of
+group: restrict the comparison to patients who survived to the end of
+the grace period, and start everyone’s clock there, at day
+90, rather than at day zero.</p>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="study-design-for-causal-questions.html#cb44-1" tabindex="-1"></a>landmark_tab <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">adherent</th>
+<th align="right">n</th>
+<th align="right">risk</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">7668</td>
+<td align="right">0.275</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">11462</td>
+<td align="right">0.276</td>
+</tr>
+</tbody>
+</table>
+<p>Among the 19130 patients who survived to day
+90, adherent and non-adherent patients now have essentially
+identical mortality risk over the remaining follow-up
+(0.276
+versus 0.275,
+a difference of 0.001) — indistinguishable
+from the null effect we built into the simulation. Nothing about any
+patient changed between the two analyses; only the point at which each
+patient’s clock was allowed to start changed, and that alone was enough
+to manufacture, and then erase, a seven-point “protective” effect.</p>
+<p>Chapter 4 flagged this exact hazard for the <code>sta</code> cohort, where any
+comparison built around staying on a statin for some minimum duration
+is vulnerable to precisely this mechanism, and left the question of
+which row of the target trial table it violates for this chapter to
+settle. The answer is the <strong>Follow-up</strong> row: the row that specifies
+when person-time starts accruing toward the outcome. Immortal time
+bias arises whenever the Assignment row — how a patient gets classified
+into a treatment strategy — is allowed to depend on something observed
+after the Follow-up row’s start date, rather than at it. A short
+checklist captures the requirement for any design in this book,
+<code>ns</code>, <code>sta</code>, or a design of your own:</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Component</th>
+<th>Must be fixed as of the same date as…</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Eligibility</td>
+<td>the date all inclusion criteria are first met</td>
+</tr>
+<tr class="even">
+<td>Assignment</td>
+<td>the date the patient’s treatment strategy is classified</td>
+</tr>
+<tr class="odd">
+<td>Start of follow-up</td>
+<td>the date person-time begins accruing toward the outcome</td>
+</tr>
+</tbody>
+</table>
+<p>Whenever those three dates coincide, as they do in <code>ns</code> by
+construction, immortal time cannot arise, because there is no gap
+between becoming eligible and starting the clock in which future
+information could leak backward into a treatment label. Whenever they
+are allowed to drift apart, as in the persistent-user hypothetical
+above, the resulting comparison can manufacture an effect, hide a real
+one, or both, entirely independent of anything an adjustment method in
+Part II could repair. The argument that this is what specifying a
+target trial buys you — that making eligibility, assignment, and the
+start of follow-up coincide forecloses immortal time bias rather than
+leaving it to be corrected afterward — is Hernán and colleagues’ (2016,
+<em>Journal of Clinical Epidemiology</em>).</p>
+</div>
+<div id="exercises-4" class="section level2 hasAnchor" number="6.5">
+<h2><span class="header-section-number">6.5</span> Exercises<a href="study-design-for-causal-questions.html#exercises-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li>Using what <code>R/setup.R</code> tells you about <code>sta</code> — that it follows
+patients who did or did not initiate a statin, with time variables
+<code>cv_time</code>, <code>death_time</code>, and <code>loss_fu_time</code> measured from cohort
+entry — describe whether <code>sta</code> follows a new-user or a
+prevalent-user design, and state what its time zero is. Would your
+answer change if <code>sta</code> had instead been built by sampling patients
+already filling statin prescriptions at some arbitrary visit, rather
+than at their first qualifying prescription?</li>
+<li>Look back at the two Table 1 chunks built from <code>ns_covs</code> in this
+chapter. Besides arthritis and age, name two more covariates where
+the gap between Cox-2 and nonselective initiators is largest, and
+propose a clinical reason each one might still differ even after
+restricting the comparison to two active NSAID options.</li>
+<li><code>sta</code> currently compares statin initiators to patients who did not
+initiate a statin at all — not an active-comparator design. Propose
+a plausible active comparator for the statin question (a different
+medication prescribed for a similar indication, initiated at a
+similar point in a patient’s care), and discuss one advantage and
+one disadvantage of switching to it, using the reasoning this
+chapter used for Cox-2 versus nonselective NSAIDs.</li>
+</ol>
+
+</div>
+</div>
+
+
+
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="causal-diagrams.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="outcome-regression-and-standardization.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": null,
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

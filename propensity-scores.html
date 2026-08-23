@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 8 Propensity scores | Causal Inference in Epidemiology Using R</title>
+  <meta name="description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 8 Propensity scores | Causal Inference in Epidemiology Using R" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 8 Propensity scores | Causal Inference in Epidemiology Using R" />
+  
+  <meta name="twitter:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+<meta name="author" content="M. Alan Brookhart" />
+
+
+<meta name="date" content="2026-08-23" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="outcome-regression-and-standardization.html"/>
+<link rel="next" href="inverse-probability-of-treatment-weighting.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Causal Inference in Epidemiology Using R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+</ul></li>
+<li class="part"><span><b>I Foundations</b></span></li>
+<li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="why.html"><a href="why.html#questions-epidemiology-cannot-answer-with-association-alone"><i class="fa fa-check"></i><b>1.1</b> Questions epidemiology cannot answer with association alone</a></li>
+<li class="chapter" data-level="1.2" data-path="why.html"><a href="why.html#a-first-look-at-the-data"><i class="fa fa-check"></i><b>1.2</b> A first look at the data</a></li>
+<li class="chapter" data-level="1.3" data-path="why.html"><a href="why.html#what-this-book-covers"><i class="fa fa-check"></i><b>1.3</b> What this book covers</a></li>
+<li class="chapter" data-level="1.4" data-path="why.html"><a href="why.html#how-to-read-this-book"><i class="fa fa-check"></i><b>1.4</b> How to read this book</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html"><i class="fa fa-check"></i><b>2</b> Getting started with R and the NAMCS data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#r-rstudio-and-the-tidyverse"><i class="fa fa-check"></i><b>2.1</b> R, RStudio, and the tidyverse</a></li>
+<li class="chapter" data-level="2.2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-teaching-cohorts"><i class="fa fa-check"></i><b>2.2</b> The NAMCS teaching cohorts</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#plotting-with-ggplot2"><i class="fa fa-check"></i><b>2.3</b> Plotting with ggplot2</a></li>
+<li class="chapter" data-level="2.4" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1"><i class="fa fa-check"></i><b>2.4</b> Your first reusable functions: Table 1</a></li>
+<li class="chapter" data-level="2.5" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#exercises"><i class="fa fa-check"></i><b>2.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html"><i class="fa fa-check"></i><b>3</b> Potential outcomes and causal effects</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#two-futures-for-every-patient"><i class="fa fa-check"></i><b>3.1</b> Two futures for every patient</a></li>
+<li class="chapter" data-level="3.2" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#a-gods-eye-view-simulation"><i class="fa fa-check"></i><b>3.2</b> A god’s-eye view: simulation</a></li>
+<li class="chapter" data-level="3.3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#average-causal-effects-and-estimands"><i class="fa fa-check"></i><b>3.3</b> Average causal effects and estimands</a></li>
+<li class="chapter" data-level="3.4" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#the-identification-conditions"><i class="fa fa-check"></i><b>3.4</b> The identification conditions</a></li>
+<li class="chapter" data-level="3.5" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html"><i class="fa fa-check"></i><b>4</b> The randomized trial as the benchmark</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#why-randomization-works"><i class="fa fa-check"></i><b>4.1</b> Why randomization works</a></li>
+<li class="chapter" data-level="4.2" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#intention-to-treat-and-per-protocol"><i class="fa fa-check"></i><b>4.2</b> Intention-to-treat and per-protocol</a></li>
+<li class="chapter" data-level="4.3" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#the-target-trial"><i class="fa fa-check"></i><b>4.3</b> The target trial</a></li>
+<li class="chapter" data-level="4.4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#exercises-2"><i class="fa fa-check"></i><b>4.4</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="causal-diagrams.html"><a href="causal-diagrams.html"><i class="fa fa-check"></i><b>5</b> Causal diagrams</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="causal-diagrams.html"><a href="causal-diagrams.html#drawing-causal-assumptions"><i class="fa fa-check"></i><b>5.1</b> Drawing causal assumptions</a></li>
+<li class="chapter" data-level="5.2" data-path="causal-diagrams.html"><a href="causal-diagrams.html#the-nsaidpud-diagram"><i class="fa fa-check"></i><b>5.2</b> The NSAID–PUD diagram</a></li>
+<li class="chapter" data-level="5.3" data-path="causal-diagrams.html"><a href="causal-diagrams.html#confounders-colliders-and-mediators"><i class="fa fa-check"></i><b>5.3</b> Confounders, colliders, and mediators</a></li>
+<li class="chapter" data-level="5.4" data-path="causal-diagrams.html"><a href="causal-diagrams.html#selection-bias-as-collider-stratification"><i class="fa fa-check"></i><b>5.4</b> Selection bias as collider stratification</a></li>
+<li class="chapter" data-level="5.5" data-path="causal-diagrams.html"><a href="causal-diagrams.html#exercises-3"><i class="fa fa-check"></i><b>5.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html"><i class="fa fa-check"></i><b>6</b> Study design for causal questions</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#design-before-analysis"><i class="fa fa-check"></i><b>6.1</b> Design before analysis</a></li>
+<li class="chapter" data-level="6.2" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#new-user-designs"><i class="fa fa-check"></i><b>6.2</b> New-user designs</a></li>
+<li class="chapter" data-level="6.3" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#active-comparator-designs"><i class="fa fa-check"></i><b>6.3</b> Active-comparator designs</a></li>
+<li class="chapter" data-level="6.4" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#immortal-time-and-other-time-zero-problems"><i class="fa fa-check"></i><b>6.4</b> Immortal time and other time-zero problems</a></li>
+<li class="chapter" data-level="6.5" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#exercises-4"><i class="fa fa-check"></i><b>6.5</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>II Core Methods</b></span></li>
+<li class="chapter" data-level="7" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html"><i class="fa fa-check"></i><b>7</b> Outcome regression and standardization</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#adjusting-with-regression"><i class="fa fa-check"></i><b>7.1</b> Adjusting with regression</a></li>
+<li class="chapter" data-level="7.2" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#standardization-predict-then-average"><i class="fa fa-check"></i><b>7.2</b> Standardization: predict, then average</a></li>
+<li class="chapter" data-level="7.3" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#the-bootstrap"><i class="fa fa-check"></i><b>7.3</b> The bootstrap</a></li>
+<li class="chapter" data-level="7.4" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#effect-modification"><i class="fa fa-check"></i><b>7.4</b> Effect modification</a></li>
+<li class="chapter" data-level="7.5" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="propensity-scores.html"><a href="propensity-scores.html"><i class="fa fa-check"></i><b>8</b> Propensity scores</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="propensity-scores.html"><a href="propensity-scores.html#one-number-that-summarizes-confounding"><i class="fa fa-check"></i><b>8.1</b> One number that summarizes confounding</a></li>
+<li class="chapter" data-level="8.2" data-path="propensity-scores.html"><a href="propensity-scores.html#estimating-the-score"><i class="fa fa-check"></i><b>8.2</b> Estimating the score</a></li>
+<li class="chapter" data-level="8.3" data-path="propensity-scores.html"><a href="propensity-scores.html#stratification"><i class="fa fa-check"></i><b>8.3</b> Stratification</a></li>
+<li class="chapter" data-level="8.4" data-path="propensity-scores.html"><a href="propensity-scores.html#matching"><i class="fa fa-check"></i><b>8.4</b> Matching</a></li>
+<li class="chapter" data-level="8.5" data-path="propensity-scores.html"><a href="propensity-scores.html#choosing-the-ps-model"><i class="fa fa-check"></i><b>8.5</b> Choosing the PS model</a></li>
+<li class="chapter" data-level="8.6" data-path="propensity-scores.html"><a href="propensity-scores.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html"><i class="fa fa-check"></i><b>9</b> Inverse probability of treatment weighting</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#reweighting-to-a-pseudo-population"><i class="fa fa-check"></i><b>9.1</b> Reweighting to a pseudo-population</a></li>
+<li class="chapter" data-level="9.2" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#building-the-weights"><i class="fa fa-check"></i><b>9.2</b> Building the weights</a></li>
+<li class="chapter" data-level="9.3" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#estimating-the-effect"><i class="fa fa-check"></i><b>9.3</b> Estimating the effect</a></li>
+<li class="chapter" data-level="9.4" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#truncation-and-diagnostics"><i class="fa fa-check"></i><b>9.4</b> Truncation and diagnostics</a></li>
+<li class="chapter" data-level="9.5" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#standardized-mortality-ratio-weights"><i class="fa fa-check"></i><b>9.5</b> Standardized mortality ratio weights</a></li>
+<li class="chapter" data-level="9.6" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#msms-and-where-weighting-shines"><i class="fa fa-check"></i><b>9.6</b> MSMs and where weighting shines</a></li>
+<li class="chapter" data-level="9.7" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#three-estimators-one-estimand"><i class="fa fa-check"></i><b>9.7</b> Three estimators, one estimand</a></li>
+<li class="chapter" data-level="9.8" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#exercises-7"><i class="fa fa-check"></i><b>9.8</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>III Time, Censoring, and Survival</b></span></li>
+<li class="chapter" data-level="10" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html"><i class="fa fa-check"></i><b>10</b> Survival outcomes and censoring</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#the-statin-question"><i class="fa fa-check"></i><b>10.1</b> The statin question</a></li>
+<li class="chapter" data-level="10.2" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#anatomy-of-time-to-event-data"><i class="fa fa-check"></i><b>10.2</b> Anatomy of time-to-event data</a></li>
+<li class="chapter" data-level="10.3" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#kaplanmeier"><i class="fa fa-check"></i><b>10.3</b> Kaplan–Meier</a></li>
+<li class="chapter" data-level="10.4" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#death-as-a-competing-risk"><i class="fa fa-check"></i><b>10.4</b> Death as a competing risk</a></li>
+<li class="chapter" data-level="10.5" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#risks-versus-hazards"><i class="fa fa-check"></i><b>10.5</b> Risks versus hazards</a></li>
+<li class="chapter" data-level="10.6" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#when-censoring-lies"><i class="fa fa-check"></i><b>10.6</b> When censoring lies</a></li>
+<li class="chapter" data-level="10.7" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#exercises-8"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html"><i class="fa fa-check"></i><b>11</b> Inverse probability of censoring weights</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weighting-returns"><i class="fa fa-check"></i><b>11.1</b> Weighting returns</a></li>
+<li class="chapter" data-level="11.2" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#person-period-data"><i class="fa fa-check"></i><b>11.2</b> Person-period data</a></li>
+<li class="chapter" data-level="11.3" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#building-censoring-weights"><i class="fa fa-check"></i><b>11.3</b> Building censoring weights</a></li>
+<li class="chapter" data-level="11.4" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weight-diagnostics"><i class="fa fa-check"></i><b>11.4</b> Weight diagnostics</a></li>
+<li class="chapter" data-level="11.5" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#did-it-matter"><i class="fa fa-check"></i><b>11.5</b> Did it matter?</a></li>
+<li class="chapter" data-level="11.6" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#exercises-9"><i class="fa fa-check"></i><b>11.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html"><i class="fa fa-check"></i><b>12</b> Clone-censor-weight</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#from-point-treatments-to-treatment-strategies"><i class="fa fa-check"></i><b>12.1</b> From point treatments to treatment strategies</a></li>
+<li class="chapter" data-level="12.2" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#the-clone-censor-weight-recipe"><i class="fa fa-check"></i><b>12.2</b> The clone-censor-weight recipe</a></li>
+<li class="chapter" data-level="12.3" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#deviation-in-the-statin-cohort"><i class="fa fa-check"></i><b>12.3</b> Deviation in the statin cohort</a></li>
+<li class="chapter" data-level="12.4" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#estimating-per-protocol-risk-curves"><i class="fa fa-check"></i><b>12.4</b> Estimating per-protocol risk curves</a></li>
+<li class="chapter" data-level="12.5" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#interpreting-the-per-protocol-effect"><i class="fa fa-check"></i><b>12.5</b> Interpreting the per-protocol effect</a></li>
+<li class="chapter" data-level="12.6" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#exercises-10"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>IV Beyond Exchangeability</b></span></li>
+<li class="chapter" data-level="13" data-path="instrumental-variables.html"><a href="instrumental-variables.html"><i class="fa fa-check"></i><b>13</b> Instrumental variables</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="instrumental-variables.html"><a href="instrumental-variables.html#when-exchangeability-fails"><i class="fa fa-check"></i><b>13.1</b> When exchangeability fails</a></li>
+<li class="chapter" data-level="13.2" data-path="instrumental-variables.html"><a href="instrumental-variables.html#provider-preference-as-an-instrument"><i class="fa fa-check"></i><b>13.2</b> Provider preference as an instrument</a></li>
+<li class="chapter" data-level="13.3" data-path="instrumental-variables.html"><a href="instrumental-variables.html#the-wald-and-two-stage-estimators"><i class="fa fa-check"></i><b>13.3</b> The Wald and two-stage estimators</a></li>
+<li class="chapter" data-level="13.4" data-path="instrumental-variables.html"><a href="instrumental-variables.html#interpreting-the-late"><i class="fa fa-check"></i><b>13.4</b> Interpreting the LATE</a></li>
+<li class="chapter" data-level="13.5" data-path="instrumental-variables.html"><a href="instrumental-variables.html#exercises-11"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html"><i class="fa fa-check"></i><b>14</b> Sensitivity analysis</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#what-we-assumed-and-cannot-check"><i class="fa fa-check"></i><b>14.1</b> What we assumed and cannot check</a></li>
+<li class="chapter" data-level="14.2" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#external-adjustment"><i class="fa fa-check"></i><b>14.2</b> External adjustment</a></li>
+<li class="chapter" data-level="14.3" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#the-e-value"><i class="fa fa-check"></i><b>14.3</b> The E-value</a></li>
+<li class="chapter" data-level="14.4" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#negative-control-outcomes"><i class="fa fa-check"></i><b>14.4</b> Negative control outcomes</a></li>
+<li class="chapter" data-level="14.5" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#reporting-a-causal-analysis"><i class="fa fa-check"></i><b>14.5</b> Reporting a causal analysis</a></li>
+<li class="chapter" data-level="14.6" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#exercises-12"><i class="fa fa-check"></i><b>14.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendices</b></span></li>
+<li class="chapter" data-level="A" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html"><i class="fa fa-check"></i><b>A</b> R and RStudio setup</a>
+<ul>
+<li class="chapter" data-level="A.1" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-r-and-rstudio"><i class="fa fa-check"></i><b>A.1</b> Installing R and RStudio</a></li>
+<li class="chapter" data-level="A.2" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-packages-this-book-uses"><i class="fa fa-check"></i><b>A.2</b> Installing the packages this book uses</a></li>
+<li class="chapter" data-level="A.3" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-namcs-teaching-package"><i class="fa fa-check"></i><b>A.3</b> Installing the NAMCS teaching package</a></li>
+<li class="chapter" data-level="A.4" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#loading-everything-a-chapter-needs"><i class="fa fa-check"></i><b>A.4</b> Loading everything a chapter needs</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="namcs-codebook.html"><a href="namcs-codebook.html"><i class="fa fa-check"></i><b>B</b> NAMCS codebook</a>
+<ul>
+<li class="chapter" data-level="B.1" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-nsaid-cohort-ns"><i class="fa fa-check"></i><b>B.1</b> The NSAID cohort (<code>ns</code>)</a></li>
+<li class="chapter" data-level="B.2" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-statin-cohort-sta"><i class="fa fa-check"></i><b>B.2</b> The statin cohort (<code>sta</code>)</a></li>
+<li class="chapter" data-level="B.3" data-path="namcs-codebook.html"><a href="namcs-codebook.html#a-note-on-the-outcomes"><i class="fa fa-check"></i><b>B.3</b> A note on the outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="C" data-path="the-estimator-toolkit.html"><a href="the-estimator-toolkit.html"><i class="fa fa-check"></i><b>C</b> The estimator toolkit</a></li>
+<li class="chapter" data-level="D" data-path="course-map-phs-921.html"><a href="course-map-phs-921.html"><i class="fa fa-check"></i><b>D</b> Course map: PHS 921</a></li>
+<li class="chapter" data-level="E" data-path="further-reading.html"><a href="further-reading.html"><i class="fa fa-check"></i><b>E</b> Further reading</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Causal Inference in Epidemiology Using R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="propensity-scores" class="section level1 hasAnchor" number="8">
+<h1><span class="header-section-number">Chapter 8</span> Propensity scores<a href="propensity-scores.html#propensity-scores" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Chapter 7 adjusted for confounding by modeling the outcome. We wrote
+down a logistic regression for <code>pud</code> that included the treatment
+indicator and all nineteen covariates in <code>ns_covs</code>, then averaged its
+predictions over the cohort twice. It worked, but notice how much weight
+that single model was carrying: nineteen covariates and their functional
+forms, all of it resting on 288 ulcer cases. This chapter
+takes a second route to the same question, and it moves the modeling
+burden to the other side of the problem. Instead of modeling how
+covariates produce the outcome, we model how covariates produce
+<em>treatment</em>, and then use that one fitted probability — rather than the
+nineteen covariates themselves — to make the arms comparable. In many
+studies the appeal is arithmetic, because exposure is far more common
+than the outcome and the treatment model therefore has more information
+to work with; here, with 240 Cox-2 initiators against
+288 cases, the two are comparably rare and the appeal is
+conceptual instead. What we gain is a separation between the work of
+making groups comparable and the work of estimating an effect.</p>
+<div id="one-number-that-summarizes-confounding" class="section level2 hasAnchor" number="8.1">
+<h2><span class="header-section-number">8.1</span> One number that summarizes confounding<a href="propensity-scores.html#one-number-that-summarizes-confounding" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <strong>propensity score</strong> is the probability of receiving treatment given
+the measured covariates,
+<span class="math display">\[e(L) = P(A = 1 \mid L),\]</span>
+a single number between 0 and 1 attached to each patient. In our cohort
+it is the probability that a patient with this age, sex, region,
+comorbidity profile, and medication history was started on a Cox-2
+selective inhibitor rather than a nonselective NSAID.</p>
+<p>What makes this useful is a result of Rosenbaum and Rubin (1983): the
+propensity score is a <strong>balancing score</strong>. Among patients who share the
+same value of <span class="math inline">\(e(L)\)</span>, the distribution of <span class="math inline">\(L\)</span> itself is the same in the
+treated and the untreated. Two patients with a propensity score of 0.20
+may look nothing alike — one old with arthritis and no other illness,
+the other younger with diabetes and hypertension — but if we collect
+<em>everyone</em> whose score is 0.20, the treated members of that collection
+and the untreated members will have, on average, the same age
+distribution, the same arthritis prevalence, the same steroid use, and
+so on for every covariate that went into the score. Within a level of
+the score, treatment is as though randomized with respect to those
+covariates.</p>
+<p>The consequence for us is the second half of the theorem. If
+conditional exchangeability holds given the full covariate vector <span class="math inline">\(L\)</span> —
+Chapter 3’s assumption, for which Chapter 5’s diagram is the argument —
+then it also holds given <span class="math inline">\(e(L)\)</span> alone. So we may condition on one
+scalar in place of nineteen variables and lose nothing. Nineteen
+dimensions of confounding collapse into one number.</p>
+<p>Two cautions belong here at the outset. First, the propensity score is
+a <strong>nuisance parameter</strong>: nobody wants to know a patient’s probability
+of getting a Cox-2 inhibitor for its own sake, and we should resist
+interpreting the treatment model’s coefficients causally. It exists only
+to be conditioned on. Second, the balancing property is a property of
+the <em>true</em> score, which we do not have. We estimate it, and the honest
+justification for the estimate is not that the model is correctly
+specified but that it demonstrably balances the covariates — something
+we can check directly, and will.</p>
+</div>
+<div id="estimating-the-score" class="section level2 hasAnchor" number="8.2">
+<h2><span class="header-section-number">8.2</span> Estimating the score<a href="propensity-scores.html#estimating-the-score" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Estimating a propensity score is a logistic regression like any other,
+so the function that does it is short. It fits the treatment model and
+returns the data with the fitted probabilities attached as a column
+named <code>ps</code>, which is what every method later in the chapter consumes.</p>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="propensity-scores.html#cb55-1" tabindex="-1"></a>est_ps <span class="ot">&lt;-</span> <span class="cf">function</span>(data, treat_model) {</span>
+<span id="cb55-2"><a href="propensity-scores.html#cb55-2" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(treat_model, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> data)</span>
+<span id="cb55-3"><a href="propensity-scores.html#cb55-3" tabindex="-1"></a>  data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">ps =</span> <span class="fu">predict</span>(fit, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb55-4"><a href="propensity-scores.html#cb55-4" tabindex="-1"></a>}</span></code></pre></div>
+<p><code>predict()</code> with <code>type = "response"</code> is what puts the predictions on the
+probability scale rather than the log-odds scale; without it we would
+get linear predictors, which balance just as well but are harder to
+read. That code and the matching function below live in
+<code>R/propensity.R</code>, so from here on we source it.</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="propensity-scores.html#cb56-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/propensity.R&quot;</span>)</span>
+<span id="cb56-2"><a href="propensity-scores.html#cb56-2" tabindex="-1"></a></span>
+<span id="cb56-3"><a href="propensity-scores.html#cb56-3" tabindex="-1"></a>ps_model <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(ns_covs, <span class="st">&quot;cox2_init&quot;</span>)</span>
+<span id="cb56-4"><a href="propensity-scores.html#cb56-4" tabindex="-1"></a>ns_ps <span class="ot">&lt;-</span> <span class="fu">est_ps</span>(ns, ps_model) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>())</span>
+<span id="cb56-5"><a href="propensity-scores.html#cb56-5" tabindex="-1"></a></span>
+<span id="cb56-6"><a href="propensity-scores.html#cb56-6" tabindex="-1"></a>ns_ps <span class="sc">|&gt;</span></span>
+<span id="cb56-7"><a href="propensity-scores.html#cb56-7" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_init) <span class="sc">|&gt;</span></span>
+<span id="cb56-8"><a href="propensity-scores.html#cb56-8" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">mean_ps =</span> <span class="fu">mean</span>(ps), <span class="at">min =</span> <span class="fu">min</span>(ps), <span class="at">max =</span> <span class="fu">max</span>(ps),</span>
+<span id="cb56-9"><a href="propensity-scores.html#cb56-9" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb56-10"><a href="propensity-scores.html#cb56-10" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">cox2_init</th>
+<th align="right">n</th>
+<th align="right">mean_ps</th>
+<th align="right">min</th>
+<th align="right">max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2642</td>
+<td align="right">0.081</td>
+<td align="right">0.016</td>
+<td align="right">0.423</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">240</td>
+<td align="right">0.109</td>
+<td align="right">0.029</td>
+<td align="right">0.506</td>
+</tr>
+</tbody>
+</table>
+<p>Notice the formula. <code>reformulate(ns_covs, "cox2_init")</code> puts treatment
+on the left and the covariates on the right — the mirror image of
+Chapter 7’s outcome model, and with no mention of <code>pud</code> anywhere. That
+is more than a technicality. The whole model can be built, inspected,
+and revised without ever looking at the outcome, so we cannot tune it,
+however unconsciously, toward an answer we like. It restores something
+outcome modeling gives up: a <strong>design</strong> stage, prior to and separate
+from analysis, in which we work only with treatment and covariates. It
+is the closest an observational study comes to writing a randomization
+scheme. Rubin (2008) makes this the central argument for propensity
+scores — that in observational work design trumps analysis, and that the
+discipline of settling the comparison before the outcome is ever
+examined is most of what the score is for.</p>
+<p>The fitted scores average 0.109 in the Cox-2
+arm against 0.081 among nonselective
+initiators, straddling the cohort-wide treatment prevalence of
+8.3%. That separation is the confounding of
+Chapter 6’s Table 1, now expressed as one number: the model can tell the
+arms apart because the arms genuinely differ. What matters more is how
+much the two distributions overlap.</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="propensity-scores.html#cb57-1" tabindex="-1"></a><span class="fu">ggplot</span>(ns_ps, <span class="fu">aes</span>(<span class="at">x =</span> ps, <span class="at">fill =</span> <span class="fu">factor</span>(cox2_init))) <span class="sc">+</span></span>
+<span id="cb57-2"><a href="propensity-scores.html#cb57-2" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.45</span>, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb57-3"><a href="propensity-scores.html#cb57-3" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(<span class="at">name =</span> <span class="cn">NULL</span>,</span>
+<span id="cb57-4"><a href="propensity-scores.html#cb57-4" tabindex="-1"></a>                      <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Nonselective NSAID&quot;</span>, <span class="st">&quot;Cox-2 selective&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb57-5"><a href="propensity-scores.html#cb57-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Estimated propensity score&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="sc">+</span></span>
+<span id="cb57-6"><a href="propensity-scores.html#cb57-6" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/ch08-overlap-1.png" width="672" /></p>
+<p>This plot is the practical face of the positivity assumption, and the
+first thing to look at before any propensity-score analysis: we want the
+region where treated patients live to be a region where untreated
+patients also live, and vice versa, because conditioning on the score
+only makes sense where both arms are represented. Formally the ranges
+nest: the count of nonselective initiators above the highest treated
+score is 0, and the count of Cox-2 initiators below the
+lowest untreated score is 0. But the tails are where the
+assumption gets thin. The bottom percentile of the score holds
+29 patients, of whom 0 started a Cox-2
+inhibitor; the top percentile holds 29 patients, of whom
+5 did. The
+left tail, then, contains patients for whom we have essentially no
+information about what a Cox-2 inhibitor would have done, and the right
+tail is thin in the other direction. Chapter 7’s standardization ran
+into exactly this problem but ran into it silently, extrapolating
+wherever it had to. Here the difficulty is visible on a plot, which is
+one of the plainer arguments for looking at a propensity score even when
+one intends to adjust some other way.</p>
+</div>
+<div id="stratification" class="section level2 hasAnchor" number="8.3">
+<h2><span class="header-section-number">8.3</span> Stratification<a href="propensity-scores.html#stratification" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The most direct use of a balancing score is to stratify on it. If
+treated and untreated patients within a level of the score are
+comparable, then a risk difference computed inside a narrow band of the
+score is unconfounded, and we can pool those within-band differences
+into one estimate. Bands of exactly equal score would be empty, so in
+practice we cut the score into quantiles — quintiles, conventionally.</p>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="propensity-scores.html#cb58-1" tabindex="-1"></a>strata <span class="ot">&lt;-</span> ns_ps <span class="sc">|&gt;</span></span>
+<span id="cb58-2"><a href="propensity-scores.html#cb58-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ps_q =</span> <span class="fu">ntile</span>(ps, <span class="dv">5</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb58-3"><a href="propensity-scores.html#cb58-3" tabindex="-1"></a>  <span class="fu">group_by</span>(ps_q) <span class="sc">|&gt;</span></span>
+<span id="cb58-4"><a href="propensity-scores.html#cb58-4" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb58-5"><a href="propensity-scores.html#cb58-5" tabindex="-1"></a>    <span class="at">n_treat =</span> <span class="fu">sum</span>(cox2_init),</span>
+<span id="cb58-6"><a href="propensity-scores.html#cb58-6" tabindex="-1"></a>    <span class="at">n_ctrl  =</span> <span class="fu">sum</span>(<span class="dv">1</span> <span class="sc">-</span> cox2_init),</span>
+<span id="cb58-7"><a href="propensity-scores.html#cb58-7" tabindex="-1"></a>    <span class="at">risk1   =</span> <span class="fu">mean</span>(pud[cox2_init <span class="sc">==</span> <span class="dv">1</span>]),</span>
+<span id="cb58-8"><a href="propensity-scores.html#cb58-8" tabindex="-1"></a>    <span class="at">risk0   =</span> <span class="fu">mean</span>(pud[cox2_init <span class="sc">==</span> <span class="dv">0</span>]),</span>
+<span id="cb58-9"><a href="propensity-scores.html#cb58-9" tabindex="-1"></a>    <span class="at">rd      =</span> risk1 <span class="sc">-</span> risk0,</span>
+<span id="cb58-10"><a href="propensity-scores.html#cb58-10" tabindex="-1"></a>    <span class="at">var_rd  =</span> risk1 <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> risk1) <span class="sc">/</span> n_treat <span class="sc">+</span> risk0 <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> risk0) <span class="sc">/</span> n_ctrl,</span>
+<span id="cb58-11"><a href="propensity-scores.html#cb58-11" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb58-12"><a href="propensity-scores.html#cb58-12" tabindex="-1"></a>  )</span>
+<span id="cb58-13"><a href="propensity-scores.html#cb58-13" tabindex="-1"></a></span>
+<span id="cb58-14"><a href="propensity-scores.html#cb58-14" tabindex="-1"></a>strata <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>var_rd) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">ps_q</th>
+<th align="right">n_treat</th>
+<th align="right">n_ctrl</th>
+<th align="right">risk1</th>
+<th align="right">risk0</th>
+<th align="right">rd</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">13</td>
+<td align="right">564</td>
+<td align="right">0.077</td>
+<td align="right">0.035</td>
+<td align="right">0.041</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">29</td>
+<td align="right">548</td>
+<td align="right">0.034</td>
+<td align="right">0.058</td>
+<td align="right">-0.024</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">36</td>
+<td align="right">540</td>
+<td align="right">0.028</td>
+<td align="right">0.078</td>
+<td align="right">-0.050</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">77</td>
+<td align="right">499</td>
+<td align="right">0.130</td>
+<td align="right">0.106</td>
+<td align="right">0.024</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="right">85</td>
+<td align="right">491</td>
+<td align="right">0.200</td>
+<td align="right">0.226</td>
+<td align="right">-0.026</td>
+</tr>
+</tbody>
+</table>
+<p>Read down the <code>risk0</code> column first. Baseline risk climbs steadily from
+3.5% in the lowest-propensity
+quintile to 22.6% in the highest,
+which is the confounding made concrete: the covariates that pushed
+physicians toward the Cox-2 drug are the same covariates that predict
+ulcers. Read the <code>n_treat</code> column next and the cost of stratification
+becomes clear. The lowest quintile holds only
+13 Cox-2 initiators against
+564 nonselective ones, so its risk difference of
++4.1 percentage points rests on a
+handful of patients and should not be taken seriously on its own.</p>
+<p>Pooling is therefore essential, and <em>how</em> we pool is a choice about the
+estimand rather than a computational detail. Weighting each stratum by
+the inverse of its variance — precision weighting, the logic behind the
+Mantel–Haenszel estimator — gives the most statistically efficient
+combination:</p>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="propensity-scores.html#cb59-1" tabindex="-1"></a><span class="fu">c</span>(<span class="at">rd_precision_weighted =</span> rd_prec, <span class="at">se =</span> se_prec)</span></code></pre></div>
+<pre><code>## rd_precision_weighted                    se 
+##           -0.02074445            0.01777657</code></pre>
+<p>That is -2.1 percentage points with a
+standard error of 1.8, so a 95% interval
+running roughly -5.6 to
++1.4 points. Weighting
+each stratum by its <em>size</em> instead gives
+-0.7 points, considerably closer to
+Chapter 7’s standardized risk difference of
+-0.6. Neither is wrong, but they answer
+different questions. The size-weighted average is standardization to
+the cohort’s own covariate distribution, and so estimates the ATE of
+Chapter 3. The precision-weighted average is standardized to a
+population defined by where the information happens to be, which
+coincides with the ATE only if the risk difference is constant across
+strata. When effects vary, efficiency and interpretability pull apart,
+and it is worth being explicit about which one has been bought.</p>
+<p>Either way, both sit on the protective side of the null while the crude
+risk difference was +2.7
+points, and both have intervals wide enough to include no effect.</p>
+<p>Does the stratification actually balance anything? Because the score is
+a balancing score, covariates should look similar between arms <em>within</em>
+a stratum even though they differ sharply overall. Chapter 2’s
+<code>table1_categorical()</code> will show us, applied to the top quintile.</p>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="propensity-scores.html#cb61-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/table1.R&quot;</span>)</span>
+<span id="cb61-2"><a href="propensity-scores.html#cb61-2" tabindex="-1"></a></span>
+<span id="cb61-3"><a href="propensity-scores.html#cb61-3" tabindex="-1"></a>top_q <span class="ot">&lt;-</span> ns_ps <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">ps_q =</span> <span class="fu">ntile</span>(ps, <span class="dv">5</span>)) <span class="sc">|&gt;</span> <span class="fu">filter</span>(ps_q <span class="sc">==</span> <span class="dv">5</span>)</span>
+<span id="cb61-4"><a href="propensity-scores.html#cb61-4" tabindex="-1"></a><span class="fu">table1_categorical</span>(top_q, <span class="fu">c</span>(<span class="st">&quot;arthritis&quot;</span>, <span class="st">&quot;corticosteroid_use&quot;</span>, <span class="st">&quot;hypertension&quot;</span>),</span>
+<span id="cb61-5"><a href="propensity-scores.html#cb61-5" tabindex="-1"></a>                   <span class="at">by =</span> <span class="st">&quot;cox2_init&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb61-6"><a href="propensity-scores.html#cb61-6" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">variable</th>
+<th align="left">level</th>
+<th align="left">0</th>
+<th align="left">1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">arthritis</td>
+<td align="left">No</td>
+<td align="left">109 (22.2%)</td>
+<td align="left">24 (28.2%)</td>
+</tr>
+<tr class="even">
+<td align="left">arthritis</td>
+<td align="left">Yes</td>
+<td align="left">382 (77.8%)</td>
+<td align="left">61 (71.8%)</td>
+</tr>
+<tr class="odd">
+<td align="left">corticosteroid_use</td>
+<td align="left">No</td>
+<td align="left">478 (97.4%)</td>
+<td align="left">80 (94.1%)</td>
+</tr>
+<tr class="even">
+<td align="left">corticosteroid_use</td>
+<td align="left">Yes</td>
+<td align="left">13 (2.6%)</td>
+<td align="left">5 (5.9%)</td>
+</tr>
+<tr class="odd">
+<td align="left">hypertension</td>
+<td align="left">No</td>
+<td align="left">289 (58.9%)</td>
+<td align="left">56 (65.9%)</td>
+</tr>
+<tr class="even">
+<td align="left">hypertension</td>
+<td align="left">Yes</td>
+<td align="left">202 (41.1%)</td>
+<td align="left">29 (34.1%)</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="propensity-scores.html#cb62-1" tabindex="-1"></a><span class="fu">table1_continuous</span>(top_q, <span class="st">&quot;age&quot;</span>, <span class="at">by =</span> <span class="st">&quot;cox2_init&quot;</span>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">variable</th>
+<th align="left">0</th>
+<th align="left">1</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">age</td>
+<td align="left">63.2 (13.5)</td>
+<td align="left">62.1 (13.7)</td>
+</tr>
+</tbody>
+</table>
+<p>It does. Across the whole cohort, Cox-2 initiators are
+6.1 years older on average and
+17 percentage points more likely to
+carry an arthritis diagnosis. Inside the top propensity quintile the age
+gap has shrunk to 1.1 years — and in
+the opposite direction — and the arthritis, steroid, and hypertension
+percentages are within a few points of each other. Both arms of this
+stratum are high-propensity patients, so both are old and arthritic;
+what distinguished them has been absorbed into the stratum itself.</p>
+<p>Balance within quintiles is good but not perfect, and it cannot be.
+Patients with scores of 0.12 and 0.50 land in the same top quintile
+despite being quite different, so some confounding survives inside each
+band — Cochran’s (1968) classic result is that five strata remove roughly 90%
+of the bias from a single continuous confounder, leaving the rest.
+Matching addresses that residual directly, by insisting that comparisons
+happen between individuals rather than within bands.</p>
+</div>
+<div id="matching" class="section level2 hasAnchor" number="8.4">
+<h2><span class="header-section-number">8.4</span> Matching<a href="propensity-scores.html#matching" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Matching pairs each treated patient with an untreated patient whose
+propensity score is close, and analyzes the paired sample. The version
+below is the simplest one that is still respectable: <strong>greedy 1:1
+nearest-neighbor matching without replacement, within a caliper</strong>.</p>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="propensity-scores.html#cb63-1" tabindex="-1"></a><span class="co"># Greedy 1:1 nearest-neighbor matching without replacement.</span></span>
+<span id="cb63-2"><a href="propensity-scores.html#cb63-2" tabindex="-1"></a>ps_match <span class="ot">&lt;-</span> <span class="cf">function</span>(data, treat, <span class="at">ps =</span> <span class="st">&quot;ps&quot;</span>, <span class="at">caliper =</span> <span class="fl">0.05</span>) {</span>
+<span id="cb63-3"><a href="propensity-scores.html#cb63-3" tabindex="-1"></a>  treated <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(.data[[treat]] <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(.data[[ps]]))</span>
+<span id="cb63-4"><a href="propensity-scores.html#cb63-4" tabindex="-1"></a>  controls <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(.data[[treat]] <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb63-5"><a href="propensity-scores.html#cb63-5" tabindex="-1"></a>  used <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">FALSE</span>, <span class="fu">nrow</span>(controls))</span>
+<span id="cb63-6"><a href="propensity-scores.html#cb63-6" tabindex="-1"></a>  pairs <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="fu">nrow</span>(treated))</span>
+<span id="cb63-7"><a href="propensity-scores.html#cb63-7" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(treated))) {</span>
+<span id="cb63-8"><a href="propensity-scores.html#cb63-8" tabindex="-1"></a>    dist <span class="ot">&lt;-</span> <span class="fu">abs</span>(controls[[ps]] <span class="sc">-</span> treated[[ps]][i])</span>
+<span id="cb63-9"><a href="propensity-scores.html#cb63-9" tabindex="-1"></a>    dist[used] <span class="ot">&lt;-</span> <span class="cn">Inf</span></span>
+<span id="cb63-10"><a href="propensity-scores.html#cb63-10" tabindex="-1"></a>    j <span class="ot">&lt;-</span> <span class="fu">which.min</span>(dist)</span>
+<span id="cb63-11"><a href="propensity-scores.html#cb63-11" tabindex="-1"></a>    <span class="cf">if</span> (dist[j] <span class="sc">&lt;=</span> caliper) {</span>
+<span id="cb63-12"><a href="propensity-scores.html#cb63-12" tabindex="-1"></a>      used[j] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb63-13"><a href="propensity-scores.html#cb63-13" tabindex="-1"></a>      pairs[[i]] <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(treated[i, ], controls[j, ])</span>
+<span id="cb63-14"><a href="propensity-scores.html#cb63-14" tabindex="-1"></a>    }</span>
+<span id="cb63-15"><a href="propensity-scores.html#cb63-15" tabindex="-1"></a>  }</span>
+<span id="cb63-16"><a href="propensity-scores.html#cb63-16" tabindex="-1"></a>  <span class="fu">bind_rows</span>(pairs, <span class="at">.id =</span> <span class="st">&quot;pair_id&quot;</span>)</span>
+<span id="cb63-17"><a href="propensity-scores.html#cb63-17" tabindex="-1"></a>}</span></code></pre></div>
+<p>Four decisions are encoded in those lines. <em>Greedy</em> means we take
+treated patients one at a time and give each its closest available
+control, never revisiting an earlier choice; it is not guaranteed to
+minimize total distance the way optimal matching would, but it is
+transparent and fast. <em>Without replacement</em> is enforced by the <code>used</code>
+vector, which sets already-matched controls to infinite distance so no
+control appears twice — keeping the paired analysis honest at the cost
+of using fewer controls. The <code>arrange(desc())</code> orders treated
+patients from the highest score down, so the hardest patients to match,
+the ones out at the sparse end of the distribution, get first pick of
+the control pool. And the <em>caliper</em> is the refusal: if the nearest
+available control is further than 0.05 on the propensity scale, that
+treated patient is left unmatched rather than paired with someone
+implausible. Unmatched patients are how a matched analysis reports a
+positivity problem instead of extrapolating through one.</p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="propensity-scores.html#cb64-1" tabindex="-1"></a>matched <span class="ot">&lt;-</span> <span class="fu">ps_match</span>(ns_ps, <span class="at">treat =</span> <span class="st">&quot;cox2_init&quot;</span>, <span class="at">caliper =</span> <span class="fl">0.05</span>)</span>
+<span id="cb64-2"><a href="propensity-scores.html#cb64-2" tabindex="-1"></a>n_pairs <span class="ot">&lt;-</span> <span class="fu">n_distinct</span>(matched<span class="sc">$</span>pair_id)</span>
+<span id="cb64-3"><a href="propensity-scores.html#cb64-3" tabindex="-1"></a><span class="fu">c</span>(<span class="at">pairs =</span> n_pairs, <span class="at">treated_available =</span> <span class="fu">sum</span>(ns_ps<span class="sc">$</span>cox2_init),</span>
+<span id="cb64-4"><a href="propensity-scores.html#cb64-4" tabindex="-1"></a>  <span class="at">unmatched =</span> <span class="fu">sum</span>(ns_ps<span class="sc">$</span>cox2_init) <span class="sc">-</span> n_pairs)</span></code></pre></div>
+<pre><code>##             pairs treated_available         unmatched 
+##               239               240                 1</code></pre>
+<p>239 pairs from 240 Cox-2 initiators, a
+shortfall of 1: out at the extreme
+right of the density plot sits a treated patient for whom no
+nonselective initiator falls inside the caliper. Losing so little is a
+consequence of having a
+control pool 11
+times the size of the treated group; in a cohort with a more common
+exposure the loss would be larger and more consequential.</p>
+<p>Now the check that matters. The <code>cobalt</code> package computes standardized
+mean differences before and after matching and plots them. We pass the
+full cohort along with a 0/1 weight flagging which rows survived
+matching, which lets <code>bal.tab()</code> compute both columns at once.</p>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="propensity-scores.html#cb66-1" tabindex="-1"></a><span class="fu">library</span>(cobalt)</span>
+<span id="cb66-2"><a href="propensity-scores.html#cb66-2" tabindex="-1"></a></span>
+<span id="cb66-3"><a href="propensity-scores.html#cb66-3" tabindex="-1"></a>ns_ps <span class="ot">&lt;-</span> ns_ps <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">matched_wt =</span> <span class="fu">as.integer</span>(id <span class="sc">%in%</span> matched<span class="sc">$</span>id))</span>
+<span id="cb66-4"><a href="propensity-scores.html#cb66-4" tabindex="-1"></a></span>
+<span id="cb66-5"><a href="propensity-scores.html#cb66-5" tabindex="-1"></a>bt <span class="ot">&lt;-</span> <span class="fu">bal.tab</span>(ps_model, <span class="at">data =</span> ns_ps, <span class="at">weights =</span> ns_ps<span class="sc">$</span>matched_wt,</span>
+<span id="cb66-6"><a href="propensity-scores.html#cb66-6" tabindex="-1"></a>              <span class="at">estimand =</span> <span class="st">&quot;ATT&quot;</span>, <span class="at">un =</span> <span class="cn">TRUE</span>, <span class="at">binary =</span> <span class="st">&quot;std&quot;</span>,</span>
+<span id="cb66-7"><a href="propensity-scores.html#cb66-7" tabindex="-1"></a>              <span class="at">thresholds =</span> <span class="fu">c</span>(<span class="at">m =</span> <span class="fl">0.1</span>))</span>
+<span id="cb66-8"><a href="propensity-scores.html#cb66-8" tabindex="-1"></a>bt</span></code></pre></div>
+<pre><code>## Balance Measures
+##                                Type Diff.Un Diff.Adj        M.Threshold
+## age                         Contin.  0.3901  -0.0537     Balanced, &lt;0.1
+## sex_Male                     Binary  0.0083   0.0170     Balanced, &lt;0.1
+## race_White                   Binary  0.0406  -0.0633     Balanced, &lt;0.1
+## race_Black                   Binary -0.0765   0.0374     Balanced, &lt;0.1
+## race_Other                   Binary  0.0381   0.0503     Balanced, &lt;0.1
+## region_Northeast             Binary -0.0876   0.0600     Balanced, &lt;0.1
+## region_Midwest               Binary -0.0246  -0.0102     Balanced, &lt;0.1
+## region_South                 Binary  0.1357  -0.0506     Balanced, &lt;0.1
+## region_West                  Binary -0.0658   0.0206     Balanced, &lt;0.1
+## year_2005                    Binary  0.1925   0.0000     Balanced, &lt;0.1
+## year_2006                    Binary -0.0005   0.0102     Balanced, &lt;0.1
+## year_2007                    Binary -0.0349   0.0105     Balanced, &lt;0.1
+## year_2008                    Binary  0.0489   0.0721     Balanced, &lt;0.1
+## year_2009                    Binary -0.2515  -0.1080 Not Balanced, &gt;0.1
+## arthritis_Yes                Binary  0.3338  -0.0923     Balanced, &lt;0.1
+## asthma_Yes                   Binary  0.0183   0.0000     Balanced, &lt;0.1
+## cancer_Yes                   Binary -0.0714   0.1172 Not Balanced, &gt;0.1
+## chronic_kidney_disease_Yes   Binary  0.0334  -0.0460     Balanced, &lt;0.1
+## heart_failure_Yes            Binary -0.0117   0.0000     Balanced, &lt;0.1
+## diabetes_Yes                 Binary  0.1425   0.0250     Balanced, &lt;0.1
+## hypertension_Yes             Binary  0.1464   0.0183     Balanced, &lt;0.1
+## coronory_artery_disease_Yes  Binary -0.0236  -0.1634 Not Balanced, &gt;0.1
+## osteoporosis_Yes             Binary  0.1356   0.0555     Balanced, &lt;0.1
+## corticosteroid_use_Yes       Binary  0.1114   0.0586     Balanced, &lt;0.1
+## aspirin_use_Yes              Binary  0.0320   0.0881     Balanced, &lt;0.1
+## anti_coagulant_use_Yes       Binary  0.0542   0.0460     Balanced, &lt;0.1
+## ppi_use_Yes                  Binary  0.0744   0.0200     Balanced, &lt;0.1
+## h2_antagonist_use_Yes        Binary  0.0717   0.0293     Balanced, &lt;0.1
+## 
+## Balance tally for mean differences
+##                    count
+## Balanced, &lt;0.1        25
+## Not Balanced, &gt;0.1     3
+## 
+## Variable with the greatest mean difference
+##                     Variable Diff.Adj        M.Threshold
+##  coronory_artery_disease_Yes  -0.1634 Not Balanced, &gt;0.1
+## 
+## Effective sample sizes
+##            Control Treated
+## Unadjusted    2642     240
+## Adjusted       239     239</code></pre>
+<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="propensity-scores.html#cb68-1" tabindex="-1"></a><span class="fu">love.plot</span>(bt, <span class="at">abs =</span> <span class="cn">TRUE</span>, <span class="at">var.order =</span> <span class="st">&quot;unadjusted&quot;</span>,</span>
+<span id="cb68-2"><a href="propensity-scores.html#cb68-2" tabindex="-1"></a>          <span class="at">thresholds =</span> <span class="fu">c</span>(<span class="at">m =</span> <span class="fl">0.1</span>),</span>
+<span id="cb68-3"><a href="propensity-scores.html#cb68-3" tabindex="-1"></a>          <span class="at">sample.names =</span> <span class="fu">c</span>(<span class="st">&quot;Before matching&quot;</span>, <span class="st">&quot;After matching&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb68-4"><a href="propensity-scores.html#cb68-4" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/ch08-loveplot-1.png" width="672" /></p>
+<p>The love plot is the standard way to present this, and it reads at a
+glance: each covariate is a row, absolute standardized mean difference
+runs along the horizontal axis, and the dashed line at 0.1 marks the
+conventional threshold below which imbalance is usually called
+negligible. Before matching, 9 of the
+28 terms exceed that line, led by age at
+0.39. After matching, most collapse toward
+zero and age falls to
+0.05; the average absolute
+standardized difference drops from 0.095 to
+0.047.</p>
+<p>The exceptions deserve attention rather than concealment, since
+3 terms still sit above the threshold after
+matching, the worst of them the coronary artery disease indicator at
+0.16. Look at the counts, though: coronary
+artery disease appears in 9 matched controls and
+4 matched Cox-2 initiators. A gap of
+5 patients out of
+239 is a raw difference of about
+2.1 percentage
+points; it looks large as a standardized difference only because
+dividing by the standard deviation of a rare binary variable inflates
+small absolute differences. This is a general hazard of reading the 0.1
+rule mechanically for rare covariates, and the remedy is to look at both
+the standardized and the raw scale before deciding whether an imbalance
+is worth acting on.</p>
+<p>With balance established, the effect estimate is a comparison of two
+proportions in the matched sample.</p>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="propensity-scores.html#cb69-1" tabindex="-1"></a>matched <span class="sc">|&gt;</span></span>
+<span id="cb69-2"><a href="propensity-scores.html#cb69-2" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_init) <span class="sc">|&gt;</span></span>
+<span id="cb69-3"><a href="propensity-scores.html#cb69-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">cases =</span> <span class="fu">sum</span>(pud), <span class="at">risk =</span> <span class="fu">mean</span>(pud), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb69-4"><a href="propensity-scores.html#cb69-4" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">cox2_init</th>
+<th align="right">n</th>
+<th align="right">cases</th>
+<th align="right">risk</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">239</td>
+<td align="right">40</td>
+<td align="right">0.167</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">239</td>
+<td align="right">30</td>
+<td align="right">0.126</td>
+</tr>
+</tbody>
+</table>
+<p>The matched risk difference is -4.2
+percentage points, 12.6% against
+16.7%, with a risk ratio of
+0.75. Because the sample is paired, the
+standard error should respect the pairing: we take the within-pair
+difference in outcomes for each of the 239 pairs and compute the
+standard error of their mean, 3.1 percentage
+points, giving an interval of roughly
+-10.3 to
++1.9 points. It comfortably
+includes zero.</p>
+<p>That point estimate is further from the null than the
+-0.6 points standardization gave us, and
+two things account for the gap. The obvious one is precision: we
+discarded 2404 patients, so the matched interval
+is much wider than Chapter 7’s and the point estimate is free to wander
+within it. The subtler one is that <strong>matching estimates a different
+estimand</strong>. Every treated patient is kept and controls are recruited to
+resemble them, so the covariate distribution we have averaged over is
+that of the Cox-2 initiators — the ATT of Chapter 3, not the ATE. Given
+that the Cox-2 arm is older and sicker, and therefore at higher baseline
+risk, there is no reason to expect the ATT and the ATE to agree, and the
+matched estimate should not be read as a failed replication of the
+standardized one. It is an answer to a neighboring question, and
+arguably the more clinically natural one: what did this drug do for the
+patients who actually received it?</p>
+</div>
+<div id="choosing-the-ps-model" class="section level2 hasAnchor" number="8.5">
+<h2><span class="header-section-number">8.5</span> Choosing the PS model<a href="propensity-scores.html#choosing-the-ps-model" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Everything above depends on which variables enter <code>ps_model</code>, and the
+selection rule is not “whatever predicts treatment best.” Judging a
+propensity-score model by its c-statistic is actively misleading: a
+model that separated the arms perfectly would push the two densities
+apart until nothing overlapped, destroying the very comparability we
+need. The model is good if it produces balance and preserves overlap,
+which is what the love plot and the density plot were for.</p>
+<p>Chapter 5’s diagram is the guide to what belongs. Confounders — common
+causes of treatment and outcome, such as age, arthritis, and steroid use
+— must be included; that is the whole point. Pure outcome predictors,
+variables that affect the outcome but not treatment, should generally be
+included too: they cannot introduce bias, and conditioning on them
+tightens the estimate. The variables to keep out are <strong>instruments</strong>:
+things that influence treatment but have no effect on the outcome except
+through treatment. Physician prescribing preference is the classic
+example. Including an instrument sharpens the treatment model, which is
+exactly why it hurts — it spreads the propensity scores apart, reduces
+overlap, inflates the variance of the estimate, and, worse, amplifies
+whatever bias unmeasured confounding was already contributing. And as in
+Chapter 5, colliders and anything on the causal pathway from treatment
+to outcome stay out; the propensity score offers no exemption from the
+rules for reading a DAG.</p>
+<p>That last consequence deserves its name, because it is the one that
+surprises people. <strong>Bias amplification</strong> is not merely a loss of
+precision: conditioning on an instrument-like variable can make the bias
+from an unmeasured confounder <em>larger</em> than it was before adjustment.
+Intuitively, the instrument explains away the part of treatment variation
+that was innocent, leaving the residual variation more heavily loaded with
+the unmeasured confounder, and the estimate is then contrasted across
+patients who differ more on <span class="math inline">\(U\)</span> than the full cohort did. Brookhart et al.
+(2006, AJE) demonstrated the effect in simulation, and it is why “include
+everything that predicts treatment” is bad advice rather than merely
+wasteful. The opposite extreme is also defensible in the right setting: in
+large claims databases, high-dimensional proxy adjustment — the <strong>hd-PS</strong>
+algorithm of Schneeweiss et al. (2009) — screens thousands of diagnosis
+and dispensing codes for empirical proxies of unmeasured confounders and
+selects a few hundred, on the argument that no investigator can enumerate
+them by hand. That approach is beyond this book’s scope, but it is where
+the course’s variable-selection session lands, and the tension between it
+and the diagram-first rule above is a real one rather than a
+misunderstanding.</p>
+<p>Two habits follow. Choose the covariate set from substantive knowledge
+and the diagram before looking at the outcome — the design stage exists
+precisely so this is possible. And when a variable’s role is genuinely
+unclear, prefer including it if it plausibly affects the outcome and
+excluding it if it plausibly affects only treatment, then report the
+analysis both ways. <code>ns_covs</code> was assembled on that reasoning, and its
+arguable members — <code>ppi_use</code> and <code>h2_antagonist_use</code> from Chapter 7’s
+exercises among them — are the ones worth varying.</p>
+</div>
+<div id="exercises-6" class="section level2 hasAnchor" number="8.6">
+<h2><span class="header-section-number">8.6</span> Exercises<a href="propensity-scores.html#exercises-6" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li>Re-estimate the propensity score with <code>arthritis</code> removed from the
+covariate list, rematch, and compare the two love plots. How much
+arthritis imbalance survives in the matched sample, and do the other
+covariates stay balanced? Explain why leaving out a strong confounder
+can still yield a matched sample that looks acceptable on the
+remaining variables.</li>
+<li>Rerun <code>ps_match()</code> with <code>caliper = 0.01</code> and report the number of
+pairs. How many treated patients are lost relative to the 0.05
+caliper? Compute the mean and maximum within-pair difference in
+propensity score under the looser caliper, and use those numbers to
+explain why tightening it costs so little here — then describe the
+cohort in which it would cost a great deal.</li>
+<li>Build one table comparing three estimates of the effect of Cox-2
+initiation on peptic ulcer disease: the precision-weighted stratified
+risk difference, the matched risk difference, and the standardized
+risk difference from <code>standardize()</code> in <code>R/standardize.R</code> (use
+<code>n_boot = 200</code> and a fixed seed). Report each with an interval. State
+which estimand each one targets and rank them by precision, then say
+which you would report as the primary analysis and why.</li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="outcome-regression-and-standardization.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="inverse-probability-of-treatment-weighting.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": null,
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

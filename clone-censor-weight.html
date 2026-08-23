@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 12 Clone-censor-weight | Causal Inference in Epidemiology Using R</title>
+  <meta name="description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 12 Clone-censor-weight | Causal Inference in Epidemiology Using R" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 12 Clone-censor-weight | Causal Inference in Epidemiology Using R" />
+  
+  <meta name="twitter:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+<meta name="author" content="M. Alan Brookhart" />
+
+
+<meta name="date" content="2026-08-23" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="inverse-probability-of-censoring-weights.html"/>
+<link rel="next" href="instrumental-variables.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Causal Inference in Epidemiology Using R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+</ul></li>
+<li class="part"><span><b>I Foundations</b></span></li>
+<li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="why.html"><a href="why.html#questions-epidemiology-cannot-answer-with-association-alone"><i class="fa fa-check"></i><b>1.1</b> Questions epidemiology cannot answer with association alone</a></li>
+<li class="chapter" data-level="1.2" data-path="why.html"><a href="why.html#a-first-look-at-the-data"><i class="fa fa-check"></i><b>1.2</b> A first look at the data</a></li>
+<li class="chapter" data-level="1.3" data-path="why.html"><a href="why.html#what-this-book-covers"><i class="fa fa-check"></i><b>1.3</b> What this book covers</a></li>
+<li class="chapter" data-level="1.4" data-path="why.html"><a href="why.html#how-to-read-this-book"><i class="fa fa-check"></i><b>1.4</b> How to read this book</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html"><i class="fa fa-check"></i><b>2</b> Getting started with R and the NAMCS data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#r-rstudio-and-the-tidyverse"><i class="fa fa-check"></i><b>2.1</b> R, RStudio, and the tidyverse</a></li>
+<li class="chapter" data-level="2.2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-teaching-cohorts"><i class="fa fa-check"></i><b>2.2</b> The NAMCS teaching cohorts</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#plotting-with-ggplot2"><i class="fa fa-check"></i><b>2.3</b> Plotting with ggplot2</a></li>
+<li class="chapter" data-level="2.4" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1"><i class="fa fa-check"></i><b>2.4</b> Your first reusable functions: Table 1</a></li>
+<li class="chapter" data-level="2.5" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#exercises"><i class="fa fa-check"></i><b>2.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html"><i class="fa fa-check"></i><b>3</b> Potential outcomes and causal effects</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#two-futures-for-every-patient"><i class="fa fa-check"></i><b>3.1</b> Two futures for every patient</a></li>
+<li class="chapter" data-level="3.2" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#a-gods-eye-view-simulation"><i class="fa fa-check"></i><b>3.2</b> A god’s-eye view: simulation</a></li>
+<li class="chapter" data-level="3.3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#average-causal-effects-and-estimands"><i class="fa fa-check"></i><b>3.3</b> Average causal effects and estimands</a></li>
+<li class="chapter" data-level="3.4" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#the-identification-conditions"><i class="fa fa-check"></i><b>3.4</b> The identification conditions</a></li>
+<li class="chapter" data-level="3.5" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html"><i class="fa fa-check"></i><b>4</b> The randomized trial as the benchmark</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#why-randomization-works"><i class="fa fa-check"></i><b>4.1</b> Why randomization works</a></li>
+<li class="chapter" data-level="4.2" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#intention-to-treat-and-per-protocol"><i class="fa fa-check"></i><b>4.2</b> Intention-to-treat and per-protocol</a></li>
+<li class="chapter" data-level="4.3" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#the-target-trial"><i class="fa fa-check"></i><b>4.3</b> The target trial</a></li>
+<li class="chapter" data-level="4.4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#exercises-2"><i class="fa fa-check"></i><b>4.4</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="causal-diagrams.html"><a href="causal-diagrams.html"><i class="fa fa-check"></i><b>5</b> Causal diagrams</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="causal-diagrams.html"><a href="causal-diagrams.html#drawing-causal-assumptions"><i class="fa fa-check"></i><b>5.1</b> Drawing causal assumptions</a></li>
+<li class="chapter" data-level="5.2" data-path="causal-diagrams.html"><a href="causal-diagrams.html#the-nsaidpud-diagram"><i class="fa fa-check"></i><b>5.2</b> The NSAID–PUD diagram</a></li>
+<li class="chapter" data-level="5.3" data-path="causal-diagrams.html"><a href="causal-diagrams.html#confounders-colliders-and-mediators"><i class="fa fa-check"></i><b>5.3</b> Confounders, colliders, and mediators</a></li>
+<li class="chapter" data-level="5.4" data-path="causal-diagrams.html"><a href="causal-diagrams.html#selection-bias-as-collider-stratification"><i class="fa fa-check"></i><b>5.4</b> Selection bias as collider stratification</a></li>
+<li class="chapter" data-level="5.5" data-path="causal-diagrams.html"><a href="causal-diagrams.html#exercises-3"><i class="fa fa-check"></i><b>5.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html"><i class="fa fa-check"></i><b>6</b> Study design for causal questions</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#design-before-analysis"><i class="fa fa-check"></i><b>6.1</b> Design before analysis</a></li>
+<li class="chapter" data-level="6.2" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#new-user-designs"><i class="fa fa-check"></i><b>6.2</b> New-user designs</a></li>
+<li class="chapter" data-level="6.3" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#active-comparator-designs"><i class="fa fa-check"></i><b>6.3</b> Active-comparator designs</a></li>
+<li class="chapter" data-level="6.4" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#immortal-time-and-other-time-zero-problems"><i class="fa fa-check"></i><b>6.4</b> Immortal time and other time-zero problems</a></li>
+<li class="chapter" data-level="6.5" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#exercises-4"><i class="fa fa-check"></i><b>6.5</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>II Core Methods</b></span></li>
+<li class="chapter" data-level="7" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html"><i class="fa fa-check"></i><b>7</b> Outcome regression and standardization</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#adjusting-with-regression"><i class="fa fa-check"></i><b>7.1</b> Adjusting with regression</a></li>
+<li class="chapter" data-level="7.2" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#standardization-predict-then-average"><i class="fa fa-check"></i><b>7.2</b> Standardization: predict, then average</a></li>
+<li class="chapter" data-level="7.3" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#the-bootstrap"><i class="fa fa-check"></i><b>7.3</b> The bootstrap</a></li>
+<li class="chapter" data-level="7.4" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#effect-modification"><i class="fa fa-check"></i><b>7.4</b> Effect modification</a></li>
+<li class="chapter" data-level="7.5" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="propensity-scores.html"><a href="propensity-scores.html"><i class="fa fa-check"></i><b>8</b> Propensity scores</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="propensity-scores.html"><a href="propensity-scores.html#one-number-that-summarizes-confounding"><i class="fa fa-check"></i><b>8.1</b> One number that summarizes confounding</a></li>
+<li class="chapter" data-level="8.2" data-path="propensity-scores.html"><a href="propensity-scores.html#estimating-the-score"><i class="fa fa-check"></i><b>8.2</b> Estimating the score</a></li>
+<li class="chapter" data-level="8.3" data-path="propensity-scores.html"><a href="propensity-scores.html#stratification"><i class="fa fa-check"></i><b>8.3</b> Stratification</a></li>
+<li class="chapter" data-level="8.4" data-path="propensity-scores.html"><a href="propensity-scores.html#matching"><i class="fa fa-check"></i><b>8.4</b> Matching</a></li>
+<li class="chapter" data-level="8.5" data-path="propensity-scores.html"><a href="propensity-scores.html#choosing-the-ps-model"><i class="fa fa-check"></i><b>8.5</b> Choosing the PS model</a></li>
+<li class="chapter" data-level="8.6" data-path="propensity-scores.html"><a href="propensity-scores.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html"><i class="fa fa-check"></i><b>9</b> Inverse probability of treatment weighting</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#reweighting-to-a-pseudo-population"><i class="fa fa-check"></i><b>9.1</b> Reweighting to a pseudo-population</a></li>
+<li class="chapter" data-level="9.2" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#building-the-weights"><i class="fa fa-check"></i><b>9.2</b> Building the weights</a></li>
+<li class="chapter" data-level="9.3" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#estimating-the-effect"><i class="fa fa-check"></i><b>9.3</b> Estimating the effect</a></li>
+<li class="chapter" data-level="9.4" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#truncation-and-diagnostics"><i class="fa fa-check"></i><b>9.4</b> Truncation and diagnostics</a></li>
+<li class="chapter" data-level="9.5" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#standardized-mortality-ratio-weights"><i class="fa fa-check"></i><b>9.5</b> Standardized mortality ratio weights</a></li>
+<li class="chapter" data-level="9.6" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#msms-and-where-weighting-shines"><i class="fa fa-check"></i><b>9.6</b> MSMs and where weighting shines</a></li>
+<li class="chapter" data-level="9.7" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#three-estimators-one-estimand"><i class="fa fa-check"></i><b>9.7</b> Three estimators, one estimand</a></li>
+<li class="chapter" data-level="9.8" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#exercises-7"><i class="fa fa-check"></i><b>9.8</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>III Time, Censoring, and Survival</b></span></li>
+<li class="chapter" data-level="10" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html"><i class="fa fa-check"></i><b>10</b> Survival outcomes and censoring</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#the-statin-question"><i class="fa fa-check"></i><b>10.1</b> The statin question</a></li>
+<li class="chapter" data-level="10.2" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#anatomy-of-time-to-event-data"><i class="fa fa-check"></i><b>10.2</b> Anatomy of time-to-event data</a></li>
+<li class="chapter" data-level="10.3" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#kaplanmeier"><i class="fa fa-check"></i><b>10.3</b> Kaplan–Meier</a></li>
+<li class="chapter" data-level="10.4" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#death-as-a-competing-risk"><i class="fa fa-check"></i><b>10.4</b> Death as a competing risk</a></li>
+<li class="chapter" data-level="10.5" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#risks-versus-hazards"><i class="fa fa-check"></i><b>10.5</b> Risks versus hazards</a></li>
+<li class="chapter" data-level="10.6" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#when-censoring-lies"><i class="fa fa-check"></i><b>10.6</b> When censoring lies</a></li>
+<li class="chapter" data-level="10.7" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#exercises-8"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html"><i class="fa fa-check"></i><b>11</b> Inverse probability of censoring weights</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weighting-returns"><i class="fa fa-check"></i><b>11.1</b> Weighting returns</a></li>
+<li class="chapter" data-level="11.2" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#person-period-data"><i class="fa fa-check"></i><b>11.2</b> Person-period data</a></li>
+<li class="chapter" data-level="11.3" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#building-censoring-weights"><i class="fa fa-check"></i><b>11.3</b> Building censoring weights</a></li>
+<li class="chapter" data-level="11.4" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weight-diagnostics"><i class="fa fa-check"></i><b>11.4</b> Weight diagnostics</a></li>
+<li class="chapter" data-level="11.5" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#did-it-matter"><i class="fa fa-check"></i><b>11.5</b> Did it matter?</a></li>
+<li class="chapter" data-level="11.6" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#exercises-9"><i class="fa fa-check"></i><b>11.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html"><i class="fa fa-check"></i><b>12</b> Clone-censor-weight</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#from-point-treatments-to-treatment-strategies"><i class="fa fa-check"></i><b>12.1</b> From point treatments to treatment strategies</a></li>
+<li class="chapter" data-level="12.2" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#the-clone-censor-weight-recipe"><i class="fa fa-check"></i><b>12.2</b> The clone-censor-weight recipe</a></li>
+<li class="chapter" data-level="12.3" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#deviation-in-the-statin-cohort"><i class="fa fa-check"></i><b>12.3</b> Deviation in the statin cohort</a></li>
+<li class="chapter" data-level="12.4" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#estimating-per-protocol-risk-curves"><i class="fa fa-check"></i><b>12.4</b> Estimating per-protocol risk curves</a></li>
+<li class="chapter" data-level="12.5" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#interpreting-the-per-protocol-effect"><i class="fa fa-check"></i><b>12.5</b> Interpreting the per-protocol effect</a></li>
+<li class="chapter" data-level="12.6" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#exercises-10"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>IV Beyond Exchangeability</b></span></li>
+<li class="chapter" data-level="13" data-path="instrumental-variables.html"><a href="instrumental-variables.html"><i class="fa fa-check"></i><b>13</b> Instrumental variables</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="instrumental-variables.html"><a href="instrumental-variables.html#when-exchangeability-fails"><i class="fa fa-check"></i><b>13.1</b> When exchangeability fails</a></li>
+<li class="chapter" data-level="13.2" data-path="instrumental-variables.html"><a href="instrumental-variables.html#provider-preference-as-an-instrument"><i class="fa fa-check"></i><b>13.2</b> Provider preference as an instrument</a></li>
+<li class="chapter" data-level="13.3" data-path="instrumental-variables.html"><a href="instrumental-variables.html#the-wald-and-two-stage-estimators"><i class="fa fa-check"></i><b>13.3</b> The Wald and two-stage estimators</a></li>
+<li class="chapter" data-level="13.4" data-path="instrumental-variables.html"><a href="instrumental-variables.html#interpreting-the-late"><i class="fa fa-check"></i><b>13.4</b> Interpreting the LATE</a></li>
+<li class="chapter" data-level="13.5" data-path="instrumental-variables.html"><a href="instrumental-variables.html#exercises-11"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html"><i class="fa fa-check"></i><b>14</b> Sensitivity analysis</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#what-we-assumed-and-cannot-check"><i class="fa fa-check"></i><b>14.1</b> What we assumed and cannot check</a></li>
+<li class="chapter" data-level="14.2" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#external-adjustment"><i class="fa fa-check"></i><b>14.2</b> External adjustment</a></li>
+<li class="chapter" data-level="14.3" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#the-e-value"><i class="fa fa-check"></i><b>14.3</b> The E-value</a></li>
+<li class="chapter" data-level="14.4" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#negative-control-outcomes"><i class="fa fa-check"></i><b>14.4</b> Negative control outcomes</a></li>
+<li class="chapter" data-level="14.5" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#reporting-a-causal-analysis"><i class="fa fa-check"></i><b>14.5</b> Reporting a causal analysis</a></li>
+<li class="chapter" data-level="14.6" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#exercises-12"><i class="fa fa-check"></i><b>14.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendices</b></span></li>
+<li class="chapter" data-level="A" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html"><i class="fa fa-check"></i><b>A</b> R and RStudio setup</a>
+<ul>
+<li class="chapter" data-level="A.1" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-r-and-rstudio"><i class="fa fa-check"></i><b>A.1</b> Installing R and RStudio</a></li>
+<li class="chapter" data-level="A.2" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-packages-this-book-uses"><i class="fa fa-check"></i><b>A.2</b> Installing the packages this book uses</a></li>
+<li class="chapter" data-level="A.3" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-namcs-teaching-package"><i class="fa fa-check"></i><b>A.3</b> Installing the NAMCS teaching package</a></li>
+<li class="chapter" data-level="A.4" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#loading-everything-a-chapter-needs"><i class="fa fa-check"></i><b>A.4</b> Loading everything a chapter needs</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="namcs-codebook.html"><a href="namcs-codebook.html"><i class="fa fa-check"></i><b>B</b> NAMCS codebook</a>
+<ul>
+<li class="chapter" data-level="B.1" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-nsaid-cohort-ns"><i class="fa fa-check"></i><b>B.1</b> The NSAID cohort (<code>ns</code>)</a></li>
+<li class="chapter" data-level="B.2" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-statin-cohort-sta"><i class="fa fa-check"></i><b>B.2</b> The statin cohort (<code>sta</code>)</a></li>
+<li class="chapter" data-level="B.3" data-path="namcs-codebook.html"><a href="namcs-codebook.html#a-note-on-the-outcomes"><i class="fa fa-check"></i><b>B.3</b> A note on the outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="C" data-path="the-estimator-toolkit.html"><a href="the-estimator-toolkit.html"><i class="fa fa-check"></i><b>C</b> The estimator toolkit</a></li>
+<li class="chapter" data-level="D" data-path="course-map-phs-921.html"><a href="course-map-phs-921.html"><i class="fa fa-check"></i><b>D</b> Course map: PHS 921</a></li>
+<li class="chapter" data-level="E" data-path="further-reading.html"><a href="further-reading.html"><i class="fa fa-check"></i><b>E</b> Further reading</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Causal Inference in Epidemiology Using R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="clone-censor-weight" class="section level1 hasAnchor" number="12">
+<h1><span class="header-section-number">Chapter 12</span> Clone-censor-weight<a href="clone-censor-weight.html#clone-censor-weight" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Chapter 11 corrected a comparison for one thing that happens after time
+zero — patients disappearing from view — and left another untouched.
+Patients also stop taking the drug they started, and start the drug they
+did not. Chapter 10’s Kaplan–Meier curves ignore that entirely: a patient
+assigned to the statin arm by her <code>statin</code> value at time zero stays in
+that arm for ten years whatever she swallows afterward. That is a
+respectable estimand, and this chapter is about the other one — what
+would happen if patients actually followed the strategy their arm
+describes — and about the machinery that estimand requires.</p>
+<div id="from-point-treatments-to-treatment-strategies" class="section level2 hasAnchor" number="12.1">
+<h2><span class="header-section-number">12.1</span> From point treatments to treatment strategies<a href="clone-censor-weight.html#from-point-treatments-to-treatment-strategies" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The contrast in Chapter 10 was between two <em>point interventions</em>:
+initiate a statin at time zero, or do not. Nothing was said about the
+years after, so the estimate answers a question about assignment. In a
+trial the analogue is the intention-to-treat effect, which is what a
+trial can deliver without further assumptions and what a patient rarely
+asks about. The question underneath is usually the <strong>per-protocol</strong>
+one: what happens if you initiate a statin <em>and stay on it</em> for the next
+decade, compared with never initiating one? Two strategies, each
+sustained over time, rather than two decisions taken once.</p>
+<p>Sustained strategies bring their own price. The intention-to-treat
+contrast is identified by baseline exchangeability alone, because
+assignment is complete at time zero and nothing later can confound it.
+Once the strategy extends over time, adherence becomes part of the
+treatment, and the people who adhere are not the people who do not: they
+are healthier, or more careful, or better attended, in ways that also
+predict cardiovascular events. Deviating from protocol is a post-baseline
+variable with its own causes, and it needs its own adjustment.</p>
+<p>The obvious move — keep the patients who followed protocol and analyze
+them as though they had been randomized — is the wrong one, and wrong in
+a way Chapter 5 already named. Deviation happens <em>after</em> time zero, so
+selecting on it selects on the future. A patient who has an event in year
+two never had the chance to stop her statin in year six, so she stays in
+the analysis; a patient who survived to year six and then stopped is
+deleted from it retrospectively, along with her early event-free time.
+The comparison is between people conditioned on their own subsequent
+histories, and the resulting numbers cannot be read as risks under either
+strategy.</p>
+</div>
+<div id="the-clone-censor-weight-recipe" class="section level2 hasAnchor" number="12.2">
+<h2><span class="header-section-number">12.2</span> The clone-censor-weight recipe<a href="clone-censor-weight.html#the-clone-censor-weight-recipe" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The fix keeps the per-protocol estimand and repairs the selection with
+weights. It has three steps. The strategy, and the formulation of the
+censoring rule in terms of when a person’s data cease to be compatible
+with the protocol she was assigned, come from Hernán and Robins’s
+target-trial work (Hernán and Robins 2016; Hernán and Robins 2017).</p>
+<p><strong>Clone.</strong> Every eligible person is copied into each strategy arm whose
+protocol her data are compatible with at baseline. A clone is not a
+duplicate observation to be counted twice by accident; it is the same
+person entered into two different bookkeeping systems, each asking a
+different question of her follow-up.</p>
+<p><strong>Censor.</strong> Each clone is followed until her observed data first
+contradict the strategy of the arm she sits in, at which point that clone
+is <em>artificially censored</em> — removed from that arm’s risk set, though she
+may continue in the other arm’s. Artificial censoring differs from the
+censoring of Chapter 11 only in provenance: it is imposed by the analysis
+rather than by the data, which means we know exactly what caused it and
+can model it.</p>
+<p><strong>Weight.</strong> Because we created the censoring, we are obliged to correct
+for it, with exactly Chapter 11’s inverse probability of censoring
+weight: each surviving clone at interval <span class="math inline">\(t\)</span> is weighted by the
+reciprocal of her probability of having remained uncensored through <span class="math inline">\(t\)</span>,
+given time, arm, and covariates. Patients who stayed on protocol stand in
+for the similar patients who did not.</p>
+<p>Here the first step is nearly vacuous, and it is worth being explicit
+about why. Our two strategies are distinguished by what happens at time
+zero — initiate, or do not — and <code>statin</code> records exactly that, with no
+grace period in which either strategy is still possible. So each person’s
+baseline data are compatible with one arm and one arm only, cloning
+assigns each person to her observed arm, and the cohort we analyze has
+the same number of rows as the cohort we started with. Censoring and
+weighting do all the work.</p>
+<p>Literal cloning earns its name when the protocol allows a window. Suppose
+the strategies were “initiate a statin within six months of the
+qualifying visit” and “do not initiate within six months”. A patient who
+starts at month four is compatible with <em>both</em> protocols at time zero and
+for the first four months: she is following the initiate-within-six-months
+strategy the whole time, and she is also following the do-not-initiate
+strategy right up until she starts. She is cloned into both arms,
+contributes person-time to both, and her non-initiator clone is
+artificially censored at month four while her initiator clone continues.
+The grace period removes the immortal-time problem that classifying her
+by a later event would create, at the cost of a patient who is
+genuinely two rows-worth of follow-up. Our cohort has no
+grace period, so we get the simple case; the recipe is identical either
+way.</p>
+</div>
+<div id="deviation-in-the-statin-cohort" class="section level2 hasAnchor" number="12.3">
+<h2><span class="header-section-number">12.3</span> Deviation in the statin cohort<a href="clone-censor-weight.html#deviation-in-the-statin-cohort" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <code>sta</code> cohort supplies the deviation time directly. <code>nonadherence</code> is
+the number of years until a patient departs from the strategy she began
+with, and crucially it is defined in both arms, meaning different things
+in each: statin initiators stopping, and untreated patients starting.</p>
+<div class="sourceCode" id="cb114"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb114-1"><a href="clone-censor-weight.html#cb114-1" tabindex="-1"></a>sta <span class="sc">|&gt;</span></span>
+<span id="cb114-2"><a href="clone-censor-weight.html#cb114-2" tabindex="-1"></a>  <span class="fu">group_by</span>(statin) <span class="sc">|&gt;</span></span>
+<span id="cb114-3"><a href="clone-censor-weight.html#cb114-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">with_deviation =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(nonadherence)),</span>
+<span id="cb114-4"><a href="clone-censor-weight.html#cb114-4" tabindex="-1"></a>            <span class="at">median_years =</span> <span class="fu">median</span>(nonadherence, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb114-5"><a href="clone-censor-weight.html#cb114-5" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb114-6"><a href="clone-censor-weight.html#cb114-6" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">statin</th>
+<th align="right">n</th>
+<th align="right">with_deviation</th>
+<th align="right">median_years</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">5327</td>
+<td align="right">1524</td>
+<td align="right">4.24</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">838</td>
+<td align="right">521</td>
+<td align="right">3.10</td>
+</tr>
+</tbody>
+</table>
+<p>Follow-up in the per-protocol analysis now ends at the earliest of five
+things: the cardiovascular event, death, loss to follow-up, the
+administrative end at 10 years — all inherited from
+<code>event_time</code> — and deviation. The last is the new one, and the only one
+we will weight for.</p>
+<div class="sourceCode" id="cb115"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb115-1"><a href="clone-censor-weight.html#cb115-1" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb115-2"><a href="clone-censor-weight.html#cb115-2" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/ipcw.R&quot;</span>)</span>
+<span id="cb115-3"><a href="clone-censor-weight.html#cb115-3" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/ccw_estimator.R&quot;</span>)</span>
+<span id="cb115-4"><a href="clone-censor-weight.html#cb115-4" tabindex="-1"></a></span>
+<span id="cb115-5"><a href="clone-censor-weight.html#cb115-5" tabindex="-1"></a>sta_ccw <span class="ot">&lt;-</span> sta <span class="sc">|&gt;</span></span>
+<span id="cb115-6"><a href="clone-censor-weight.html#cb115-6" tabindex="-1"></a>  <span class="fu">filter</span>(event_time <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb115-7"><a href="clone-censor-weight.html#cb115-7" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb115-8"><a href="clone-censor-weight.html#cb115-8" tabindex="-1"></a>    <span class="at">dev_time   =</span> <span class="fu">if_else</span>(<span class="fu">is.na</span>(nonadherence), <span class="cn">Inf</span>, nonadherence),</span>
+<span id="cb115-9"><a href="clone-censor-weight.html#cb115-9" tabindex="-1"></a>    <span class="at">fu_end     =</span> <span class="fu">pmin</span>(event_time, dev_time),</span>
+<span id="cb115-10"><a href="clone-censor-weight.html#cb115-10" tabindex="-1"></a>    <span class="at">deviated   =</span> <span class="fu">as.integer</span>(dev_time <span class="sc">&lt;=</span> event_time <span class="sc">&amp;</span></span>
+<span id="cb115-11"><a href="clone-censor-weight.html#cb115-11" tabindex="-1"></a>                              <span class="sc">!</span>(cv_event <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> event_time <span class="sc">&lt;=</span> dev_time)),</span>
+<span id="cb115-12"><a href="clone-censor-weight.html#cb115-12" tabindex="-1"></a>    <span class="at">event_c    =</span> <span class="fu">as.integer</span>(cv_event <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> event_time <span class="sc">&lt;=</span> dev_time),</span>
+<span id="cb115-13"><a href="clone-censor-weight.html#cb115-13" tabindex="-1"></a>    <span class="at">split_time =</span> fu_end</span>
+<span id="cb115-14"><a href="clone-censor-weight.html#cb115-14" tabindex="-1"></a>  )</span>
+<span id="cb115-15"><a href="clone-censor-weight.html#cb115-15" tabindex="-1"></a></span>
+<span id="cb115-16"><a href="clone-censor-weight.html#cb115-16" tabindex="-1"></a>pp <span class="ot">&lt;-</span> <span class="fu">make_person_period</span>(sta_ccw, <span class="at">time =</span> <span class="st">&quot;split_time&quot;</span>, <span class="at">event =</span> <span class="st">&quot;deviated&quot;</span>,</span>
+<span id="cb115-17"><a href="clone-censor-weight.html#cb115-17" tabindex="-1"></a>                         <span class="at">cuts =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="sc">|&gt;</span></span>
+<span id="cb115-18"><a href="clone-censor-weight.html#cb115-18" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">event =</span> <span class="fu">as.integer</span>(event_c <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> fu_end <span class="sc">&gt;</span> tstart <span class="sc">&amp;</span> fu_end <span class="sc">&lt;=</span> tstop))</span></code></pre></div>
+<p>Four points of bookkeeping, each of which changes the analysis if it goes
+wrong. Patients who never deviate get <code>dev_time = Inf</code>, so <code>pmin()</code> leaves
+their follow-up at <code>event_time</code>. The <code>deviated</code> indicator is 1 when
+deviation came first, with the <code>!(cv_event == 1 &amp; ...)</code> clause settling
+ties in the outcome’s favour: a patient whose event and deviation are
+recorded at the same instant had the event, and <code>event_c</code> — the outcome
+indicator for this analysis — says so. <code>split_time</code> is a copy of <code>fu_end</code>
+for the same reason Chapter 11 copied <code>event_time</code>: <code>survSplit()</code> consumes
+the variable it splits on, and we need the original left standing to place
+the outcome in its interval. And as in Chapter 11 the handful of patients
+whose follow-up ends at time zero are dropped, since no interval can be
+made out of nothing.</p>
+<div class="sourceCode" id="cb116"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb116-1"><a href="clone-censor-weight.html#cb116-1" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb116-2"><a href="clone-censor-weight.html#cb116-2" tabindex="-1"></a>  <span class="at">quantity      =</span> <span class="fu">c</span>(<span class="st">&quot;patients&quot;</span>, <span class="st">&quot;person-period rows&quot;</span>, <span class="st">&quot;outcome events&quot;</span>,</span>
+<span id="cb116-3"><a href="clone-censor-weight.html#cb116-3" tabindex="-1"></a>                    <span class="st">&quot;deviations&quot;</span>, <span class="st">&quot;rows flagged as both&quot;</span>),</span>
+<span id="cb116-4"><a href="clone-censor-weight.html#cb116-4" tabindex="-1"></a>  <span class="at">person_period =</span> <span class="fu">c</span>(<span class="fu">n_distinct</span>(pp<span class="sc">$</span>.row_id), <span class="fu">nrow</span>(pp), <span class="fu">sum</span>(pp<span class="sc">$</span>event),</span>
+<span id="cb116-5"><a href="clone-censor-weight.html#cb116-5" tabindex="-1"></a>                    <span class="fu">sum</span>(pp<span class="sc">$</span>deviated), <span class="fu">sum</span>(pp<span class="sc">$</span>event <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> pp<span class="sc">$</span>deviated <span class="sc">==</span> <span class="dv">1</span>)),</span>
+<span id="cb116-6"><a href="clone-censor-weight.html#cb116-6" tabindex="-1"></a>  <span class="at">patient_level =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(sta_ccw), <span class="cn">NA</span>, <span class="fu">sum</span>(sta_ccw<span class="sc">$</span>event_c),</span>
+<span id="cb116-7"><a href="clone-censor-weight.html#cb116-7" tabindex="-1"></a>                    <span class="fu">sum</span>(sta_ccw<span class="sc">$</span>deviated), <span class="dv">0</span>)</span>
+<span id="cb116-8"><a href="clone-censor-weight.html#cb116-8" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">quantity</th>
+<th align="right">person_period</th>
+<th align="right">patient_level</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">patients</td>
+<td align="right">6157</td>
+<td align="right">6157</td>
+</tr>
+<tr class="even">
+<td align="left">person-period rows</td>
+<td align="right">38107</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">outcome events</td>
+<td align="right">314</td>
+<td align="right">314</td>
+</tr>
+<tr class="even">
+<td align="left">deviations</td>
+<td align="right">1447</td>
+<td align="right">1447</td>
+</tr>
+<tr class="odd">
+<td align="left">rows flagged as both</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>The two indicators agree with their patient-level counts and never
+co-occur in a row, which is TRUE. What the table also shows is the cost
+of the estimand. Artificial censoring at deviation ends follow-up early
+for 1,447 patients, cutting the person-period
+data from Chapter 11’s 44,485 rows to
+38,107, and it discards 146 of the
+460 cardiovascular events in the cohort because they
+happened after their patient had already left her protocol. The statin arm
+is hit hardest: 10 of its 29 events
+survive the censoring, against 304 of
+431 among non-initiators. Per-protocol questions are
+answered with less information than intention-to-treat questions, always.</p>
+</div>
+<div id="estimating-per-protocol-risk-curves" class="section level2 hasAnchor" number="12.4">
+<h2><span class="header-section-number">12.4</span> Estimating per-protocol risk curves<a href="clone-censor-weight.html#estimating-per-protocol-risk-curves" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The estimator is Chapter 11’s weight construction pointed at the new
+censoring indicator, with the outcome model replaced by direct weighted
+hazards so that risk curves come back rather than coefficients.</p>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="clone-censor-weight.html#cb117-1" tabindex="-1"></a>ccw_estimator <span class="ot">&lt;-</span> <span class="cf">function</span>(pp_data, censor_model, treat, <span class="at">id =</span> <span class="st">&quot;.row_id&quot;</span>,</span>
+<span id="cb117-2"><a href="clone-censor-weight.html#cb117-2" tabindex="-1"></a>                          <span class="at">numerator_model =</span> <span class="cn">NULL</span>, <span class="at">truncate_at =</span> <span class="fl">0.99</span>) {</span>
+<span id="cb117-3"><a href="clone-censor-weight.html#cb117-3" tabindex="-1"></a>  dev_fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(censor_model, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp_data)</span>
+<span id="cb117-4"><a href="clone-censor-weight.html#cb117-4" tabindex="-1"></a>  pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">p_stay =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">predict</span>(dev_fit, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb117-5"><a href="clone-censor-weight.html#cb117-5" tabindex="-1"></a></span>
+<span id="cb117-6"><a href="clone-censor-weight.html#cb117-6" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(numerator_model)) {</span>
+<span id="cb117-7"><a href="clone-censor-weight.html#cb117-7" tabindex="-1"></a>    num_fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(numerator_model, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp_data)</span>
+<span id="cb117-8"><a href="clone-censor-weight.html#cb117-8" tabindex="-1"></a>    pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">p_stay_num =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">predict</span>(num_fit, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb117-9"><a href="clone-censor-weight.html#cb117-9" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb117-10"><a href="clone-censor-weight.html#cb117-10" tabindex="-1"></a>    pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">p_stay_num =</span> <span class="dv">1</span>)</span>
+<span id="cb117-11"><a href="clone-censor-weight.html#cb117-11" tabindex="-1"></a>  }</span>
+<span id="cb117-12"><a href="clone-censor-weight.html#cb117-12" tabindex="-1"></a></span>
+<span id="cb117-13"><a href="clone-censor-weight.html#cb117-13" tabindex="-1"></a>  pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span></span>
+<span id="cb117-14"><a href="clone-censor-weight.html#cb117-14" tabindex="-1"></a>    <span class="fu">group_by</span>(.data[[id]]) <span class="sc">|&gt;</span></span>
+<span id="cb117-15"><a href="clone-censor-weight.html#cb117-15" tabindex="-1"></a>    <span class="fu">arrange</span>(tstop, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb117-16"><a href="clone-censor-weight.html#cb117-16" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">w =</span> <span class="fu">cumprod</span>(p_stay_num) <span class="sc">/</span> <span class="fu">cumprod</span>(p_stay)) <span class="sc">|&gt;</span></span>
+<span id="cb117-17"><a href="clone-censor-weight.html#cb117-17" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb117-18"><a href="clone-censor-weight.html#cb117-18" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">w =</span> <span class="fu">pmin</span>(w, <span class="fu">quantile</span>(w, truncate_at)))</span>
+<span id="cb117-19"><a href="clone-censor-weight.html#cb117-19" tabindex="-1"></a></span>
+<span id="cb117-20"><a href="clone-censor-weight.html#cb117-20" tabindex="-1"></a>  <span class="co"># A patient&#39;s last row is a stub ending at her exact follow-up time, so raw</span></span>
+<span id="cb117-21"><a href="clone-censor-weight.html#cb117-21" tabindex="-1"></a>  <span class="co"># `tstop` is continuous; hazards are pooled over the interval it falls in.</span></span>
+<span id="cb117-22"><a href="clone-censor-weight.html#cb117-22" tabindex="-1"></a>  pp_data <span class="sc">|&gt;</span></span>
+<span id="cb117-23"><a href="clone-censor-weight.html#cb117-23" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">interval =</span> <span class="fu">ceiling</span>(tstop)) <span class="sc">|&gt;</span></span>
+<span id="cb117-24"><a href="clone-censor-weight.html#cb117-24" tabindex="-1"></a>    <span class="fu">group_by</span>(.data[[treat]], interval) <span class="sc">|&gt;</span></span>
+<span id="cb117-25"><a href="clone-censor-weight.html#cb117-25" tabindex="-1"></a>    <span class="fu">summarise</span>(<span class="at">hazard =</span> <span class="fu">weighted.mean</span>(event, w), <span class="at">.groups =</span> <span class="st">&quot;drop_last&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb117-26"><a href="clone-censor-weight.html#cb117-26" tabindex="-1"></a>    <span class="fu">arrange</span>(interval, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb117-27"><a href="clone-censor-weight.html#cb117-27" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">surv =</span> <span class="fu">cumprod</span>(<span class="dv">1</span> <span class="sc">-</span> hazard), <span class="at">risk =</span> <span class="dv">1</span> <span class="sc">-</span> surv) <span class="sc">|&gt;</span></span>
+<span id="cb117-28"><a href="clone-censor-weight.html#cb117-28" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb117-29"><a href="clone-censor-weight.html#cb117-29" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">tstop =</span> interval)</span>
+<span id="cb117-30"><a href="clone-censor-weight.html#cb117-30" tabindex="-1"></a>}</span></code></pre></div>
+<p><code>p_stay</code> is the probability of <em>not</em> deviating in an interval, and the
+<code>cumprod()</code> line is again the running product that turns per-interval
+probabilities into a weight at time <span class="math inline">\(t\)</span>. The last block is new: within an
+arm and interval, <code>weighted.mean(event, w)</code> is the weighted discrete-time
+hazard, and <code>cumprod(1 - hazard)</code> multiplies the hazards back into a
+survival curve. This is a weighted Kaplan–Meier computed in
+person-period form, and it needs no outcome model at all.</p>
+<p>The deviation model does need thought, because deviation is not the same
+event in the two arms. We let the arms differ in their time trend and in
+two covariates by interacting <code>statin</code> with the spline and with <code>age</code> and
+<code>diabetes</code>, rather than fitting two fully arm-specific models. The
+interaction model is the more parsimonious of the two here and the fit
+turns out to be well behaved, so we prefer it; had it been unstable, two
+<code>glm()</code> calls stratified by arm would give the same weights with more
+freedom and less pooling.</p>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="clone-censor-weight.html#cb118-1" tabindex="-1"></a>dev_form <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;splines::ns(tstop, 3) * statin&quot;</span>, sta_covs,</span>
+<span id="cb118-2"><a href="clone-censor-weight.html#cb118-2" tabindex="-1"></a>                          <span class="fu">paste0</span>(<span class="st">&quot;statin:&quot;</span>, <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;diabetes&quot;</span>))), <span class="st">&quot;deviated&quot;</span>)</span>
+<span id="cb118-3"><a href="clone-censor-weight.html#cb118-3" tabindex="-1"></a>num_form <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(<span class="st">&quot;splines::ns(tstop, 3) * statin&quot;</span>, <span class="st">&quot;deviated&quot;</span>)</span>
+<span id="cb118-4"><a href="clone-censor-weight.html#cb118-4" tabindex="-1"></a></span>
+<span id="cb118-5"><a href="clone-censor-weight.html#cb118-5" tabindex="-1"></a>curves  <span class="ot">&lt;-</span> <span class="fu">ccw_estimator</span>(pp, <span class="at">censor_model =</span> dev_form, <span class="at">treat =</span> <span class="st">&quot;statin&quot;</span>,</span>
+<span id="cb118-6"><a href="clone-censor-weight.html#cb118-6" tabindex="-1"></a>                         <span class="at">numerator_model =</span> num_form)</span>
+<span id="cb118-7"><a href="clone-censor-weight.html#cb118-7" tabindex="-1"></a>crude   <span class="ot">&lt;-</span> <span class="fu">ccw_estimator</span>(pp, <span class="at">censor_model =</span> deviated <span class="sc">~</span> <span class="dv">1</span>, <span class="at">treat =</span> <span class="st">&quot;statin&quot;</span>,</span>
+<span id="cb118-8"><a href="clone-censor-weight.html#cb118-8" tabindex="-1"></a>                         <span class="at">numerator_model =</span> deviated <span class="sc">~</span> <span class="dv">1</span>)</span></code></pre></div>
+<p>The second call is a device worth knowing: identical numerator and
+denominator models give every row a weight of exactly 1, so <code>crude</code>
+is the same analysis with the censoring left uncorrected — censor at
+deviation and hope.</p>
+<p>Well behaved, here, means <code>glm()</code> converges with no aliased coefficient,
+the largest coefficient other than the intercept is
+2.86, and the fitted probability of
+deviating within an interval runs from
+0.0006 to 0.84.
+The intercept is the exception at 77, and it is a
+matter of scale rather than instability: <code>sta_covs</code> carries <code>year</code> as an
+uncentered calendar year, so the intercept is the log-odds extrapolated
+back to year 0. Refitting with <code>I(year - 2007)</code> moves it to
+-6.8 and changes no fitted probability
+— the largest discrepancy is
+9e-14 — so we leave <code>sta_covs</code>
+as the rest of the book uses it.</p>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="clone-censor-weight.html#cb119-1" tabindex="-1"></a><span class="fu">bind_rows</span>(<span class="st">&quot;Weighted&quot;</span> <span class="ot">=</span> curves, <span class="st">&quot;Unweighted&quot;</span> <span class="ot">=</span> crude, <span class="at">.id =</span> <span class="st">&quot;analysis&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb119-2"><a href="clone-censor-weight.html#cb119-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">arm =</span> <span class="fu">if_else</span>(statin <span class="sc">==</span> <span class="dv">1</span>, <span class="st">&quot;Statin, sustained&quot;</span>, <span class="st">&quot;No statin, sustained&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb119-3"><a href="clone-censor-weight.html#cb119-3" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(tstop, risk, <span class="at">colour =</span> arm, <span class="at">linetype =</span> analysis)) <span class="sc">+</span></span>
+<span id="cb119-4"><a href="clone-censor-weight.html#cb119-4" tabindex="-1"></a>  <span class="fu">geom_step</span>() <span class="sc">+</span></span>
+<span id="cb119-5"><a href="clone-censor-weight.html#cb119-5" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
+<span id="cb119-6"><a href="clone-censor-weight.html#cb119-6" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="dv">1</span><span class="sc">:</span>admin_end) <span class="sc">+</span></span>
+<span id="cb119-7"><a href="clone-censor-weight.html#cb119-7" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Years since time zero&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Cumulative incidence of CV event&quot;</span>,</span>
+<span id="cb119-8"><a href="clone-censor-weight.html#cb119-8" tabindex="-1"></a>       <span class="at">colour =</span> <span class="cn">NULL</span>, <span class="at">linetype =</span> <span class="cn">NULL</span>) <span class="sc">+</span></span>
+<span id="cb119-9"><a href="clone-censor-weight.html#cb119-9" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/ch12-curves-1.png" width="672" /></p>
+<p>Unlike <code>ipcw_estimator()</code>, this function returns only the curves, so the
+weights must be rebuilt to be inspected.</p>
+<div class="sourceCode" id="cb120"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb120-1"><a href="clone-censor-weight.html#cb120-1" tabindex="-1"></a>wts <span class="ot">&lt;-</span> pp <span class="sc">|&gt;</span></span>
+<span id="cb120-2"><a href="clone-censor-weight.html#cb120-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">p_stay     =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">predict</span>(<span class="fu">glm</span>(dev_form, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp),</span>
+<span id="cb120-3"><a href="clone-censor-weight.html#cb120-3" tabindex="-1"></a>                                  <span class="at">type =</span> <span class="st">&quot;response&quot;</span>),</span>
+<span id="cb120-4"><a href="clone-censor-weight.html#cb120-4" tabindex="-1"></a>         <span class="at">p_stay_num =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">predict</span>(<span class="fu">glm</span>(num_form, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp),</span>
+<span id="cb120-5"><a href="clone-censor-weight.html#cb120-5" tabindex="-1"></a>                                  <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb120-6"><a href="clone-censor-weight.html#cb120-6" tabindex="-1"></a>  <span class="fu">group_by</span>(.row_id) <span class="sc">|&gt;</span> <span class="fu">arrange</span>(tstop, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb120-7"><a href="clone-censor-weight.html#cb120-7" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">w =</span> <span class="fu">cumprod</span>(p_stay_num) <span class="sc">/</span> <span class="fu">cumprod</span>(p_stay)) <span class="sc">|&gt;</span> <span class="fu">ungroup</span>()</span>
+<span id="cb120-8"><a href="clone-censor-weight.html#cb120-8" tabindex="-1"></a></span>
+<span id="cb120-9"><a href="clone-censor-weight.html#cb120-9" tabindex="-1"></a>wts <span class="sc">|&gt;</span></span>
+<span id="cb120-10"><a href="clone-censor-weight.html#cb120-10" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">interval =</span> <span class="fu">ceiling</span>(tstop)) <span class="sc">|&gt;</span></span>
+<span id="cb120-11"><a href="clone-censor-weight.html#cb120-11" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">rows =</span> <span class="fu">n</span>(), <span class="at">mean =</span> <span class="fu">mean</span>(w), <span class="at">sd =</span> <span class="fu">sd</span>(w), <span class="at">max =</span> <span class="fu">max</span>(w),</span>
+<span id="cb120-12"><a href="clone-censor-weight.html#cb120-12" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb120-13"><a href="clone-censor-weight.html#cb120-13" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">2</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">interval</th>
+<th align="right">rows</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">6157</td>
+<td align="right">1.01</td>
+<td align="right">0.16</td>
+<td align="right">5.80</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">5436</td>
+<td align="right">1.01</td>
+<td align="right">0.23</td>
+<td align="right">6.31</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">4841</td>
+<td align="right">1.01</td>
+<td align="right">0.29</td>
+<td align="right">9.11</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">4271</td>
+<td align="right">1.01</td>
+<td align="right">0.42</td>
+<td align="right">18.90</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="right">3823</td>
+<td align="right">1.01</td>
+<td align="right">0.77</td>
+<td align="right">42.73</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="right">3389</td>
+<td align="right">1.03</td>
+<td align="right">1.79</td>
+<td align="right">101.85</td>
+</tr>
+<tr class="odd">
+<td align="right">7</td>
+<td align="right">3043</td>
+<td align="right">1.08</td>
+<td align="right">4.34</td>
+<td align="right">238.80</td>
+</tr>
+<tr class="even">
+<td align="right">8</td>
+<td align="right">2681</td>
+<td align="right">0.99</td>
+<td align="right">0.58</td>
+<td align="right">17.96</td>
+</tr>
+<tr class="odd">
+<td align="right">9</td>
+<td align="right">2381</td>
+<td align="right">0.99</td>
+<td align="right">0.75</td>
+<td align="right">25.20</td>
+</tr>
+<tr class="even">
+<td align="right">10</td>
+<td align="right">2085</td>
+<td align="right">0.98</td>
+<td align="right">0.63</td>
+<td align="right">20.52</td>
+</tr>
+</tbody>
+</table>
+<p>These weights behave nothing like Chapter 11’s. They still average near
+1.01, as stabilized weights should, but their
+standard deviation is 1.41 and the largest is
+239, with the spread widening as the running
+product accumulates and peaking in the seventh interval. Kish’s effective sample size is
+13,030 of
+38,107 rows. These are the untruncated
+weights, since the rebuilt version above stops short of the estimator’s
+final <code>pmin()</code>; inside <code>ccw_estimator()</code> the 99th percentile,
+2.32, becomes the ceiling. The reason is the contrast we
+drew in Chapter 11: covariates that barely predicted loss to follow-up
+predict adherence quite well, so the estimated probabilities of staying on
+protocol vary across patients, and ten intervals of variation compound.</p>
+<p>Extreme weights are the positivity assumption complaining, as in
+Chapter 9. A weight of 239 says that somewhere in
+covariate-and-time space staying on protocol was close to impossible —
+52 of the 38,107 rows carry
+a fitted deviation probability above one half — so the few patients there
+who did stay must speak for everyone who did not. Positivity is a heavier
+demand for a sustained strategy than for a point treatment, because it has
+to hold in <em>every</em> interval.
+Truncation at the 99th percentile, a formality last chapter, is doing
+visible work here, and would be the first thing to vary in a sensitivity
+analysis.</p>
+<p>A single number for the contrast needs an interval, and the weights make
+the model-based one untrustworthy: the curve is a function of two fitted
+models and a running product, so we resample patients instead. Each of
+100 replicates draws 6,157 patient
+identifiers with replacement, reassembles their person-period rows under
+fresh identifiers, and reruns the whole pipeline — fewer than Chapter 7’s
+200, because each replicate here refits two models and a running product.</p>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="clone-censor-weight.html#cb121-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">20260822</span>)</span>
+<span id="cb121-2"><a href="clone-censor-weight.html#cb121-2" tabindex="-1"></a>ids <span class="ot">&lt;-</span> <span class="fu">unique</span>(pp<span class="sc">$</span>.row_id)</span>
+<span id="cb121-3"><a href="clone-censor-weight.html#cb121-3" tabindex="-1"></a></span>
+<span id="cb121-4"><a href="clone-censor-weight.html#cb121-4" tabindex="-1"></a>rd_at <span class="ot">&lt;-</span> <span class="cf">function</span>(cv, <span class="at">years =</span> <span class="dv">5</span>) {</span>
+<span id="cb121-5"><a href="clone-censor-weight.html#cb121-5" tabindex="-1"></a>  r <span class="ot">&lt;-</span> cv<span class="sc">$</span>risk[cv<span class="sc">$</span>tstop <span class="sc">==</span> years]</span>
+<span id="cb121-6"><a href="clone-censor-weight.html#cb121-6" tabindex="-1"></a>  r[<span class="dv">2</span>] <span class="sc">-</span> r[<span class="dv">1</span>]</span>
+<span id="cb121-7"><a href="clone-censor-weight.html#cb121-7" tabindex="-1"></a>}</span>
+<span id="cb121-8"><a href="clone-censor-weight.html#cb121-8" tabindex="-1"></a></span>
+<span id="cb121-9"><a href="clone-censor-weight.html#cb121-9" tabindex="-1"></a>rd_boot <span class="ot">&lt;-</span> <span class="fu">replicate</span>(<span class="dv">100</span>, {</span>
+<span id="cb121-10"><a href="clone-censor-weight.html#cb121-10" tabindex="-1"></a>  draw <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">.row_id =</span> <span class="fu">sample</span>(ids, <span class="fu">length</span>(ids), <span class="at">replace =</span> <span class="cn">TRUE</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb121-11"><a href="clone-censor-weight.html#cb121-11" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">.boot =</span> <span class="fu">row_number</span>())</span>
+<span id="cb121-12"><a href="clone-censor-weight.html#cb121-12" tabindex="-1"></a>  bs <span class="ot">&lt;-</span> draw <span class="sc">|&gt;</span></span>
+<span id="cb121-13"><a href="clone-censor-weight.html#cb121-13" tabindex="-1"></a>    <span class="fu">left_join</span>(pp, <span class="at">by =</span> <span class="st">&quot;.row_id&quot;</span>, <span class="at">relationship =</span> <span class="st">&quot;many-to-many&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb121-14"><a href="clone-censor-weight.html#cb121-14" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">.row_id =</span> .boot)</span>
+<span id="cb121-15"><a href="clone-censor-weight.html#cb121-15" tabindex="-1"></a>  <span class="fu">rd_at</span>(<span class="fu">ccw_estimator</span>(bs, <span class="at">censor_model =</span> dev_form, <span class="at">treat =</span> <span class="st">&quot;statin&quot;</span>,</span>
+<span id="cb121-16"><a href="clone-censor-weight.html#cb121-16" tabindex="-1"></a>                      <span class="at">numerator_model =</span> num_form))</span>
+<span id="cb121-17"><a href="clone-censor-weight.html#cb121-17" tabindex="-1"></a>})</span>
+<span id="cb121-18"><a href="clone-censor-weight.html#cb121-18" tabindex="-1"></a></span>
+<span id="cb121-19"><a href="clone-censor-weight.html#cb121-19" tabindex="-1"></a><span class="fu">tibble</span>(<span class="at">risk_difference =</span> <span class="fu">rd_at</span>(curves),</span>
+<span id="cb121-20"><a href="clone-censor-weight.html#cb121-20" tabindex="-1"></a>       <span class="at">conf.low  =</span> <span class="fu">quantile</span>(rd_boot, <span class="fl">0.025</span>),</span>
+<span id="cb121-21"><a href="clone-censor-weight.html#cb121-21" tabindex="-1"></a>       <span class="at">conf.high =</span> <span class="fu">quantile</span>(rd_boot, <span class="fl">0.975</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb121-22"><a href="clone-censor-weight.html#cb121-22" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">risk_difference</th>
+<th align="right">conf.low</th>
+<th align="right">conf.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">-0.0417</td>
+<td align="right">-0.0519</td>
+<td align="right">-0.0292</td>
+</tr>
+</tbody>
+</table>
+<p>Reassigning identifiers with <code>.boot</code> is the detail that makes this
+correct: a patient drawn twice must appear as two different people, or the
+<code>group_by(.data[[id]])</code> inside the estimator would splice her duplicated
+rows into one impossible history.</p>
+</div>
+<div id="interpreting-the-per-protocol-effect" class="section level2 hasAnchor" number="12.5">
+<h2><span class="header-section-number">12.5</span> Interpreting the per-protocol effect<a href="clone-censor-weight.html#interpreting-the-per-protocol-effect" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="clone-censor-weight.html#cb122-1" tabindex="-1"></a><span class="co"># Chapter 14 quotes the two clone-censor-weight five-year risks from this table</span></span>
+<span id="cb122-2"><a href="clone-censor-weight.html#cb122-2" tabindex="-1"></a><span class="co"># (1.61% under sustained statin use, 5.78% under none) as literals; if anything</span></span>
+<span id="cb122-3"><a href="clone-censor-weight.html#cb122-3" tabindex="-1"></a><span class="co"># here changes those numbers, update that chapter&#39;s `ch14-evalue-values` chunk.</span></span>
+<span id="cb122-4"><a href="clone-censor-weight.html#cb122-4" tabindex="-1"></a>km5 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">summary</span>(<span class="fu">survfit</span>(<span class="fu">Surv</span>(event_time, cv_event) <span class="sc">~</span> statin, <span class="at">data =</span> sta),</span>
+<span id="cb122-5"><a href="clone-censor-weight.html#cb122-5" tabindex="-1"></a>                   <span class="at">times =</span> <span class="dv">5</span>)<span class="sc">$</span>surv</span>
+<span id="cb122-6"><a href="clone-censor-weight.html#cb122-6" tabindex="-1"></a>drop5 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">summary</span>(<span class="fu">survfit</span>(<span class="fu">Surv</span>(event_time, cv_event) <span class="sc">~</span> statin,</span>
+<span id="cb122-7"><a href="clone-censor-weight.html#cb122-7" tabindex="-1"></a>                             <span class="at">data =</span> <span class="fu">filter</span>(sta_ccw, deviated <span class="sc">==</span> <span class="dv">0</span>)),</span>
+<span id="cb122-8"><a href="clone-censor-weight.html#cb122-8" tabindex="-1"></a>                     <span class="at">times =</span> <span class="dv">5</span>)<span class="sc">$</span>surv</span>
+<span id="cb122-9"><a href="clone-censor-weight.html#cb122-9" tabindex="-1"></a>at5 <span class="ot">&lt;-</span> <span class="cf">function</span>(cv, a) cv<span class="sc">$</span>risk[cv<span class="sc">$</span>statin <span class="sc">==</span> a <span class="sc">&amp;</span> cv<span class="sc">$</span>tstop <span class="sc">==</span> <span class="dv">5</span>]</span>
+<span id="cb122-10"><a href="clone-censor-weight.html#cb122-10" tabindex="-1"></a></span>
+<span id="cb122-11"><a href="clone-censor-weight.html#cb122-11" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb122-12"><a href="clone-censor-weight.html#cb122-12" tabindex="-1"></a>  <span class="at">analysis  =</span> <span class="fu">c</span>(<span class="st">&quot;ITT-analog (Chapter 10)&quot;</span>, <span class="st">&quot;Naive per-protocol (drop deviators)&quot;</span>,</span>
+<span id="cb122-13"><a href="clone-censor-weight.html#cb122-13" tabindex="-1"></a>                <span class="st">&quot;Censor at deviation, unweighted&quot;</span>, <span class="st">&quot;Clone-censor-weight&quot;</span>),</span>
+<span id="cb122-14"><a href="clone-censor-weight.html#cb122-14" tabindex="-1"></a>  <span class="at">no_statin =</span> <span class="fu">c</span>(km5[<span class="dv">1</span>], drop5[<span class="dv">1</span>], <span class="fu">at5</span>(crude, <span class="dv">0</span>), <span class="fu">at5</span>(curves, <span class="dv">0</span>)),</span>
+<span id="cb122-15"><a href="clone-censor-weight.html#cb122-15" tabindex="-1"></a>  <span class="at">statin    =</span> <span class="fu">c</span>(km5[<span class="dv">2</span>], drop5[<span class="dv">2</span>], <span class="fu">at5</span>(crude, <span class="dv">1</span>), <span class="fu">at5</span>(curves, <span class="dv">1</span>))</span>
+<span id="cb122-16"><a href="clone-censor-weight.html#cb122-16" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb122-17"><a href="clone-censor-weight.html#cb122-17" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">difference =</span> statin <span class="sc">-</span> no_statin) <span class="sc">|&gt;</span></span>
+<span id="cb122-18"><a href="clone-censor-weight.html#cb122-18" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">analysis</th>
+<th align="right">no_statin</th>
+<th align="right">statin</th>
+<th align="right">difference</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">ITT-analog (Chapter 10)</td>
+<td align="right">0.0566</td>
+<td align="right">0.0290</td>
+<td align="right">-0.0276</td>
+</tr>
+<tr class="even">
+<td align="left">Naive per-protocol (drop deviators)</td>
+<td align="right">0.0587</td>
+<td align="right">0.0240</td>
+<td align="right">-0.0347</td>
+</tr>
+<tr class="odd">
+<td align="left">Censor at deviation, unweighted</td>
+<td align="right">0.0478</td>
+<td align="right">0.0124</td>
+<td align="right">-0.0354</td>
+</tr>
+<tr class="even">
+<td align="left">Clone-censor-weight</td>
+<td align="right">0.0578</td>
+<td align="right">0.0161</td>
+<td align="right">-0.0417</td>
+</tr>
+</tbody>
+</table>
+<p>Read down the difference column. The intention-to-treat analogue puts the
+five-year risk difference at -2.8 percentage
+points; the clone-censor-weight estimate is
+-4.2, with a bootstrap interval of
+-5.2 to -2.9. The
+per-protocol contrast is larger, which is the expected direction — a
+strategy followed for five years should do more than a strategy assigned
+and then abandoned — and in these simulated outcomes the gap is
+substantial. It rests on thin evidence: the sustained-statin curve is built from 10 events, which is why it sits flat for whole
+intervals and should not be read closely. The naive
+analysis that simply deletes deviators lands
+between the two, close enough to be mistaken for a reasonable answer and
+arrived at by conditioning on the future.</p>
+<p>The weights also matter within the per-protocol column: uncorrected,
+censoring at deviation understates risk in both arms, because the patients
+who stay on protocol are the ones who stay well, and weighting them back
+up to represent the deviators they resemble raises both curves. That the
+correction moves the arms in the same direction is a reminder that
+artificial censoring is not a bias with a sign we can guess.</p>
+<p>What did the extra estimand cost in assumptions? Chapter 10’s contrast
+needed baseline exchangeability. This one needs that <em>and</em> no unmeasured
+common causes of deviation and outcome, at every interval: whatever makes
+a patient stop her statin in year four must be captured, at that time, by
+the variables in <code>dev_form</code>. Ours contains baseline covariates and time
+and nothing else, which is a strong claim about a cohort in which the
+obvious reasons for stopping a statin — a new symptom, a rising liver
+enzyme, a change in perceived prognosis — are time-varying and
+unrecorded. If they matter, the weights are built from the wrong model
+and this analysis looks exactly as it does now, which is Chapter 11’s
+uncomfortable symmetry once more. It needs positivity at every interval
+besides: in each stratum the model uses, some patients like her must
+actually have stayed on protocol. Unlike exchangeability, that assumption
+leaves a trace — in the weights we just looked at.</p>
+<p>Two further limits belong on the record. The comparison here is still
+crude with respect to baseline confounding: the arms differ at time zero
+and nothing in this chapter fixes that. The complete recipe, promised at
+the end of Chapter 11, multiplies three weights per row — Chapter 9’s
+stabilized treatment weight, Chapter 11’s loss-to-follow-up weight, and
+this chapter’s deviation weight — and the product goes into exactly the
+calculation above. We carry one factor at a time so the mechanism stays
+visible. And “stay on it” is the crudest possible version of a sustained
+strategy; real protocols specify doses, gaps, and restarts, and each
+refinement changes both the estimand and the deviation model.</p>
+</div>
+<div id="exercises-10" class="section level2 hasAnchor" number="12.6">
+<h2><span class="header-section-number">12.6</span> Exercises<a href="clone-censor-weight.html#exercises-10" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li>Refit the deviation model with only <code>age</code>, <code>sex</code>, and a spline in
+<code>tstop</code>, dropping the comorbidities and the arm interactions. Compare
+the weight distribution and the five-year risk difference against the
+full model. Which moves more, and what does that tell you about where
+the adherence signal lives?</li>
+<li>Report the risk difference at three years instead of five, with a
+bootstrap interval. Compare its width with the five-year interval and
+account for the difference in terms of the events and the weights that
+each horizon uses.</li>
+<li>Suppose the protocol allowed a six-month grace period for initiation.
+Describe what would change in <code>sta_ccw</code>: who would be cloned into both
+arms, when each clone’s artificial censoring would occur, and why the
+<code>.row_id</code> column would no longer identify a patient. Would you expect
+the per-protocol estimate to move toward the intention-to-treat one, or
+away from it?</li>
+</ol>
+
+</div>
+</div>
+
+
+
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="inverse-probability-of-censoring-weights.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="instrumental-variables.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": null,
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

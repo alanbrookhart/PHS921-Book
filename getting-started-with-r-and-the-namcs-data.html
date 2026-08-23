@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 Getting started with R and the NAMCS data | Causal Inference in Epidemiology Using R</title>
+  <meta name="description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 Getting started with R and the NAMCS data | Causal Inference in Epidemiology Using R" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 Getting started with R and the NAMCS data | Causal Inference in Epidemiology Using R" />
+  
+  <meta name="twitter:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+<meta name="author" content="M. Alan Brookhart" />
+
+
+<meta name="date" content="2026-08-23" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="why.html"/>
+<link rel="next" href="potential-outcomes-and-causal-effects.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Causal Inference in Epidemiology Using R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+</ul></li>
+<li class="part"><span><b>I Foundations</b></span></li>
+<li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="why.html"><a href="why.html#questions-epidemiology-cannot-answer-with-association-alone"><i class="fa fa-check"></i><b>1.1</b> Questions epidemiology cannot answer with association alone</a></li>
+<li class="chapter" data-level="1.2" data-path="why.html"><a href="why.html#a-first-look-at-the-data"><i class="fa fa-check"></i><b>1.2</b> A first look at the data</a></li>
+<li class="chapter" data-level="1.3" data-path="why.html"><a href="why.html#what-this-book-covers"><i class="fa fa-check"></i><b>1.3</b> What this book covers</a></li>
+<li class="chapter" data-level="1.4" data-path="why.html"><a href="why.html#how-to-read-this-book"><i class="fa fa-check"></i><b>1.4</b> How to read this book</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html"><i class="fa fa-check"></i><b>2</b> Getting started with R and the NAMCS data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#r-rstudio-and-the-tidyverse"><i class="fa fa-check"></i><b>2.1</b> R, RStudio, and the tidyverse</a></li>
+<li class="chapter" data-level="2.2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-teaching-cohorts"><i class="fa fa-check"></i><b>2.2</b> The NAMCS teaching cohorts</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#plotting-with-ggplot2"><i class="fa fa-check"></i><b>2.3</b> Plotting with ggplot2</a></li>
+<li class="chapter" data-level="2.4" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1"><i class="fa fa-check"></i><b>2.4</b> Your first reusable functions: Table 1</a></li>
+<li class="chapter" data-level="2.5" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#exercises"><i class="fa fa-check"></i><b>2.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html"><i class="fa fa-check"></i><b>3</b> Potential outcomes and causal effects</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#two-futures-for-every-patient"><i class="fa fa-check"></i><b>3.1</b> Two futures for every patient</a></li>
+<li class="chapter" data-level="3.2" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#a-gods-eye-view-simulation"><i class="fa fa-check"></i><b>3.2</b> A god’s-eye view: simulation</a></li>
+<li class="chapter" data-level="3.3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#average-causal-effects-and-estimands"><i class="fa fa-check"></i><b>3.3</b> Average causal effects and estimands</a></li>
+<li class="chapter" data-level="3.4" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#the-identification-conditions"><i class="fa fa-check"></i><b>3.4</b> The identification conditions</a></li>
+<li class="chapter" data-level="3.5" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html"><i class="fa fa-check"></i><b>4</b> The randomized trial as the benchmark</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#why-randomization-works"><i class="fa fa-check"></i><b>4.1</b> Why randomization works</a></li>
+<li class="chapter" data-level="4.2" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#intention-to-treat-and-per-protocol"><i class="fa fa-check"></i><b>4.2</b> Intention-to-treat and per-protocol</a></li>
+<li class="chapter" data-level="4.3" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#the-target-trial"><i class="fa fa-check"></i><b>4.3</b> The target trial</a></li>
+<li class="chapter" data-level="4.4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#exercises-2"><i class="fa fa-check"></i><b>4.4</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="causal-diagrams.html"><a href="causal-diagrams.html"><i class="fa fa-check"></i><b>5</b> Causal diagrams</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="causal-diagrams.html"><a href="causal-diagrams.html#drawing-causal-assumptions"><i class="fa fa-check"></i><b>5.1</b> Drawing causal assumptions</a></li>
+<li class="chapter" data-level="5.2" data-path="causal-diagrams.html"><a href="causal-diagrams.html#the-nsaidpud-diagram"><i class="fa fa-check"></i><b>5.2</b> The NSAID–PUD diagram</a></li>
+<li class="chapter" data-level="5.3" data-path="causal-diagrams.html"><a href="causal-diagrams.html#confounders-colliders-and-mediators"><i class="fa fa-check"></i><b>5.3</b> Confounders, colliders, and mediators</a></li>
+<li class="chapter" data-level="5.4" data-path="causal-diagrams.html"><a href="causal-diagrams.html#selection-bias-as-collider-stratification"><i class="fa fa-check"></i><b>5.4</b> Selection bias as collider stratification</a></li>
+<li class="chapter" data-level="5.5" data-path="causal-diagrams.html"><a href="causal-diagrams.html#exercises-3"><i class="fa fa-check"></i><b>5.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html"><i class="fa fa-check"></i><b>6</b> Study design for causal questions</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#design-before-analysis"><i class="fa fa-check"></i><b>6.1</b> Design before analysis</a></li>
+<li class="chapter" data-level="6.2" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#new-user-designs"><i class="fa fa-check"></i><b>6.2</b> New-user designs</a></li>
+<li class="chapter" data-level="6.3" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#active-comparator-designs"><i class="fa fa-check"></i><b>6.3</b> Active-comparator designs</a></li>
+<li class="chapter" data-level="6.4" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#immortal-time-and-other-time-zero-problems"><i class="fa fa-check"></i><b>6.4</b> Immortal time and other time-zero problems</a></li>
+<li class="chapter" data-level="6.5" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#exercises-4"><i class="fa fa-check"></i><b>6.5</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>II Core Methods</b></span></li>
+<li class="chapter" data-level="7" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html"><i class="fa fa-check"></i><b>7</b> Outcome regression and standardization</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#adjusting-with-regression"><i class="fa fa-check"></i><b>7.1</b> Adjusting with regression</a></li>
+<li class="chapter" data-level="7.2" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#standardization-predict-then-average"><i class="fa fa-check"></i><b>7.2</b> Standardization: predict, then average</a></li>
+<li class="chapter" data-level="7.3" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#the-bootstrap"><i class="fa fa-check"></i><b>7.3</b> The bootstrap</a></li>
+<li class="chapter" data-level="7.4" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#effect-modification"><i class="fa fa-check"></i><b>7.4</b> Effect modification</a></li>
+<li class="chapter" data-level="7.5" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="propensity-scores.html"><a href="propensity-scores.html"><i class="fa fa-check"></i><b>8</b> Propensity scores</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="propensity-scores.html"><a href="propensity-scores.html#one-number-that-summarizes-confounding"><i class="fa fa-check"></i><b>8.1</b> One number that summarizes confounding</a></li>
+<li class="chapter" data-level="8.2" data-path="propensity-scores.html"><a href="propensity-scores.html#estimating-the-score"><i class="fa fa-check"></i><b>8.2</b> Estimating the score</a></li>
+<li class="chapter" data-level="8.3" data-path="propensity-scores.html"><a href="propensity-scores.html#stratification"><i class="fa fa-check"></i><b>8.3</b> Stratification</a></li>
+<li class="chapter" data-level="8.4" data-path="propensity-scores.html"><a href="propensity-scores.html#matching"><i class="fa fa-check"></i><b>8.4</b> Matching</a></li>
+<li class="chapter" data-level="8.5" data-path="propensity-scores.html"><a href="propensity-scores.html#choosing-the-ps-model"><i class="fa fa-check"></i><b>8.5</b> Choosing the PS model</a></li>
+<li class="chapter" data-level="8.6" data-path="propensity-scores.html"><a href="propensity-scores.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html"><i class="fa fa-check"></i><b>9</b> Inverse probability of treatment weighting</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#reweighting-to-a-pseudo-population"><i class="fa fa-check"></i><b>9.1</b> Reweighting to a pseudo-population</a></li>
+<li class="chapter" data-level="9.2" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#building-the-weights"><i class="fa fa-check"></i><b>9.2</b> Building the weights</a></li>
+<li class="chapter" data-level="9.3" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#estimating-the-effect"><i class="fa fa-check"></i><b>9.3</b> Estimating the effect</a></li>
+<li class="chapter" data-level="9.4" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#truncation-and-diagnostics"><i class="fa fa-check"></i><b>9.4</b> Truncation and diagnostics</a></li>
+<li class="chapter" data-level="9.5" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#standardized-mortality-ratio-weights"><i class="fa fa-check"></i><b>9.5</b> Standardized mortality ratio weights</a></li>
+<li class="chapter" data-level="9.6" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#msms-and-where-weighting-shines"><i class="fa fa-check"></i><b>9.6</b> MSMs and where weighting shines</a></li>
+<li class="chapter" data-level="9.7" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#three-estimators-one-estimand"><i class="fa fa-check"></i><b>9.7</b> Three estimators, one estimand</a></li>
+<li class="chapter" data-level="9.8" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#exercises-7"><i class="fa fa-check"></i><b>9.8</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>III Time, Censoring, and Survival</b></span></li>
+<li class="chapter" data-level="10" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html"><i class="fa fa-check"></i><b>10</b> Survival outcomes and censoring</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#the-statin-question"><i class="fa fa-check"></i><b>10.1</b> The statin question</a></li>
+<li class="chapter" data-level="10.2" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#anatomy-of-time-to-event-data"><i class="fa fa-check"></i><b>10.2</b> Anatomy of time-to-event data</a></li>
+<li class="chapter" data-level="10.3" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#kaplanmeier"><i class="fa fa-check"></i><b>10.3</b> Kaplan–Meier</a></li>
+<li class="chapter" data-level="10.4" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#death-as-a-competing-risk"><i class="fa fa-check"></i><b>10.4</b> Death as a competing risk</a></li>
+<li class="chapter" data-level="10.5" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#risks-versus-hazards"><i class="fa fa-check"></i><b>10.5</b> Risks versus hazards</a></li>
+<li class="chapter" data-level="10.6" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#when-censoring-lies"><i class="fa fa-check"></i><b>10.6</b> When censoring lies</a></li>
+<li class="chapter" data-level="10.7" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#exercises-8"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html"><i class="fa fa-check"></i><b>11</b> Inverse probability of censoring weights</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weighting-returns"><i class="fa fa-check"></i><b>11.1</b> Weighting returns</a></li>
+<li class="chapter" data-level="11.2" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#person-period-data"><i class="fa fa-check"></i><b>11.2</b> Person-period data</a></li>
+<li class="chapter" data-level="11.3" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#building-censoring-weights"><i class="fa fa-check"></i><b>11.3</b> Building censoring weights</a></li>
+<li class="chapter" data-level="11.4" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weight-diagnostics"><i class="fa fa-check"></i><b>11.4</b> Weight diagnostics</a></li>
+<li class="chapter" data-level="11.5" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#did-it-matter"><i class="fa fa-check"></i><b>11.5</b> Did it matter?</a></li>
+<li class="chapter" data-level="11.6" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#exercises-9"><i class="fa fa-check"></i><b>11.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html"><i class="fa fa-check"></i><b>12</b> Clone-censor-weight</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#from-point-treatments-to-treatment-strategies"><i class="fa fa-check"></i><b>12.1</b> From point treatments to treatment strategies</a></li>
+<li class="chapter" data-level="12.2" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#the-clone-censor-weight-recipe"><i class="fa fa-check"></i><b>12.2</b> The clone-censor-weight recipe</a></li>
+<li class="chapter" data-level="12.3" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#deviation-in-the-statin-cohort"><i class="fa fa-check"></i><b>12.3</b> Deviation in the statin cohort</a></li>
+<li class="chapter" data-level="12.4" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#estimating-per-protocol-risk-curves"><i class="fa fa-check"></i><b>12.4</b> Estimating per-protocol risk curves</a></li>
+<li class="chapter" data-level="12.5" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#interpreting-the-per-protocol-effect"><i class="fa fa-check"></i><b>12.5</b> Interpreting the per-protocol effect</a></li>
+<li class="chapter" data-level="12.6" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#exercises-10"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>IV Beyond Exchangeability</b></span></li>
+<li class="chapter" data-level="13" data-path="instrumental-variables.html"><a href="instrumental-variables.html"><i class="fa fa-check"></i><b>13</b> Instrumental variables</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="instrumental-variables.html"><a href="instrumental-variables.html#when-exchangeability-fails"><i class="fa fa-check"></i><b>13.1</b> When exchangeability fails</a></li>
+<li class="chapter" data-level="13.2" data-path="instrumental-variables.html"><a href="instrumental-variables.html#provider-preference-as-an-instrument"><i class="fa fa-check"></i><b>13.2</b> Provider preference as an instrument</a></li>
+<li class="chapter" data-level="13.3" data-path="instrumental-variables.html"><a href="instrumental-variables.html#the-wald-and-two-stage-estimators"><i class="fa fa-check"></i><b>13.3</b> The Wald and two-stage estimators</a></li>
+<li class="chapter" data-level="13.4" data-path="instrumental-variables.html"><a href="instrumental-variables.html#interpreting-the-late"><i class="fa fa-check"></i><b>13.4</b> Interpreting the LATE</a></li>
+<li class="chapter" data-level="13.5" data-path="instrumental-variables.html"><a href="instrumental-variables.html#exercises-11"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html"><i class="fa fa-check"></i><b>14</b> Sensitivity analysis</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#what-we-assumed-and-cannot-check"><i class="fa fa-check"></i><b>14.1</b> What we assumed and cannot check</a></li>
+<li class="chapter" data-level="14.2" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#external-adjustment"><i class="fa fa-check"></i><b>14.2</b> External adjustment</a></li>
+<li class="chapter" data-level="14.3" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#the-e-value"><i class="fa fa-check"></i><b>14.3</b> The E-value</a></li>
+<li class="chapter" data-level="14.4" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#negative-control-outcomes"><i class="fa fa-check"></i><b>14.4</b> Negative control outcomes</a></li>
+<li class="chapter" data-level="14.5" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#reporting-a-causal-analysis"><i class="fa fa-check"></i><b>14.5</b> Reporting a causal analysis</a></li>
+<li class="chapter" data-level="14.6" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#exercises-12"><i class="fa fa-check"></i><b>14.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendices</b></span></li>
+<li class="chapter" data-level="A" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html"><i class="fa fa-check"></i><b>A</b> R and RStudio setup</a>
+<ul>
+<li class="chapter" data-level="A.1" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-r-and-rstudio"><i class="fa fa-check"></i><b>A.1</b> Installing R and RStudio</a></li>
+<li class="chapter" data-level="A.2" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-packages-this-book-uses"><i class="fa fa-check"></i><b>A.2</b> Installing the packages this book uses</a></li>
+<li class="chapter" data-level="A.3" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-namcs-teaching-package"><i class="fa fa-check"></i><b>A.3</b> Installing the NAMCS teaching package</a></li>
+<li class="chapter" data-level="A.4" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#loading-everything-a-chapter-needs"><i class="fa fa-check"></i><b>A.4</b> Loading everything a chapter needs</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="namcs-codebook.html"><a href="namcs-codebook.html"><i class="fa fa-check"></i><b>B</b> NAMCS codebook</a>
+<ul>
+<li class="chapter" data-level="B.1" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-nsaid-cohort-ns"><i class="fa fa-check"></i><b>B.1</b> The NSAID cohort (<code>ns</code>)</a></li>
+<li class="chapter" data-level="B.2" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-statin-cohort-sta"><i class="fa fa-check"></i><b>B.2</b> The statin cohort (<code>sta</code>)</a></li>
+<li class="chapter" data-level="B.3" data-path="namcs-codebook.html"><a href="namcs-codebook.html#a-note-on-the-outcomes"><i class="fa fa-check"></i><b>B.3</b> A note on the outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="C" data-path="the-estimator-toolkit.html"><a href="the-estimator-toolkit.html"><i class="fa fa-check"></i><b>C</b> The estimator toolkit</a></li>
+<li class="chapter" data-level="D" data-path="course-map-phs-921.html"><a href="course-map-phs-921.html"><i class="fa fa-check"></i><b>D</b> Course map: PHS 921</a></li>
+<li class="chapter" data-level="E" data-path="further-reading.html"><a href="further-reading.html"><i class="fa fa-check"></i><b>E</b> Further reading</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Causal Inference in Epidemiology Using R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="getting-started-with-r-and-the-namcs-data" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> Getting started with R and the NAMCS data<a href="getting-started-with-r-and-the-namcs-data.html#getting-started-with-r-and-the-namcs-data" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Every idea in this book is attached to code, and the code is R. If you
+have never used R before, this chapter is for you: it introduces just
+enough of the tidyverse to read and write the data manipulations in the
+chapters that follow, walks through the two example cohorts you will be
+living with for the rest of the semester, and ends by building your first
+reusable function — a “Table 1” generator you will reach for in every
+observational study you ever run, in this course and after it. If you
+already know R and the tidyverse well, skim this chapter for the two data
+sets and read the Table 1 section, since <code>table1_continuous()</code> and
+<code>table1_categorical()</code> are used again in later chapters.</p>
+<div id="r-rstudio-and-the-tidyverse" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> R, RStudio, and the tidyverse<a href="getting-started-with-r-and-the-namcs-data.html#r-rstudio-and-the-tidyverse" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>R is the language; RStudio is the editor most people use to write and run
+it. Appendix A walks through installing both, along with the packages
+this book relies on. Once they are installed, you will type or paste code
+into a script or, as here, into a code chunk inside an R Markdown
+document, and run it a line or a chunk at a time.</p>
+<p>The basic vocabulary of R is small. An <strong>object</strong> is a name that holds a
+value — a number, a piece of text, or, most often in this book, a
+rectangular data set with rows and columns (a <strong>data frame</strong>, or in the
+tidyverse a <strong>tibble</strong>). A <strong>function</strong> takes some input, does something
+to it, and returns an output; <code>mean(x)</code> takes a vector <code>x</code> and returns
+its average. A <strong>package</strong> is a bundle of functions someone else wrote
+and shared, loaded with <code>library()</code>. The tidyverse is one such bundle —
+really a collection of packages, including <code>dplyr</code> for manipulating data
+frames and <code>ggplot2</code> for plotting — built around a shared design that
+tries to make code read like a description of what you want done rather
+than a set of instructions for how a computer should do it.</p>
+<p>The setup chunk at the top of this chapter already did the loading for
+us: <code>source("R/setup.R")</code> runs a script that attaches the tidyverse,
+attaches the <code>NAMCS</code> package that supplies our example data, and builds
+the two analysis cohorts, <code>ns</code> and <code>sta</code>, that we will use throughout the
+book. Every chapter starts this way, so that it can be read and rendered
+on its own without depending on anything that came before it.</p>
+<p>The one piece of tidyverse syntax you should get comfortable with
+immediately is the pipe, <code>|&gt;</code>. It takes whatever is on its left and
+passes it as the first argument to whatever is on its right, so that
+<code>x |&gt; f()</code> means the same thing as <code>f(x)</code>. This lets you chain several
+operations together and read them roughly left to right, top to bottom,
+as a sequence of steps: start with the data, then filter it, then
+summarize it. Four <code>dplyr</code> verbs will carry most of the weight in this
+book: <code>filter()</code> keeps rows that satisfy a condition, <code>select()</code> keeps
+particular columns, <code>mutate()</code> adds or changes a column, and
+<code>group_by()</code> paired with <code>summarise()</code> computes a statistic separately
+within each level of a grouping variable. A fifth, <code>count()</code>, is a
+shortcut for counting rows within groups.</p>
+<p>A few examples, all using the NSAID cohort <code>ns</code>:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb3-1" tabindex="-1"></a>ns <span class="sc">|&gt;</span> <span class="fu">filter</span>(age <span class="sc">&gt;=</span> <span class="dv">65</span>) <span class="sc">|&gt;</span> <span class="fu">nrow</span>()</span></code></pre></div>
+<pre><code>## [1] 501</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb5-1" tabindex="-1"></a>ns <span class="sc">|&gt;</span> <span class="fu">select</span>(cox2_initiation, age, sex) <span class="sc">|&gt;</span> <span class="fu">head</span>(<span class="dv">3</span>)</span></code></pre></div>
+<pre><code>## # A tibble: 3 x 3
+##   cox2_initiation   age sex   
+##   &lt;fct&gt;           &lt;dbl&gt; &lt;chr&gt; 
+## 1 No                 44 Male  
+## 2 Yes                58 Female
+## 3 No                 78 Female</code></pre>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb7-1" tabindex="-1"></a>ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">age65 =</span> <span class="fu">as.integer</span>(age <span class="sc">&gt;=</span> <span class="dv">65</span>)) <span class="sc">|&gt;</span> <span class="fu">count</span>(age65)</span></code></pre></div>
+<pre><code>## # A tibble: 2 x 2
+##   age65     n
+##   &lt;int&gt; &lt;int&gt;
+## 1     0  2381
+## 2     1   501</code></pre>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb9-1" tabindex="-1"></a>ns <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="getting-started-with-r-and-the-namcs-data.html#cb9-2" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_initiation) <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="getting-started-with-r-and-the-namcs-data.html#cb9-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">mean_age =</span> <span class="fu">mean</span>(age))</span></code></pre></div>
+<pre><code>## # A tibble: 2 x 3
+##   cox2_initiation     n mean_age
+##   &lt;fct&gt;           &lt;int&gt;    &lt;dbl&gt;
+## 1 No               2642     47.3
+## 2 Yes               240     53.4</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb11-1" tabindex="-1"></a>ns <span class="sc">|&gt;</span> <span class="fu">count</span>(sex, cox2_initiation)</span></code></pre></div>
+<pre><code>## # A tibble: 4 x 3
+##   sex    cox2_initiation     n
+##   &lt;chr&gt;  &lt;fct&gt;           &lt;int&gt;
+## 1 Female No               1552
+## 2 Female Yes               140
+## 3 Male   No               1090
+## 4 Male   Yes               100</code></pre>
+<p>The first line counts how many patients in <code>ns</code> are 65 or older. The
+second pulls out three columns and prints the first few rows. The third
+uses <code>mutate()</code> to add a new column, <code>age65</code>, that recodes age as a 0/1
+indicator for being 65 or older, and then counts how many patients land
+in each category — the same recode-and-count pattern behind <code>cox2_init</code>
+and <code>pud</code>, the two convenience columns <code>R/setup.R</code> added for us. The
+fourth groups patients by which drug class they initiated and reports
+the number of patients and mean age in each group — a first, very small
+taste of the comparisons we will spend the rest of the book refining. The
+fifth cross-tabulates sex against treatment group. None of this is
+causal inference yet; it is just description, but description is where
+every analysis starts, and it is worth being fluent in it before adding
+any causal machinery on top.</p>
+</div>
+<div id="the-namcs-teaching-cohorts" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> The NAMCS teaching cohorts<a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-teaching-cohorts" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The data behind every example in this book come from the National
+Ambulatory Medical Care Survey (NAMCS), an annual survey of visits to
+office-based physicians in the United States. We use five years of
+NAMCS, 2005 through 2009, assembled into two teaching cohorts by the
+<code>NAMCS</code> R package. Both cohorts are built from real survey visits, but
+the outcomes — peptic ulcer disease in one cohort, cardiovascular events
+and survival times in the other — are simulated, so that we know there
+is a true underlying data-generating process while still working with
+realistic covariate structure. This is common in causal inference
+teaching materials: it lets us illustrate methods with plausible clinical
+questions without the ambiguity of relying on outcomes we cannot
+validate.</p>
+<p>The first cohort, <code>ns</code>, follows new users of NSAIDs — patients starting
+either a nonselective NSAID or a Cox-2 selective inhibitor — and asks
+whether the choice of drug class affects the risk of incident peptic
+ulcer disease. <code>glimpse()</code> gives a quick sense of what is in it:</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb13-1" tabindex="-1"></a><span class="fu">glimpse</span>(ns)</span></code></pre></div>
+<pre><code>## Rows: 2,882
+## Columns: 60
+## $ year                      &lt;fct&gt; 2005, 2005, 2005, 2005, 2005, 2005, 2005, 20~
+## $ phycode                   &lt;chr&gt; &quot;200500013&quot;, &quot;200500015&quot;, &quot;200500015&quot;, &quot;2005~
+## $ patcode                   &lt;chr&gt; &quot;2005000130008&quot;, &quot;2005000150004&quot;, &quot;200500015~
+## $ region                    &lt;fct&gt; Northeast, Northeast, Northeast, Northeast, ~
+## $ northeast                 &lt;fct&gt; Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes,~
+## $ midwest                   &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ specr                     &lt;fct&gt; Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes,~
+## $ speccat                   &lt;fct&gt; Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes, Yes,~
+## $ surgspec                  &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ medspec                   &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ cvdspec                   &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ age                       &lt;dbl&gt; 44, 58, 78, 23, 56, 68, 46, 40, 29, 61, 43, ~
+## $ raceblkoth                &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ pripayer                  &lt;fct&gt; Yes, Yes, NA, NA, Yes, NA, NA, Yes, Yes, Yes~
+## $ mcaidselfnc_imp           &lt;fct&gt; No, No, No, No, No, No, Yes, No, No, No, No,~
+## $ urbanrur0609              &lt;fct&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ nonmetro0609              &lt;fct&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ hinczip0609               &lt;fct&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ lowinczip0609             &lt;fct&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ pctpov0609                &lt;fct&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ hipovzip0609              &lt;fct&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ pctbamore0609             &lt;fct&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ arthritis                 &lt;fct&gt; No, No, No, No, Yes, Yes, No, No, Yes, Yes, ~
+## $ asthma                    &lt;fct&gt; No, No, No, No, No, No, No, No, Yes, No, No,~
+## $ cancer                    &lt;fct&gt; No, No, No, No, No, No, No, Yes, No, No, No,~
+## $ cerebrovascular_disease   &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ chronic_kidney_disease    &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ heart_failure             &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ chronic_pulmonary_disease &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ depression                &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ diabetes                  &lt;fct&gt; No, No, No, No, No, Yes, Yes, No, No, Yes, N~
+## $ hyperlipidemia            &lt;fct&gt; No, No, No, No, No, No, No, No, No, Yes, No,~
+## $ hypertension              &lt;fct&gt; No, No, No, No, No, No, No, No, No, Yes, No,~
+## $ coronory_artery_disease   &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ osteoporosis              &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ totchron_imp              &lt;fct&gt; No, No, No, No, Yes, NA, Yes, Yes, NA, NA, Y~
+## $ multchron_imp             &lt;fct&gt; No, No, No, No, No, Yes, No, No, Yes, Yes, N~
+## $ surgflare_imp             &lt;fct&gt; No, No, No, No, No, Yes, No, No, No, No, No,~
+## $ surgchron_imp             &lt;fct&gt; No, No, No, No, Yes, Yes, Yes, No, No, No, N~
+## $ bpsys                     &lt;fct&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ bpdias                    &lt;fct&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, ~
+## $ tobacco_imp               &lt;fct&gt; No, No, No, No, Yes, No, No, No, Yes, No, Ye~
+## $ bp_stage2                 &lt;fct&gt; No, No, No, No, No, No, Yes, Yes, No, No, No~
+## $ bp_stage1                 &lt;fct&gt; No, No, No, No, No, No, No, No, No, Yes, No,~
+## $ bp_prehtn                 &lt;fct&gt; No, Yes, Yes, Yes, Yes, Yes, No, No, No, No,~
+## $ cox2                      &lt;fct&gt; No, Yes, No, No, No, No, No, No, No, No, No,~
+## $ cox2_initiation           &lt;fct&gt; No, Yes, No, No, No, No, No, No, No, No, No,~
+## $ newnsnsaid                &lt;fct&gt; Yes, No, Yes, Yes, Yes, Yes, Yes, Yes, Yes, ~
+## $ anti_hypertensive_use     &lt;fct&gt; No, No, No, No, No, No, Yes, No, No, Yes, No~
+## $ statin_use                &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ h2_antagonist_use         &lt;fct&gt; No, No, No, No, No, No, No, No, Yes, No, No,~
+## $ ppi_use                   &lt;fct&gt; No, No, No, No, No, Yes, No, No, No, No, No,~
+## $ aspirin_use               &lt;fct&gt; No, No, No, No, No, No, No, No, No, Yes, No,~
+## $ anti_coagulant_use        &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ corticosteroid_use        &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ sex                       &lt;chr&gt; &quot;Male&quot;, &quot;Female&quot;, &quot;Female&quot;, &quot;Male&quot;, &quot;Male&quot;, ~
+## $ race                      &lt;fct&gt; White, White, White, White, White, White, Wh~
+## $ incident_pud              &lt;fct&gt; No, No, Yes, No, No, No, Yes, No, No, No, No~
+## $ cox2_init                 &lt;int&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,~
+## $ pud                       &lt;int&gt; 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,~</code></pre>
+<p>There are 2882 patients in <code>ns</code>, of whom
+240 initiated a Cox-2 selective
+inhibitor. Alongside the treatment indicator <code>cox2_initiation</code> and the
+outcome <code>incident_pud</code>, the cohort carries baseline covariates: age, sex,
+race, region, calendar year, a set of chronic conditions, and
+comedications like corticosteroids, aspirin, and gastroprotective drugs.
+<code>R/setup.R</code> already added two convenience columns, <code>cox2_init</code> and <code>pud</code>,
+which are the same information as <code>cox2_initiation</code> and <code>incident_pud</code>
+recoded as 0/1 integers — most of the model-fitting functions we write
+later expect a numeric 0/1 treatment or outcome rather than a factor.</p>
+<p>The second cohort, <code>sta</code>, follows patients who did or did not initiate a
+statin, and asks whether statin initiation reduces the risk of a
+cardiovascular event. Because a cardiovascular event can happen — or
+fail to happen — at any point over years of follow-up, this cohort looks
+a little different:</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb15-1" tabindex="-1"></a><span class="fu">glimpse</span>(sta)</span></code></pre></div>
+<pre><code>## Rows: 6,165
+## Columns: 39
+## $ year                      &lt;dbl&gt; 2005, 2005, 2005, 2005, 2005, 2005, 2005, 20~
+## $ region                    &lt;fct&gt; Northeast, Northeast, Northeast, Northeast, ~
+## $ age                       &lt;dbl&gt; 39, 46, 58, 32, 36, 36, 33, 72, 70, 84, 43, ~
+## $ arthritis                 &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ asthma                    &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ cancer                    &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ cerebrovascular_disease   &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ chronic_kidney_disease    &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ heart_failure             &lt;fct&gt; No, No, No, No, No, No, No, Yes, No, No, No,~
+## $ chronic_pulmonary_disease &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ depression                &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, Yes,~
+## $ diabetes                  &lt;fct&gt; No, Yes, No, No, No, No, Yes, No, No, No, No~
+## $ hyperlipidemia            &lt;fct&gt; No, No, Yes, No, No, No, No, No, No, No, No,~
+## $ hypertension              &lt;fct&gt; No, No, No, No, No, No, No, Yes, No, Yes, No~
+## $ coronory_artery_disease   &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ obesity                   &lt;fct&gt; No, No, No, No, No, No, No, No, Yes, No, No,~
+## $ osteoporosis              &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ tobacco_use               &lt;fct&gt; No, No, No, No, Yes, No, No, No, No, No, No,~
+## $ statinpotency_use         &lt;fct&gt; No treatment, No treatment, No treatment, No~
+## $ nsaid_use                 &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ anti_hypertensive_use     &lt;fct&gt; No, Yes, No, No, No, No, No, No, No, Yes, No~
+## $ h2_antagonist_use         &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ ppi_use                   &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ aspirin_use               &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ anti_coagulant_use        &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ corticosteroid_use        &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ mi                        &lt;fct&gt; No, No, No, No, No, No, No, No, No, No, No, ~
+## $ sex                       &lt;chr&gt; &quot;Male&quot;, &quot;Female&quot;, &quot;Male&quot;, &quot;Female&quot;, &quot;Female&quot;~
+## $ race                      &lt;fct&gt; White, White, White, White, White, White, Wh~
+## $ statin_use                &lt;fct&gt; No Treatment, No Treatment, No Treatment, No~
+## $ cv_time                   &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, 8.64, NA, NA, NA~
+## $ death_time                &lt;dbl&gt; NA, NA, NA, NA, 2.09, NA, NA, NA, NA, NA, NA~
+## $ nonadherence              &lt;dbl&gt; NA, NA, NA, NA, NA, 9.60, NA, NA, NA, 1.35, ~
+## $ cv_indicator              &lt;dbl&gt; NA, NA, NA, NA, 0, NA, NA, 1, NA, NA, NA, NA~
+## $ loss_fu_time              &lt;dbl&gt; 0.5, 1.8, 3.1, 2.9, NA, NA, 7.0, NA, 2.2, 2.~
+## $ cv_death_time             &lt;dbl&gt; NA, NA, NA, NA, 2.09, NA, NA, 8.64, NA, NA, ~
+## $ statin                    &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0,~
+## $ event_time                &lt;dbl&gt; 0.50, 1.80, 3.10, 2.90, 2.09, 10.00, 7.00, 8~
+## $ cv_event                  &lt;int&gt; 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,~</code></pre>
+<p>There are 6165 patients in <code>sta</code>, and 838
+of them initiated a statin. Instead of a single yes/no outcome measured
+at a fixed time, <code>sta</code> carries several time variables — <code>cv_time</code>,
+<code>death_time</code>, <code>loss_fu_time</code> — recording, in years, when each event
+would have occurred had it occurred at all (a patient who never has the
+event has a missing <code>cv_time</code>). <code>R/setup.R</code> combines these into a single
+<code>event_time</code>, the time to whichever of a cardiovascular event, death,
+loss to follow-up, or the administrative end of the study (<code>admin_end</code>,
+set to 10 years) happened first, and a <code>cv_event</code> indicator for whether
+that first thing was actually the cardiovascular event. We will not need
+any of that machinery until Chapter 10, on survival outcomes and
+censoring; for now it is enough to know that <code>sta</code> exists, that it is
+bigger and slower-moving than <code>ns</code>, and that it is where the book turns
+once we start worrying about follow-up time.</p>
+<p>Appendix B collects a full codebook for both cohorts, generated directly
+from the data rather than typed out by hand, so it will always match
+what is actually in the package. If you are ever unsure what a variable
+means, that is the place to check.</p>
+</div>
+<div id="plotting-with-ggplot2" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> Plotting with ggplot2<a href="getting-started-with-r-and-the-namcs-data.html#plotting-with-ggplot2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><code>ggplot2</code> builds a plot by mapping columns of data to visual properties
+— an x-axis, a y-axis, a color — and then adding layers on top that
+say how to draw it: as points, bars, lines, or histograms. Every
+<code>ggplot2</code> call in this book starts the same way, with <code>ggplot(data, aes(...))</code> naming the data and the mapping, followed by one or more
+<code>geom_*()</code> layers.</p>
+<p>A natural first question about <code>ns</code> is whether Cox-2 initiators and
+nonselective NSAID initiators look similar in age. A histogram, faceted
+by treatment group, answers this directly:</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb17-1" tabindex="-1"></a><span class="fu">ggplot</span>(ns, <span class="fu">aes</span>(age)) <span class="sc">+</span></span>
+<span id="cb17-2"><a href="getting-started-with-r-and-the-namcs-data.html#cb17-2" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">binwidth =</span> <span class="dv">5</span>, <span class="at">boundary =</span> <span class="dv">0</span>) <span class="sc">+</span></span>
+<span id="cb17-3"><a href="getting-started-with-r-and-the-namcs-data.html#cb17-3" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>cox2_initiation) <span class="sc">+</span></span>
+<span id="cb17-4"><a href="getting-started-with-r-and-the-namcs-data.html#cb17-4" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Age (years)&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Number of patients&quot;</span>,</span>
+<span id="cb17-5"><a href="getting-started-with-r-and-the-namcs-data.html#cb17-5" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">&quot;Age distribution by initiated drug class&quot;</span>)</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:age-hist"></span>
+<img src="causal-inference-epi-r_files/figure-html/age-hist-1.png" alt="Age distribution by initiated drug class." width="672" />
+<p class="caption">
+Figure 2.1: Age distribution by initiated drug class.
+</p>
+</div>
+<p>The two distributions are not identical, and that alone is worth
+sitting with for a moment: it means age could confound any simple
+comparison of peptic ulcer risk between the groups, since age is
+plausibly related to both which drug a physician chooses to prescribe
+and the baseline risk of peptic ulcer disease.</p>
+<p>A second question is whether the two groups differ in their burden of
+relevant comorbidities and comedications. A bar chart of prevalence, one
+bar per condition per group, is a compact way to see several
+comparisons at once:</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb18-1" tabindex="-1"></a>ns <span class="sc">|&gt;</span></span>
+<span id="cb18-2"><a href="getting-started-with-r-and-the-namcs-data.html#cb18-2" tabindex="-1"></a>  <span class="fu">select</span>(cox2_initiation, arthritis, diabetes, hypertension,</span>
+<span id="cb18-3"><a href="getting-started-with-r-and-the-namcs-data.html#cb18-3" tabindex="-1"></a>         corticosteroid_use) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="getting-started-with-r-and-the-namcs-data.html#cb18-4" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="sc">-</span>cox2_initiation, <span class="at">names_to =</span> <span class="st">&quot;condition&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-5"><a href="getting-started-with-r-and-the-namcs-data.html#cb18-5" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_initiation, condition) <span class="sc">|&gt;</span></span>
+<span id="cb18-6"><a href="getting-started-with-r-and-the-namcs-data.html#cb18-6" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">prevalence =</span> <span class="fu">mean</span>(value <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span>), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb18-7"><a href="getting-started-with-r-and-the-namcs-data.html#cb18-7" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(condition, prevalence, <span class="at">fill =</span> cox2_initiation)) <span class="sc">+</span></span>
+<span id="cb18-8"><a href="getting-started-with-r-and-the-namcs-data.html#cb18-8" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">&quot;dodge&quot;</span>) <span class="sc">+</span></span>
+<span id="cb18-9"><a href="getting-started-with-r-and-the-namcs-data.html#cb18-9" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="cn">NULL</span>, <span class="at">y =</span> <span class="st">&quot;Prevalence&quot;</span>, <span class="at">fill =</span> <span class="st">&quot;Initiated Cox-2?&quot;</span>) <span class="sc">+</span></span>
+<span id="cb18-10"><a href="getting-started-with-r-and-the-namcs-data.html#cb18-10" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code></pre></div>
+<div class="figure"><span style="display:block;" id="fig:comorbid-bars"></span>
+<img src="causal-inference-epi-r_files/figure-html/comorbid-bars-1.png" alt="Prevalence of selected comorbidities and comedications by initiated drug class." width="672" />
+<p class="caption">
+Figure 2.2: Prevalence of selected comorbidities and comedications by initiated drug class.
+</p>
+</div>
+<p>Arthritis, in particular, is more common among Cox-2 initiators than
+among nonselective NSAID initiators, which makes clinical sense — Cox-2
+selective drugs are often chosen specifically for patients thought to be
+at higher gastrointestinal risk — and is exactly the kind of pattern that
+will occupy us once we start asking how to adjust for confounding.</p>
+</div>
+<div id="your-first-reusable-functions-table-1" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> Your first reusable functions: Table 1<a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Every observational paper you will ever read, and every one you will
+ever write, opens with a table comparing the characteristics of the
+groups being compared — universally, if a little unimaginatively, called
+“Table 1.” It is descriptive, not causal, but it is also indispensable:
+it is where a reader first sees whether the groups look similar,
+and it is often where a reader first suspects they don’t. You will make
+some version of this table for every study you ever do, so rather than
+rebuild it from scratch each time, we are going to write it once, as a
+function, and reuse it for the rest of this book.</p>
+<p>A function in R is defined with <code>function(...)</code>, naming its arguments,
+followed by a body that computes something from them and returns it (by
+default, the value of the last expression evaluated). Writing your own
+functions is the single habit that will save you the most time as an R
+user, because it turns a block of code you would otherwise copy, paste,
+and slightly mis-edit into something you write once, test once, and
+trust afterward.</p>
+<p>A Table 1 needs to summarize two kinds of variables differently:
+continuous variables as a mean and standard deviation, and categorical
+variables as a count and percentage, both computed separately within
+each level of a grouping variable (here, treatment group). We will write
+one function for each.</p>
+<p>For continuous variables, the recipe is: reshape the requested columns
+into a long format with one row per patient per variable, group by the
+grouping variable and the variable name, compute <code>"mean (sd)"</code> as a
+formatted string, and reshape back so that each treatment group is its
+own column.</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-1" tabindex="-1"></a>table1_continuous <span class="ot">&lt;-</span> <span class="cf">function</span>(data, vars, by) {</span>
+<span id="cb19-2"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-2" tabindex="-1"></a>  data <span class="sc">|&gt;</span></span>
+<span id="cb19-3"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-3" tabindex="-1"></a>    <span class="fu">select</span>(<span class="fu">all_of</span>(<span class="fu">c</span>(by, vars))) <span class="sc">|&gt;</span></span>
+<span id="cb19-4"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-4" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(<span class="fu">all_of</span>(vars), <span class="at">names_to =</span> <span class="st">&quot;variable&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb19-5"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-5" tabindex="-1"></a>    <span class="fu">group_by</span>(.data[[by]], variable) <span class="sc">|&gt;</span></span>
+<span id="cb19-6"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-6" tabindex="-1"></a>    <span class="fu">summarise</span>(</span>
+<span id="cb19-7"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-7" tabindex="-1"></a>      <span class="at">stat =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%.1f (%.1f)&quot;</span>,</span>
+<span id="cb19-8"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-8" tabindex="-1"></a>                     <span class="fu">mean</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>), <span class="fu">sd</span>(value, <span class="at">na.rm =</span> <span class="cn">TRUE</span>)),</span>
+<span id="cb19-9"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-9" tabindex="-1"></a>      <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb19-10"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-10" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
+<span id="cb19-11"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-11" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="fu">all_of</span>(by), <span class="at">values_from =</span> stat)</span>
+<span id="cb19-12"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-12" tabindex="-1"></a>}</span></code></pre></div>
+<p>A couple of details are worth pointing out because they recur throughout
+this book. <code>all_of(vars)</code> tells <code>select()</code> and <code>pivot_longer()</code> that
+<code>vars</code> is a character vector of column names supplied by the caller,
+rather than a single column to look up literally — this is what lets the
+function work for any set of variables, not just the ones we happen to
+try first. <code>.data[[by]]</code> does the analogous thing for <code>group_by()</code>,
+letting the name of the grouping column be a string passed in as an
+argument rather than hard-coded. Together these are what make the
+function <em>reusable</em>: nothing about age or treatment group is written
+into the body of <code>table1_continuous()</code> itself.</p>
+<p>Categorical variables follow the same shape, but count levels instead of
+averaging values:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-1" tabindex="-1"></a>table1_categorical <span class="ot">&lt;-</span> <span class="cf">function</span>(data, vars, by) {</span>
+<span id="cb20-2"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-2" tabindex="-1"></a>  data <span class="sc">|&gt;</span></span>
+<span id="cb20-3"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-3" tabindex="-1"></a>    <span class="fu">select</span>(<span class="fu">all_of</span>(<span class="fu">c</span>(by, vars))) <span class="sc">|&gt;</span></span>
+<span id="cb20-4"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-4" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">all_of</span>(vars), as.character)) <span class="sc">|&gt;</span></span>
+<span id="cb20-5"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-5" tabindex="-1"></a>    <span class="fu">pivot_longer</span>(<span class="fu">all_of</span>(vars), <span class="at">names_to =</span> <span class="st">&quot;variable&quot;</span>, <span class="at">values_to =</span> <span class="st">&quot;level&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb20-6"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-6" tabindex="-1"></a>    <span class="fu">count</span>(.data[[by]], variable, level) <span class="sc">|&gt;</span></span>
+<span id="cb20-7"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-7" tabindex="-1"></a>    <span class="fu">group_by</span>(.data[[by]], variable) <span class="sc">|&gt;</span></span>
+<span id="cb20-8"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-8" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">stat =</span> <span class="fu">sprintf</span>(<span class="st">&quot;%d (%.1f%%)&quot;</span>, n, <span class="dv">100</span> <span class="sc">*</span> n <span class="sc">/</span> <span class="fu">sum</span>(n))) <span class="sc">|&gt;</span></span>
+<span id="cb20-9"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-9" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb20-10"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-10" tabindex="-1"></a>    <span class="fu">select</span>(<span class="sc">-</span>n) <span class="sc">|&gt;</span></span>
+<span id="cb20-11"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-11" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="fu">all_of</span>(by), <span class="at">values_from =</span> stat)</span>
+<span id="cb20-12"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-12" tabindex="-1"></a>}</span></code></pre></div>
+<p>Both functions are saved in <code>R/table1.R</code> so that later chapters can pull
+them in with a single <code>source()</code> call rather than redefining them. Let’s
+use them on the NSAID cohort, comparing Cox-2 initiators to nonselective
+NSAID initiators on age and on five categorical covariates, and format
+the results with <code>knitr::kable()</code> for a readable table:</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb21-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/table1.R&quot;</span>)</span>
+<span id="cb21-2"><a href="getting-started-with-r-and-the-namcs-data.html#cb21-2" tabindex="-1"></a><span class="fu">table1_continuous</span>(ns, <span class="at">vars =</span> <span class="st">&quot;age&quot;</span>, <span class="at">by =</span> <span class="st">&quot;cox2_initiation&quot;</span>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">variable</th>
+<th align="left">No</th>
+<th align="left">Yes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">age</td>
+<td align="left">47.3 (16.6)</td>
+<td align="left">53.4 (15.7)</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb22-1" tabindex="-1"></a><span class="fu">table1_categorical</span>(</span>
+<span id="cb22-2"><a href="getting-started-with-r-and-the-namcs-data.html#cb22-2" tabindex="-1"></a>  ns,</span>
+<span id="cb22-3"><a href="getting-started-with-r-and-the-namcs-data.html#cb22-3" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">&quot;sex&quot;</span>, <span class="st">&quot;arthritis&quot;</span>, <span class="st">&quot;aspirin_use&quot;</span>, <span class="st">&quot;ppi_use&quot;</span>, <span class="st">&quot;corticosteroid_use&quot;</span>),</span>
+<span id="cb22-4"><a href="getting-started-with-r-and-the-namcs-data.html#cb22-4" tabindex="-1"></a>  <span class="at">by =</span> <span class="st">&quot;cox2_initiation&quot;</span></span>
+<span id="cb22-5"><a href="getting-started-with-r-and-the-namcs-data.html#cb22-5" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">variable</th>
+<th align="left">level</th>
+<th align="left">No</th>
+<th align="left">Yes</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">arthritis</td>
+<td align="left">No</td>
+<td align="left">1849 (70.0%)</td>
+<td align="left">128 (53.3%)</td>
+</tr>
+<tr class="even">
+<td align="left">arthritis</td>
+<td align="left">Yes</td>
+<td align="left">793 (30.0%)</td>
+<td align="left">112 (46.7%)</td>
+</tr>
+<tr class="odd">
+<td align="left">aspirin_use</td>
+<td align="left">No</td>
+<td align="left">2559 (96.9%)</td>
+<td align="left">231 (96.2%)</td>
+</tr>
+<tr class="even">
+<td align="left">aspirin_use</td>
+<td align="left">Yes</td>
+<td align="left">83 (3.1%)</td>
+<td align="left">9 (3.8%)</td>
+</tr>
+<tr class="odd">
+<td align="left">corticosteroid_use</td>
+<td align="left">No</td>
+<td align="left">2629 (99.5%)</td>
+<td align="left">235 (97.9%)</td>
+</tr>
+<tr class="even">
+<td align="left">corticosteroid_use</td>
+<td align="left">Yes</td>
+<td align="left">13 (0.5%)</td>
+<td align="left">5 (2.1%)</td>
+</tr>
+<tr class="odd">
+<td align="left">ppi_use</td>
+<td align="left">No</td>
+<td align="left">2562 (97.0%)</td>
+<td align="left">229 (95.4%)</td>
+</tr>
+<tr class="even">
+<td align="left">ppi_use</td>
+<td align="left">Yes</td>
+<td align="left">80 (3.0%)</td>
+<td align="left">11 (4.6%)</td>
+</tr>
+<tr class="odd">
+<td align="left">sex</td>
+<td align="left">Female</td>
+<td align="left">1552 (58.7%)</td>
+<td align="left">140 (58.3%)</td>
+</tr>
+<tr class="even">
+<td align="left">sex</td>
+<td align="left">Male</td>
+<td align="left">1090 (41.3%)</td>
+<td align="left">100 (41.7%)</td>
+</tr>
+</tbody>
+</table>
+<p>Look at the two tables side by side. Cox-2 initiators are, on average,
+older than nonselective NSAID initiators, and a substantially larger
+share of them have a history of arthritis. Neither table tells us
+whether Cox-2 selectivity affects peptic ulcer risk — that question
+needs the rest of this book — but both are exactly the kind of evidence
+an epidemiologist reaches for first, and both came from two functions
+you now understand well enough to have written yourself.</p>
+</div>
+<div id="exercises" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> Exercises<a href="getting-started-with-r-and-the-namcs-data.html#exercises" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li>Build both a continuous and a categorical Table 1 for the statin
+cohort, comparing statin initiators to non-initiators
+(<code>statin_use</code>) on <code>age</code> and on <code>diabetes</code>, <code>hypertension</code>, and
+<code>tobacco_use</code>. Use <code>table1_continuous()</code> and <code>table1_categorical()</code>
+exactly as they were used above, just pointing them at <code>sta</code> and a
+different <code>by</code> variable and variable list.</li>
+<li>The age-by-group histogram in the <em>Plotting with ggplot2</em> section was
+built for the NSAID cohort. Adapt that code to plot the distribution
+of <code>age</code> by <code>statin_use</code> in the <code>sta</code> cohort instead. Do the two
+statin groups look as similar in age as the two NSAID groups did?</li>
+<li>Using <code>count()</code>, tabulate the number of visits per calendar <code>year</code>
+separately for statin initiators and non-initiators in <code>sta</code>. Is the
+number of statin initiators roughly constant across 2005–2009, or
+does it trend up or down?</li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="why.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="potential-outcomes-and-causal-effects.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": null,
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

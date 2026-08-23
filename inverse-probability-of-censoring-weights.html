@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 11 Inverse probability of censoring weights | Causal Inference in Epidemiology Using R</title>
+  <meta name="description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 11 Inverse probability of censoring weights | Causal Inference in Epidemiology Using R" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 11 Inverse probability of censoring weights | Causal Inference in Epidemiology Using R" />
+  
+  <meta name="twitter:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+<meta name="author" content="M. Alan Brookhart" />
+
+
+<meta name="date" content="2026-08-23" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="survival-outcomes-and-censoring.html"/>
+<link rel="next" href="clone-censor-weight.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Causal Inference in Epidemiology Using R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+</ul></li>
+<li class="part"><span><b>I Foundations</b></span></li>
+<li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="why.html"><a href="why.html#questions-epidemiology-cannot-answer-with-association-alone"><i class="fa fa-check"></i><b>1.1</b> Questions epidemiology cannot answer with association alone</a></li>
+<li class="chapter" data-level="1.2" data-path="why.html"><a href="why.html#a-first-look-at-the-data"><i class="fa fa-check"></i><b>1.2</b> A first look at the data</a></li>
+<li class="chapter" data-level="1.3" data-path="why.html"><a href="why.html#what-this-book-covers"><i class="fa fa-check"></i><b>1.3</b> What this book covers</a></li>
+<li class="chapter" data-level="1.4" data-path="why.html"><a href="why.html#how-to-read-this-book"><i class="fa fa-check"></i><b>1.4</b> How to read this book</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html"><i class="fa fa-check"></i><b>2</b> Getting started with R and the NAMCS data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#r-rstudio-and-the-tidyverse"><i class="fa fa-check"></i><b>2.1</b> R, RStudio, and the tidyverse</a></li>
+<li class="chapter" data-level="2.2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-teaching-cohorts"><i class="fa fa-check"></i><b>2.2</b> The NAMCS teaching cohorts</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#plotting-with-ggplot2"><i class="fa fa-check"></i><b>2.3</b> Plotting with ggplot2</a></li>
+<li class="chapter" data-level="2.4" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1"><i class="fa fa-check"></i><b>2.4</b> Your first reusable functions: Table 1</a></li>
+<li class="chapter" data-level="2.5" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#exercises"><i class="fa fa-check"></i><b>2.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html"><i class="fa fa-check"></i><b>3</b> Potential outcomes and causal effects</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#two-futures-for-every-patient"><i class="fa fa-check"></i><b>3.1</b> Two futures for every patient</a></li>
+<li class="chapter" data-level="3.2" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#a-gods-eye-view-simulation"><i class="fa fa-check"></i><b>3.2</b> A god’s-eye view: simulation</a></li>
+<li class="chapter" data-level="3.3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#average-causal-effects-and-estimands"><i class="fa fa-check"></i><b>3.3</b> Average causal effects and estimands</a></li>
+<li class="chapter" data-level="3.4" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#the-identification-conditions"><i class="fa fa-check"></i><b>3.4</b> The identification conditions</a></li>
+<li class="chapter" data-level="3.5" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html"><i class="fa fa-check"></i><b>4</b> The randomized trial as the benchmark</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#why-randomization-works"><i class="fa fa-check"></i><b>4.1</b> Why randomization works</a></li>
+<li class="chapter" data-level="4.2" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#intention-to-treat-and-per-protocol"><i class="fa fa-check"></i><b>4.2</b> Intention-to-treat and per-protocol</a></li>
+<li class="chapter" data-level="4.3" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#the-target-trial"><i class="fa fa-check"></i><b>4.3</b> The target trial</a></li>
+<li class="chapter" data-level="4.4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#exercises-2"><i class="fa fa-check"></i><b>4.4</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="causal-diagrams.html"><a href="causal-diagrams.html"><i class="fa fa-check"></i><b>5</b> Causal diagrams</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="causal-diagrams.html"><a href="causal-diagrams.html#drawing-causal-assumptions"><i class="fa fa-check"></i><b>5.1</b> Drawing causal assumptions</a></li>
+<li class="chapter" data-level="5.2" data-path="causal-diagrams.html"><a href="causal-diagrams.html#the-nsaidpud-diagram"><i class="fa fa-check"></i><b>5.2</b> The NSAID–PUD diagram</a></li>
+<li class="chapter" data-level="5.3" data-path="causal-diagrams.html"><a href="causal-diagrams.html#confounders-colliders-and-mediators"><i class="fa fa-check"></i><b>5.3</b> Confounders, colliders, and mediators</a></li>
+<li class="chapter" data-level="5.4" data-path="causal-diagrams.html"><a href="causal-diagrams.html#selection-bias-as-collider-stratification"><i class="fa fa-check"></i><b>5.4</b> Selection bias as collider stratification</a></li>
+<li class="chapter" data-level="5.5" data-path="causal-diagrams.html"><a href="causal-diagrams.html#exercises-3"><i class="fa fa-check"></i><b>5.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html"><i class="fa fa-check"></i><b>6</b> Study design for causal questions</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#design-before-analysis"><i class="fa fa-check"></i><b>6.1</b> Design before analysis</a></li>
+<li class="chapter" data-level="6.2" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#new-user-designs"><i class="fa fa-check"></i><b>6.2</b> New-user designs</a></li>
+<li class="chapter" data-level="6.3" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#active-comparator-designs"><i class="fa fa-check"></i><b>6.3</b> Active-comparator designs</a></li>
+<li class="chapter" data-level="6.4" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#immortal-time-and-other-time-zero-problems"><i class="fa fa-check"></i><b>6.4</b> Immortal time and other time-zero problems</a></li>
+<li class="chapter" data-level="6.5" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#exercises-4"><i class="fa fa-check"></i><b>6.5</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>II Core Methods</b></span></li>
+<li class="chapter" data-level="7" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html"><i class="fa fa-check"></i><b>7</b> Outcome regression and standardization</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#adjusting-with-regression"><i class="fa fa-check"></i><b>7.1</b> Adjusting with regression</a></li>
+<li class="chapter" data-level="7.2" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#standardization-predict-then-average"><i class="fa fa-check"></i><b>7.2</b> Standardization: predict, then average</a></li>
+<li class="chapter" data-level="7.3" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#the-bootstrap"><i class="fa fa-check"></i><b>7.3</b> The bootstrap</a></li>
+<li class="chapter" data-level="7.4" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#effect-modification"><i class="fa fa-check"></i><b>7.4</b> Effect modification</a></li>
+<li class="chapter" data-level="7.5" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="propensity-scores.html"><a href="propensity-scores.html"><i class="fa fa-check"></i><b>8</b> Propensity scores</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="propensity-scores.html"><a href="propensity-scores.html#one-number-that-summarizes-confounding"><i class="fa fa-check"></i><b>8.1</b> One number that summarizes confounding</a></li>
+<li class="chapter" data-level="8.2" data-path="propensity-scores.html"><a href="propensity-scores.html#estimating-the-score"><i class="fa fa-check"></i><b>8.2</b> Estimating the score</a></li>
+<li class="chapter" data-level="8.3" data-path="propensity-scores.html"><a href="propensity-scores.html#stratification"><i class="fa fa-check"></i><b>8.3</b> Stratification</a></li>
+<li class="chapter" data-level="8.4" data-path="propensity-scores.html"><a href="propensity-scores.html#matching"><i class="fa fa-check"></i><b>8.4</b> Matching</a></li>
+<li class="chapter" data-level="8.5" data-path="propensity-scores.html"><a href="propensity-scores.html#choosing-the-ps-model"><i class="fa fa-check"></i><b>8.5</b> Choosing the PS model</a></li>
+<li class="chapter" data-level="8.6" data-path="propensity-scores.html"><a href="propensity-scores.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html"><i class="fa fa-check"></i><b>9</b> Inverse probability of treatment weighting</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#reweighting-to-a-pseudo-population"><i class="fa fa-check"></i><b>9.1</b> Reweighting to a pseudo-population</a></li>
+<li class="chapter" data-level="9.2" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#building-the-weights"><i class="fa fa-check"></i><b>9.2</b> Building the weights</a></li>
+<li class="chapter" data-level="9.3" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#estimating-the-effect"><i class="fa fa-check"></i><b>9.3</b> Estimating the effect</a></li>
+<li class="chapter" data-level="9.4" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#truncation-and-diagnostics"><i class="fa fa-check"></i><b>9.4</b> Truncation and diagnostics</a></li>
+<li class="chapter" data-level="9.5" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#standardized-mortality-ratio-weights"><i class="fa fa-check"></i><b>9.5</b> Standardized mortality ratio weights</a></li>
+<li class="chapter" data-level="9.6" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#msms-and-where-weighting-shines"><i class="fa fa-check"></i><b>9.6</b> MSMs and where weighting shines</a></li>
+<li class="chapter" data-level="9.7" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#three-estimators-one-estimand"><i class="fa fa-check"></i><b>9.7</b> Three estimators, one estimand</a></li>
+<li class="chapter" data-level="9.8" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#exercises-7"><i class="fa fa-check"></i><b>9.8</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>III Time, Censoring, and Survival</b></span></li>
+<li class="chapter" data-level="10" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html"><i class="fa fa-check"></i><b>10</b> Survival outcomes and censoring</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#the-statin-question"><i class="fa fa-check"></i><b>10.1</b> The statin question</a></li>
+<li class="chapter" data-level="10.2" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#anatomy-of-time-to-event-data"><i class="fa fa-check"></i><b>10.2</b> Anatomy of time-to-event data</a></li>
+<li class="chapter" data-level="10.3" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#kaplanmeier"><i class="fa fa-check"></i><b>10.3</b> Kaplan–Meier</a></li>
+<li class="chapter" data-level="10.4" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#death-as-a-competing-risk"><i class="fa fa-check"></i><b>10.4</b> Death as a competing risk</a></li>
+<li class="chapter" data-level="10.5" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#risks-versus-hazards"><i class="fa fa-check"></i><b>10.5</b> Risks versus hazards</a></li>
+<li class="chapter" data-level="10.6" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#when-censoring-lies"><i class="fa fa-check"></i><b>10.6</b> When censoring lies</a></li>
+<li class="chapter" data-level="10.7" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#exercises-8"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html"><i class="fa fa-check"></i><b>11</b> Inverse probability of censoring weights</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weighting-returns"><i class="fa fa-check"></i><b>11.1</b> Weighting returns</a></li>
+<li class="chapter" data-level="11.2" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#person-period-data"><i class="fa fa-check"></i><b>11.2</b> Person-period data</a></li>
+<li class="chapter" data-level="11.3" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#building-censoring-weights"><i class="fa fa-check"></i><b>11.3</b> Building censoring weights</a></li>
+<li class="chapter" data-level="11.4" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weight-diagnostics"><i class="fa fa-check"></i><b>11.4</b> Weight diagnostics</a></li>
+<li class="chapter" data-level="11.5" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#did-it-matter"><i class="fa fa-check"></i><b>11.5</b> Did it matter?</a></li>
+<li class="chapter" data-level="11.6" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#exercises-9"><i class="fa fa-check"></i><b>11.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html"><i class="fa fa-check"></i><b>12</b> Clone-censor-weight</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#from-point-treatments-to-treatment-strategies"><i class="fa fa-check"></i><b>12.1</b> From point treatments to treatment strategies</a></li>
+<li class="chapter" data-level="12.2" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#the-clone-censor-weight-recipe"><i class="fa fa-check"></i><b>12.2</b> The clone-censor-weight recipe</a></li>
+<li class="chapter" data-level="12.3" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#deviation-in-the-statin-cohort"><i class="fa fa-check"></i><b>12.3</b> Deviation in the statin cohort</a></li>
+<li class="chapter" data-level="12.4" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#estimating-per-protocol-risk-curves"><i class="fa fa-check"></i><b>12.4</b> Estimating per-protocol risk curves</a></li>
+<li class="chapter" data-level="12.5" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#interpreting-the-per-protocol-effect"><i class="fa fa-check"></i><b>12.5</b> Interpreting the per-protocol effect</a></li>
+<li class="chapter" data-level="12.6" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#exercises-10"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>IV Beyond Exchangeability</b></span></li>
+<li class="chapter" data-level="13" data-path="instrumental-variables.html"><a href="instrumental-variables.html"><i class="fa fa-check"></i><b>13</b> Instrumental variables</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="instrumental-variables.html"><a href="instrumental-variables.html#when-exchangeability-fails"><i class="fa fa-check"></i><b>13.1</b> When exchangeability fails</a></li>
+<li class="chapter" data-level="13.2" data-path="instrumental-variables.html"><a href="instrumental-variables.html#provider-preference-as-an-instrument"><i class="fa fa-check"></i><b>13.2</b> Provider preference as an instrument</a></li>
+<li class="chapter" data-level="13.3" data-path="instrumental-variables.html"><a href="instrumental-variables.html#the-wald-and-two-stage-estimators"><i class="fa fa-check"></i><b>13.3</b> The Wald and two-stage estimators</a></li>
+<li class="chapter" data-level="13.4" data-path="instrumental-variables.html"><a href="instrumental-variables.html#interpreting-the-late"><i class="fa fa-check"></i><b>13.4</b> Interpreting the LATE</a></li>
+<li class="chapter" data-level="13.5" data-path="instrumental-variables.html"><a href="instrumental-variables.html#exercises-11"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html"><i class="fa fa-check"></i><b>14</b> Sensitivity analysis</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#what-we-assumed-and-cannot-check"><i class="fa fa-check"></i><b>14.1</b> What we assumed and cannot check</a></li>
+<li class="chapter" data-level="14.2" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#external-adjustment"><i class="fa fa-check"></i><b>14.2</b> External adjustment</a></li>
+<li class="chapter" data-level="14.3" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#the-e-value"><i class="fa fa-check"></i><b>14.3</b> The E-value</a></li>
+<li class="chapter" data-level="14.4" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#negative-control-outcomes"><i class="fa fa-check"></i><b>14.4</b> Negative control outcomes</a></li>
+<li class="chapter" data-level="14.5" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#reporting-a-causal-analysis"><i class="fa fa-check"></i><b>14.5</b> Reporting a causal analysis</a></li>
+<li class="chapter" data-level="14.6" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#exercises-12"><i class="fa fa-check"></i><b>14.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendices</b></span></li>
+<li class="chapter" data-level="A" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html"><i class="fa fa-check"></i><b>A</b> R and RStudio setup</a>
+<ul>
+<li class="chapter" data-level="A.1" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-r-and-rstudio"><i class="fa fa-check"></i><b>A.1</b> Installing R and RStudio</a></li>
+<li class="chapter" data-level="A.2" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-packages-this-book-uses"><i class="fa fa-check"></i><b>A.2</b> Installing the packages this book uses</a></li>
+<li class="chapter" data-level="A.3" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-namcs-teaching-package"><i class="fa fa-check"></i><b>A.3</b> Installing the NAMCS teaching package</a></li>
+<li class="chapter" data-level="A.4" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#loading-everything-a-chapter-needs"><i class="fa fa-check"></i><b>A.4</b> Loading everything a chapter needs</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="namcs-codebook.html"><a href="namcs-codebook.html"><i class="fa fa-check"></i><b>B</b> NAMCS codebook</a>
+<ul>
+<li class="chapter" data-level="B.1" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-nsaid-cohort-ns"><i class="fa fa-check"></i><b>B.1</b> The NSAID cohort (<code>ns</code>)</a></li>
+<li class="chapter" data-level="B.2" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-statin-cohort-sta"><i class="fa fa-check"></i><b>B.2</b> The statin cohort (<code>sta</code>)</a></li>
+<li class="chapter" data-level="B.3" data-path="namcs-codebook.html"><a href="namcs-codebook.html#a-note-on-the-outcomes"><i class="fa fa-check"></i><b>B.3</b> A note on the outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="C" data-path="the-estimator-toolkit.html"><a href="the-estimator-toolkit.html"><i class="fa fa-check"></i><b>C</b> The estimator toolkit</a></li>
+<li class="chapter" data-level="D" data-path="course-map-phs-921.html"><a href="course-map-phs-921.html"><i class="fa fa-check"></i><b>D</b> Course map: PHS 921</a></li>
+<li class="chapter" data-level="E" data-path="further-reading.html"><a href="further-reading.html"><i class="fa fa-check"></i><b>E</b> Further reading</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Causal Inference in Epidemiology Using R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="inverse-probability-of-censoring-weights" class="section level1 hasAnchor" number="11">
+<h1><span class="header-section-number">Chapter 11</span> Inverse probability of censoring weights<a href="inverse-probability-of-censoring-weights.html#inverse-probability-of-censoring-weights" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Chapter 10 ended with a diagram and a promise. The diagram put loss to
+follow-up between treatment and an unmeasured element of prognosis,
+making every risk set past time zero a selected sample and every
+Kaplan–Meier factor a comparison among survivors of that selection. The
+promise was that we already own the tool for it. Chapter 9 met a problem
+of the same shape — a variable associated with treatment that we could
+not condition on without breaking something — and solved it by
+reweighting rather than conditioning. This chapter builds the weights for
+censoring, which requires reshaping the cohort into a form we will use
+for the rest of Part III.</p>
+<div id="weighting-returns" class="section level2 hasAnchor" number="11.1">
+<h2><span class="header-section-number">11.1</span> Weighting returns<a href="inverse-probability-of-censoring-weights.html#weighting-returns" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The two estimators are the same idea addressed to different columns. An
+inverse probability of treatment weight is the reciprocal of the
+probability of the treatment a patient actually received, <span class="math inline">\(1/P(A \mid
+L)\)</span>, and it builds a pseudo-population in which treatment is unrelated to
+<span class="math inline">\(L\)</span>. An <strong>inverse probability of censoring weight</strong> is the reciprocal of
+the probability of the <em>observation status</em> a patient actually had: among
+patients still under observation at time <span class="math inline">\(t\)</span>, each is weighted by one
+over her probability of having remained uncensored that long. She then
+stands in for herself plus the patients like her who dropped out, and in
+the reweighted data the people we can still see represent the people we
+started with.</p>
+<p>One structural difference matters. Treatment here happens once, at time
+zero, so its weight is a single number per patient. Censoring accumulates:
+a patient must survive being censored in the first year, and then the
+second, and so on, and the chance of getting through all of it is a
+product of the chances of getting through each piece. Splitting follow-up
+into intervals <span class="math inline">\(k = 1, \dots, K\)</span> and writing <span class="math inline">\(C_k = 1\)</span> for censoring
+during interval <span class="math inline">\(k\)</span>, the weight in effect at interval <span class="math inline">\(t\)</span> is</p>
+<p><span class="math display">\[W^{C}(t) = \prod_{k \le t} \frac{1}{\Pr(C_k = 0 \mid C_{k-1} = 0, A, L)},\]</span></p>
+<p>and its stabilized version replaces the 1 in each numerator with
+<span class="math inline">\(\Pr(C_k = 0 \mid C_{k-1} = 0)\)</span>, a probability that depends on time but
+not on covariates. As in Chapter 9 the numerator cannot undo the
+balancing the denominator achieves; it rescales, so that a stabilized
+weight averages near 1 and a mean far from 1 signals a misbehaving
+censoring model.</p>
+<p>What the weights buy is a renamed assumption. Kaplan–Meier needs
+censoring to be non-informative outright; the weighted analysis needs it
+to be non-informative <em>given the covariates in the censoring model</em>,
+which is the survival-data version of conditional exchangeability and is
+just as unverifiable. Two things are needed to fit it: a data structure
+with one row per patient per interval, and a model for censoring in that
+structure.</p>
+</div>
+<div id="person-period-data" class="section level2 hasAnchor" number="11.2">
+<h2><span class="header-section-number">11.2</span> Person-period data<a href="inverse-probability-of-censoring-weights.html#person-period-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The trick that makes everything else easy is to stop treating each
+patient as one row. Cut follow-up into yearly intervals and give a
+patient one row for each interval she survives into, carrying her
+baseline covariates along; the row records the interval, whether the
+outcome happened in it, and whether censoring happened in it. A patient
+followed 3.1 years contributes four rows, the last a stub from year 3 to
+year 3.1. <code>survival::survSplit()</code> does the cutting, and wrapping it fixes
+the column names we will rely on later.</p>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="inverse-probability-of-censoring-weights.html#cb102-1" tabindex="-1"></a>make_person_period <span class="ot">&lt;-</span> <span class="cf">function</span>(data, time, event, cuts) {</span>
+<span id="cb102-2"><a href="inverse-probability-of-censoring-weights.html#cb102-2" tabindex="-1"></a>  data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">.row_id =</span> dplyr<span class="sc">::</span><span class="fu">row_number</span>())</span>
+<span id="cb102-3"><a href="inverse-probability-of-censoring-weights.html#cb102-3" tabindex="-1"></a>  survival<span class="sc">::</span><span class="fu">survSplit</span>(</span>
+<span id="cb102-4"><a href="inverse-probability-of-censoring-weights.html#cb102-4" tabindex="-1"></a>    <span class="fu">as.formula</span>(<span class="fu">paste0</span>(<span class="st">&quot;Surv(&quot;</span>, time, <span class="st">&quot;, &quot;</span>, event, <span class="st">&quot;) ~ .&quot;</span>)),</span>
+<span id="cb102-5"><a href="inverse-probability-of-censoring-weights.html#cb102-5" tabindex="-1"></a>    <span class="at">data =</span> data, <span class="at">cut =</span> cuts, <span class="at">start =</span> <span class="st">&quot;tstart&quot;</span>, <span class="at">end =</span> <span class="st">&quot;tstop&quot;</span>,</span>
+<span id="cb102-6"><a href="inverse-probability-of-censoring-weights.html#cb102-6" tabindex="-1"></a>    <span class="at">event =</span> event</span>
+<span id="cb102-7"><a href="inverse-probability-of-censoring-weights.html#cb102-7" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>()</span>
+<span id="cb102-8"><a href="inverse-probability-of-censoring-weights.html#cb102-8" tabindex="-1"></a>}</span></code></pre></div>
+<p>The <code>. ~</code> on the right of the formula keeps every other column, so
+covariates are repeated down a patient’s rows unchanged. <code>.row_id</code> is
+added before splitting and is what glues the rows back into people —
+needed for the running product of weights and for the cluster-robust
+variance at the end. The event we split on is censoring, defined as
+being lost to follow-up before having a cardiovascular event; the next
+section takes up why that definition and not another. Because
+<code>survSplit()</code> cannot make an interval out of nothing, we first set aside
+the handful of patients whose follow-up ends at time zero.</p>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="inverse-probability-of-censoring-weights.html#cb103-1" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb103-2"><a href="inverse-probability-of-censoring-weights.html#cb103-2" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/ipcw.R&quot;</span>)</span>
+<span id="cb103-3"><a href="inverse-probability-of-censoring-weights.html#cb103-3" tabindex="-1"></a></span>
+<span id="cb103-4"><a href="inverse-probability-of-censoring-weights.html#cb103-4" tabindex="-1"></a>sta_cens <span class="ot">&lt;-</span> sta <span class="sc">|&gt;</span></span>
+<span id="cb103-5"><a href="inverse-probability-of-censoring-weights.html#cb103-5" tabindex="-1"></a>  <span class="fu">filter</span>(event_time <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb103-6"><a href="inverse-probability-of-censoring-weights.html#cb103-6" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb103-7"><a href="inverse-probability-of-censoring-weights.html#cb103-7" tabindex="-1"></a>    <span class="at">censored  =</span> <span class="fu">as.integer</span>(<span class="sc">!</span><span class="fu">is.na</span>(loss_fu_time) <span class="sc">&amp;</span> loss_fu_time <span class="sc">&lt;=</span> event_time <span class="sc">&amp;</span></span>
+<span id="cb103-8"><a href="inverse-probability-of-censoring-weights.html#cb103-8" tabindex="-1"></a>                             cv_event <span class="sc">==</span> <span class="dv">0</span>),</span>
+<span id="cb103-9"><a href="inverse-probability-of-censoring-weights.html#cb103-9" tabindex="-1"></a>    <span class="at">cens_time =</span> event_time</span>
+<span id="cb103-10"><a href="inverse-probability-of-censoring-weights.html#cb103-10" tabindex="-1"></a>  )</span>
+<span id="cb103-11"><a href="inverse-probability-of-censoring-weights.html#cb103-11" tabindex="-1"></a></span>
+<span id="cb103-12"><a href="inverse-probability-of-censoring-weights.html#cb103-12" tabindex="-1"></a>pp <span class="ot">&lt;-</span> <span class="fu">make_person_period</span>(sta_cens, <span class="at">time =</span> <span class="st">&quot;cens_time&quot;</span>, <span class="at">event =</span> <span class="st">&quot;censored&quot;</span>,</span>
+<span id="cb103-13"><a href="inverse-probability-of-censoring-weights.html#cb103-13" tabindex="-1"></a>                         <span class="at">cuts =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="sc">|&gt;</span></span>
+<span id="cb103-14"><a href="inverse-probability-of-censoring-weights.html#cb103-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">event =</span> <span class="fu">as.integer</span>(cv_event <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span></span>
+<span id="cb103-15"><a href="inverse-probability-of-censoring-weights.html#cb103-15" tabindex="-1"></a>                            event_time <span class="sc">&gt;</span> tstart <span class="sc">&amp;</span> event_time <span class="sc">&lt;=</span> tstop))</span></code></pre></div>
+<p>Two details of bookkeeping deserve naming, because getting either wrong
+silently changes the analysis. First, <code>cens_time</code> is a copy of
+<code>event_time</code>: <code>survSplit()</code> consumes the time variable it splits on and
+replaces it with <code>tstart</code> and <code>tstop</code>, so splitting on the copy leaves
+the original <code>event_time</code> intact as an ordinary carried-along column.
+Second, the outcome indicator has to be rebuilt by hand. The <code>censored</code>
+column that comes back from <code>survSplit()</code> is already interval-specific —
+1 only in the interval where censoring happened — but <code>cv_event</code> is
+still the patient-level value, repeated down every row, so a patient with
+an event would appear to have one in each of her intervals. The
+<code>event_time &gt; tstart &amp; event_time &lt;= tstop</code> comparison puts it in the one
+interval
+that contains it. Look at two patients, one lost to follow-up and one
+with an event, before and after expansion.</p>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="inverse-probability-of-censoring-weights.html#cb104-1" tabindex="-1"></a>mid <span class="ot">&lt;-</span> sta_cens<span class="sc">$</span>event_time <span class="sc">&gt;</span> <span class="dv">2</span> <span class="sc">&amp;</span> sta_cens<span class="sc">$</span>event_time <span class="sc">&lt;</span> <span class="dv">3</span></span>
+<span id="cb104-2"><a href="inverse-probability-of-censoring-weights.html#cb104-2" tabindex="-1"></a>ids <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">first</span>(<span class="fu">which</span>(sta_cens<span class="sc">$</span>censored <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> mid)),</span>
+<span id="cb104-3"><a href="inverse-probability-of-censoring-weights.html#cb104-3" tabindex="-1"></a>         <span class="fu">first</span>(<span class="fu">which</span>(sta_cens<span class="sc">$</span>cv_event <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> mid)))</span>
+<span id="cb104-4"><a href="inverse-probability-of-censoring-weights.html#cb104-4" tabindex="-1"></a></span>
+<span id="cb104-5"><a href="inverse-probability-of-censoring-weights.html#cb104-5" tabindex="-1"></a>sta_cens <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">.row_id =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span> <span class="fu">slice</span>(ids) <span class="sc">|&gt;</span></span>
+<span id="cb104-6"><a href="inverse-probability-of-censoring-weights.html#cb104-6" tabindex="-1"></a>  <span class="fu">select</span>(.row_id, statin, event_time, cv_event, censored)</span></code></pre></div>
+<pre><code>##   .row_id statin event_time cv_event censored
+## 1       4      0       2.90        0        1
+## 2     243      0       2.75        1        0</code></pre>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="inverse-probability-of-censoring-weights.html#cb106-1" tabindex="-1"></a>pp <span class="sc">|&gt;</span> <span class="fu">filter</span>(.row_id <span class="sc">%in%</span> ids) <span class="sc">|&gt;</span></span>
+<span id="cb106-2"><a href="inverse-probability-of-censoring-weights.html#cb106-2" tabindex="-1"></a>  <span class="fu">select</span>(.row_id, statin, tstart, tstop, event, censored)</span></code></pre></div>
+<pre><code>## # A tibble: 6 x 6
+##   .row_id statin tstart tstop event censored
+##     &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt;
+## 1       4      0      0  1        0        0
+## 2       4      0      1  2        0        0
+## 3       4      0      2  2.9      0        1
+## 4     243      0      0  1        0        0
+## 5     243      0      1  2        0        0
+## 6     243      0      2  2.75     1        0</code></pre>
+<p>The rows read as a small clinical history: at risk through each interval,
+then one final interval in which either the outcome arrives or the patient
+disappears. Since the two indicators are now built from three different
+columns, they need checking against the patient-level cohort rather than
+trusted.</p>
+<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="inverse-probability-of-censoring-weights.html#cb108-1" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb108-2"><a href="inverse-probability-of-censoring-weights.html#cb108-2" tabindex="-1"></a>  <span class="at">quantity        =</span> <span class="fu">c</span>(<span class="st">&quot;patients&quot;</span>, <span class="st">&quot;person-period rows&quot;</span>, <span class="st">&quot;outcome events&quot;</span>,</span>
+<span id="cb108-3"><a href="inverse-probability-of-censoring-weights.html#cb108-3" tabindex="-1"></a>                      <span class="st">&quot;patients censored&quot;</span>),</span>
+<span id="cb108-4"><a href="inverse-probability-of-censoring-weights.html#cb108-4" tabindex="-1"></a>  <span class="at">person_period   =</span> <span class="fu">c</span>(<span class="fu">n_distinct</span>(pp<span class="sc">$</span>.row_id), <span class="fu">nrow</span>(pp), <span class="fu">sum</span>(pp<span class="sc">$</span>event),</span>
+<span id="cb108-5"><a href="inverse-probability-of-censoring-weights.html#cb108-5" tabindex="-1"></a>                      <span class="fu">sum</span>(pp<span class="sc">$</span>censored)),</span>
+<span id="cb108-6"><a href="inverse-probability-of-censoring-weights.html#cb108-6" tabindex="-1"></a>  <span class="at">patient_level   =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(sta_cens), <span class="cn">NA</span>, <span class="fu">sum</span>(sta_cens<span class="sc">$</span>cv_event),</span>
+<span id="cb108-7"><a href="inverse-probability-of-censoring-weights.html#cb108-7" tabindex="-1"></a>                      <span class="fu">sum</span>(sta_cens<span class="sc">$</span>censored))</span>
+<span id="cb108-8"><a href="inverse-probability-of-censoring-weights.html#cb108-8" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">quantity</th>
+<th align="right">person_period</th>
+<th align="right">patient_level</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">patients</td>
+<td align="right">6157</td>
+<td align="right">6157</td>
+</tr>
+<tr class="even">
+<td align="left">person-period rows</td>
+<td align="right">44485</td>
+<td align="right">NA</td>
+</tr>
+<tr class="odd">
+<td align="left">outcome events</td>
+<td align="right">460</td>
+<td align="right">460</td>
+</tr>
+<tr class="even">
+<td align="left">patients censored</td>
+<td align="right">2837</td>
+<td align="right">2837</td>
+</tr>
+</tbody>
+</table>
+<p>Dropping the 8 patients with no follow-up leaves
+6,157 patients and
+44,485 person-period rows, about
+7.2 intervals each. The expansion
+preserves 460 events — the same count as <code>sum(sta$cv_event)</code>, since
+none of the dropped patients had one — and 2,837
+censorings, matching the patient-level indicator exactly — both
+identities hold, which is TRUE. Checks this dull are worth printing
+every time, because an event indicator that is right at the patient level
+and wrong at the interval level produces plausible output and a wrong
+answer.</p>
+<p>The reason to pay this price in rows is that a logistic regression fitted
+to person-period data estimates a <strong>discrete-time hazard</strong>. Each row asks
+whether the event happened in that interval among patients who reached
+it, which is exactly the conditional quantity Kaplan–Meier computes; a
+logistic model of that indicator, pooled over intervals and with time on
+the right-hand side, is a <strong>pooled logistic</strong> model and approximates a
+proportional hazards model when the interval hazards are small. Ours
+carries time as <code>splines::ns(tstop, 3)</code> rather than <code>factor(tstop)</code>,
+spending three degrees of freedom instead of nine on a hazard we expect
+to be smooth. And because the hazards can be multiplied back up into a
+survival curve, the model returns risks at the horizons the target trial
+named, not only ratios.</p>
+</div>
+<div id="building-censoring-weights" class="section level2 hasAnchor" number="11.3">
+<h2><span class="header-section-number">11.3</span> Building censoring weights<a href="inverse-probability-of-censoring-weights.html#building-censoring-weights" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The censoring indicator above makes a substantive choice worth defending.
+Of the ways follow-up ends in <code>sta</code>, only loss to follow-up is treated as
+the censoring we weight for. Administrative censoring at
+10 years is excluded because it happens to everyone still
+present at a calendar boundary that no covariate predicts — the benign
+case of Chapter 10. Death is excluded for a worse reason: it is a
+competing risk that Chapter 10 chose to treat as censoring, and putting
+it in the censoring model would weight the analysis toward a world in
+which nobody dies of anything else, an estimand harder to defend than the
+one we have. Both choices are assumptions, not conveniences, and the
+second is the chapter’s weakest point.</p>
+<p>With the indicator fixed, the censoring model is a pooled logistic
+regression of <code>censored</code> on time and the baseline covariates, fitted
+across all person-period rows at once. In lecture, and in much of the
+literature, censoring models are instead fit with Cox proportional
+hazards regression; the pooled logistic on person-period data is its
+discrete-time analog, and with intervals this short the two give
+essentially the same weights. Our estimator wraps the whole
+sequence: fit the censoring model, fit the numerator model, take the
+running product down each patient’s rows, truncate, and fit the weighted
+outcome model.</p>
+<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="inverse-probability-of-censoring-weights.html#cb109-1" tabindex="-1"></a>ipcw_estimator <span class="ot">&lt;-</span> <span class="cf">function</span>(pp_data, censor_model, outcome_formula,</span>
+<span id="cb109-2"><a href="inverse-probability-of-censoring-weights.html#cb109-2" tabindex="-1"></a>                           <span class="at">id =</span> <span class="st">&quot;.row_id&quot;</span>, <span class="at">numerator_model =</span> <span class="cn">NULL</span>,</span>
+<span id="cb109-3"><a href="inverse-probability-of-censoring-weights.html#cb109-3" tabindex="-1"></a>                           <span class="at">truncate_at =</span> <span class="fl">0.99</span>) {</span>
+<span id="cb109-4"><a href="inverse-probability-of-censoring-weights.html#cb109-4" tabindex="-1"></a>  cens_fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(censor_model, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp_data)</span>
+<span id="cb109-5"><a href="inverse-probability-of-censoring-weights.html#cb109-5" tabindex="-1"></a>  pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">p_uncens =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">predict</span>(cens_fit, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb109-6"><a href="inverse-probability-of-censoring-weights.html#cb109-6" tabindex="-1"></a></span>
+<span id="cb109-7"><a href="inverse-probability-of-censoring-weights.html#cb109-7" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(numerator_model)) {</span>
+<span id="cb109-8"><a href="inverse-probability-of-censoring-weights.html#cb109-8" tabindex="-1"></a>    num_fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(numerator_model, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp_data)</span>
+<span id="cb109-9"><a href="inverse-probability-of-censoring-weights.html#cb109-9" tabindex="-1"></a>    pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">p_uncens_num =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">predict</span>(num_fit, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb109-10"><a href="inverse-probability-of-censoring-weights.html#cb109-10" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb109-11"><a href="inverse-probability-of-censoring-weights.html#cb109-11" tabindex="-1"></a>    pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">p_uncens_num =</span> <span class="dv">1</span>)</span>
+<span id="cb109-12"><a href="inverse-probability-of-censoring-weights.html#cb109-12" tabindex="-1"></a>  }</span>
+<span id="cb109-13"><a href="inverse-probability-of-censoring-weights.html#cb109-13" tabindex="-1"></a></span>
+<span id="cb109-14"><a href="inverse-probability-of-censoring-weights.html#cb109-14" tabindex="-1"></a>  pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span></span>
+<span id="cb109-15"><a href="inverse-probability-of-censoring-weights.html#cb109-15" tabindex="-1"></a>    <span class="fu">group_by</span>(.data[[id]]) <span class="sc">|&gt;</span></span>
+<span id="cb109-16"><a href="inverse-probability-of-censoring-weights.html#cb109-16" tabindex="-1"></a>    <span class="fu">arrange</span>(tstop, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb109-17"><a href="inverse-probability-of-censoring-weights.html#cb109-17" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">w_cens =</span> <span class="fu">cumprod</span>(p_uncens_num) <span class="sc">/</span> <span class="fu">cumprod</span>(p_uncens)) <span class="sc">|&gt;</span></span>
+<span id="cb109-18"><a href="inverse-probability-of-censoring-weights.html#cb109-18" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb109-19"><a href="inverse-probability-of-censoring-weights.html#cb109-19" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">w_cens =</span> <span class="fu">pmin</span>(w_cens, <span class="fu">quantile</span>(w_cens, truncate_at)))</span>
+<span id="cb109-20"><a href="inverse-probability-of-censoring-weights.html#cb109-20" tabindex="-1"></a></span>
+<span id="cb109-21"><a href="inverse-probability-of-censoring-weights.html#cb109-21" tabindex="-1"></a>  <span class="co"># geeglm() looks up `id` and `weights` in the environment of the formula it</span></span>
+<span id="cb109-22"><a href="inverse-probability-of-censoring-weights.html#cb109-22" tabindex="-1"></a>  <span class="co"># is handed; ours was built by the caller, so re-home it here.</span></span>
+<span id="cb109-23"><a href="inverse-probability-of-censoring-weights.html#cb109-23" tabindex="-1"></a>  <span class="fu">environment</span>(outcome_formula) <span class="ot">&lt;-</span> <span class="fu">environment</span>()</span>
+<span id="cb109-24"><a href="inverse-probability-of-censoring-weights.html#cb109-24" tabindex="-1"></a></span>
+<span id="cb109-25"><a href="inverse-probability-of-censoring-weights.html#cb109-25" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> geepack<span class="sc">::</span><span class="fu">geeglm</span>(</span>
+<span id="cb109-26"><a href="inverse-probability-of-censoring-weights.html#cb109-26" tabindex="-1"></a>    outcome_formula, <span class="at">id =</span> pp_data[[id]], <span class="at">weights =</span> pp_data<span class="sc">$</span>w_cens,</span>
+<span id="cb109-27"><a href="inverse-probability-of-censoring-weights.html#cb109-27" tabindex="-1"></a>    <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp_data</span>
+<span id="cb109-28"><a href="inverse-probability-of-censoring-weights.html#cb109-28" tabindex="-1"></a>  )</span>
+<span id="cb109-29"><a href="inverse-probability-of-censoring-weights.html#cb109-29" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">fit =</span> broom<span class="sc">::</span><span class="fu">tidy</span>(fit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>), <span class="at">data =</span> pp_data)</span>
+<span id="cb109-30"><a href="inverse-probability-of-censoring-weights.html#cb109-30" tabindex="-1"></a>}</span></code></pre></div>
+<p>The <code>cumprod()</code> line is the whole time-varying idea in one expression:
+grouped by patient and ordered by interval, the weight at interval <span class="math inline">\(t\)</span> is
+the running product of stabilized numerators over the running product of
+uncensored probabilities, exactly the <span class="math inline">\(W^{C}(t)\)</span> written above. When
+<code>numerator_model</code> is <code>NULL</code> the numerator is 1 and the weights are
+unstabilized. Truncation reuses Chapter 9’s <code>pmin(w, quantile(w, p))</code>,
+here applied across all rows rather than all patients. The fit goes
+through <code>geepack::geeglm()</code> with <code>id</code> set to the patient identifier, which
+now does real work: a patient contributes several correlated rows, and
+treating them as independent observations would understate the standard
+error twice over — once for the weights and once for the repeated rows.
+Clustering on the patient repairs both. The function returns the tidied
+fit and the weighted data, so the weights can be inspected rather than
+taken on trust.</p>
+<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="inverse-probability-of-censoring-weights.html#cb110-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">ipcw_estimator</span>(</span>
+<span id="cb110-2"><a href="inverse-probability-of-censoring-weights.html#cb110-2" tabindex="-1"></a>  pp,</span>
+<span id="cb110-3"><a href="inverse-probability-of-censoring-weights.html#cb110-3" tabindex="-1"></a>  <span class="at">censor_model    =</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;splines::ns(tstop, 3)&quot;</span>, sta_covs), <span class="st">&quot;censored&quot;</span>),</span>
+<span id="cb110-4"><a href="inverse-probability-of-censoring-weights.html#cb110-4" tabindex="-1"></a>  <span class="at">outcome_formula =</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;statin&quot;</span>, <span class="st">&quot;splines::ns(tstop, 3)&quot;</span>), <span class="st">&quot;event&quot;</span>),</span>
+<span id="cb110-5"><a href="inverse-probability-of-censoring-weights.html#cb110-5" tabindex="-1"></a>  <span class="at">numerator_model =</span> <span class="fu">reformulate</span>(<span class="st">&quot;splines::ns(tstop, 3)&quot;</span>, <span class="st">&quot;censored&quot;</span>)</span>
+<span id="cb110-6"><a href="inverse-probability-of-censoring-weights.html#cb110-6" tabindex="-1"></a>)</span>
+<span id="cb110-7"><a href="inverse-probability-of-censoring-weights.html#cb110-7" tabindex="-1"></a></span>
+<span id="cb110-8"><a href="inverse-probability-of-censoring-weights.html#cb110-8" tabindex="-1"></a>res<span class="sc">$</span>fit <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<colgroup>
+<col width="29%" />
+<col width="11%" />
+<col width="12%" />
+<col width="12%" />
+<col width="10%" />
+<col width="11%" />
+<col width="12%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">conf.low</th>
+<th align="right">conf.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">-3.369</td>
+<td align="right">0.189</td>
+<td align="right">318.634</td>
+<td align="right">0.000</td>
+<td align="right">-3.738</td>
+<td align="right">-2.999</td>
+</tr>
+<tr class="even">
+<td align="left">statin</td>
+<td align="right">-0.843</td>
+<td align="right">0.192</td>
+<td align="right">19.191</td>
+<td align="right">0.000</td>
+<td align="right">-1.220</td>
+<td align="right">-0.466</td>
+</tr>
+<tr class="odd">
+<td align="left">splines::ns(tstop, 3)1</td>
+<td align="right">0.000</td>
+<td align="right">0.180</td>
+<td align="right">0.000</td>
+<td align="right">0.998</td>
+<td align="right">-0.353</td>
+<td align="right">0.354</td>
+</tr>
+<tr class="even">
+<td align="left">splines::ns(tstop, 3)2</td>
+<td align="right">-3.009</td>
+<td align="right">0.498</td>
+<td align="right">36.491</td>
+<td align="right">0.000</td>
+<td align="right">-3.985</td>
+<td align="right">-2.033</td>
+</tr>
+<tr class="odd">
+<td align="left">splines::ns(tstop, 3)3</td>
+<td align="right">-0.766</td>
+<td align="right">0.185</td>
+<td align="right">17.109</td>
+<td align="right">0.000</td>
+<td align="right">-1.129</td>
+<td align="right">-0.403</td>
+</tr>
+</tbody>
+</table>
+<p>The outcome model is deliberately thin: <code>statin</code>, a spline in time, and
+nothing else. Confounding of the treatment contrast is Chapter 9’s job
+and is not addressed here, so the <code>statin</code> coefficient in that table is a
+censoring-corrected <em>crude</em> comparison, not an effect estimate. (A weighted binomial fit also
+provokes a warning about non-integer successes, since the weights are
+fractional; it is expected, and the sandwich variance is what we are
+relying on rather than the likelihood.)</p>
+</div>
+<div id="weight-diagnostics" class="section level2 hasAnchor" number="11.4">
+<h2><span class="header-section-number">11.4</span> Weight diagnostics<a href="inverse-probability-of-censoring-weights.html#weight-diagnostics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A weight is a claim about how many unseen patients each observed patient
+represents, and the claim should be looked at before it is believed.</p>
+<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="inverse-probability-of-censoring-weights.html#cb111-1" tabindex="-1"></a>res<span class="sc">$</span>data <span class="sc">|&gt;</span></span>
+<span id="cb111-2"><a href="inverse-probability-of-censoring-weights.html#cb111-2" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">interval =</span> <span class="fu">ceiling</span>(tstop)) <span class="sc">|&gt;</span></span>
+<span id="cb111-3"><a href="inverse-probability-of-censoring-weights.html#cb111-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">rows =</span> <span class="fu">n</span>(), <span class="at">mean =</span> <span class="fu">mean</span>(w_cens), <span class="at">sd =</span> <span class="fu">sd</span>(w_cens),</span>
+<span id="cb111-4"><a href="inverse-probability-of-censoring-weights.html#cb111-4" tabindex="-1"></a>            <span class="at">max =</span> <span class="fu">max</span>(w_cens), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb111-5"><a href="inverse-probability-of-censoring-weights.html#cb111-5" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">interval</th>
+<th align="right">rows</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">1</td>
+<td align="right">6157</td>
+<td align="right">1.000</td>
+<td align="right">0.008</td>
+<td align="right">1.032</td>
+</tr>
+<tr class="even">
+<td align="right">2</td>
+<td align="right">5738</td>
+<td align="right">1.000</td>
+<td align="right">0.014</td>
+<td align="right">1.056</td>
+</tr>
+<tr class="odd">
+<td align="right">3</td>
+<td align="right">5339</td>
+<td align="right">1.000</td>
+<td align="right">0.018</td>
+<td align="right">1.077</td>
+</tr>
+<tr class="even">
+<td align="right">4</td>
+<td align="right">4939</td>
+<td align="right">1.000</td>
+<td align="right">0.023</td>
+<td align="right">1.098</td>
+</tr>
+<tr class="odd">
+<td align="right">5</td>
+<td align="right">4579</td>
+<td align="right">1.001</td>
+<td align="right">0.029</td>
+<td align="right">1.111</td>
+</tr>
+<tr class="even">
+<td align="right">6</td>
+<td align="right">4195</td>
+<td align="right">1.001</td>
+<td align="right">0.036</td>
+<td align="right">1.111</td>
+</tr>
+<tr class="odd">
+<td align="right">7</td>
+<td align="right">3871</td>
+<td align="right">1.001</td>
+<td align="right">0.043</td>
+<td align="right">1.111</td>
+</tr>
+<tr class="even">
+<td align="right">8</td>
+<td align="right">3539</td>
+<td align="right">1.001</td>
+<td align="right">0.050</td>
+<td align="right">1.111</td>
+</tr>
+<tr class="odd">
+<td align="right">9</td>
+<td align="right">3231</td>
+<td align="right">1.000</td>
+<td align="right">0.056</td>
+<td align="right">1.111</td>
+</tr>
+<tr class="even">
+<td align="right">10</td>
+<td align="right">2897</td>
+<td align="right">0.999</td>
+<td align="right">0.061</td>
+<td align="right">1.111</td>
+</tr>
+</tbody>
+</table>
+<p>Two things stand out, and the second is the more important. The
+stabilized weights average 1.000 with a standard
+deviation of 0.034 — the reassuring diagnostic,
+telling us the censoring model is not producing a pseudo-population of
+the wrong size. But the whole distribution is narrow. The largest weight
+in the data is 1.27 before truncation, and the
+weights drift away from 1 only slowly as the intervals accumulate,
+because a running product of numbers very close to 1 stays close to 1.
+Kish’s effective sample size, 44,433 of
+44,485 rows, records the same fact: these
+weights cost almost no information.</p>
+<p>That narrowness is a finding about the cohort, not about the method. The
+weights spread out only to the extent that the covariates in the
+censoring model predict who drops out, and Chapter 10 already showed they
+barely do — every standardized difference between the early-loss patients
+and everyone else was under 0.10. A censoring model built from variables
+that do not predict censoring returns probabilities near the overall
+average, and those cancel almost exactly against the stabilizing
+numerator.</p>
+<p>Truncation, on this evidence, is a formality. Capping at the 99th
+percentile touches 445 of the
+44,485 rows and changes the largest weight
+from 1.27 to 1.11, so
+nothing here hangs on it. It is worth keeping the habit anyway, since a
+running product is the one weight that can misbehave badly: a single
+interval with a low estimated probability of remaining uncensored
+multiplies into every later weight for that patient, and with ten
+intervals and a richer censoring model, weights in the hundreds are
+routine. The rule from Chapter 9 carries over — report the untruncated
+estimate, report it capped, and if they disagree materially, say so
+rather than choosing.</p>
+</div>
+<div id="did-it-matter" class="section level2 hasAnchor" number="11.5">
+<h2><span class="header-section-number">11.5</span> Did it matter?<a href="inverse-probability-of-censoring-weights.html#did-it-matter" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The honest test is to fit the same pooled logistic model twice, once with
+the censoring weights and once with weights of 1, and put the answers
+beside each other. Since the model is a hazard model, we also multiply
+the fitted hazards back into risks at the horizons Chapter 10 named.</p>
+<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="inverse-probability-of-censoring-weights.html#cb112-1" tabindex="-1"></a>d      <span class="ot">&lt;-</span> res<span class="sc">$</span>data</span>
+<span id="cb112-2"><a href="inverse-probability-of-censoring-weights.html#cb112-2" tabindex="-1"></a>w_one  <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">nrow</span>(d))</span>
+<span id="cb112-3"><a href="inverse-probability-of-censoring-weights.html#cb112-3" tabindex="-1"></a>outcome_formula <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;statin&quot;</span>, <span class="st">&quot;splines::ns(tstop, 3)&quot;</span>), <span class="st">&quot;event&quot;</span>)</span>
+<span id="cb112-4"><a href="inverse-probability-of-censoring-weights.html#cb112-4" tabindex="-1"></a></span>
+<span id="cb112-5"><a href="inverse-probability-of-censoring-weights.html#cb112-5" tabindex="-1"></a>wfit <span class="ot">&lt;-</span> geepack<span class="sc">::</span><span class="fu">geeglm</span>(outcome_formula, <span class="at">id =</span> d<span class="sc">$</span>.row_id, <span class="at">weights =</span> d<span class="sc">$</span>w_cens,</span>
+<span id="cb112-6"><a href="inverse-probability-of-censoring-weights.html#cb112-6" tabindex="-1"></a>                        <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> d)</span>
+<span id="cb112-7"><a href="inverse-probability-of-censoring-weights.html#cb112-7" tabindex="-1"></a>ufit <span class="ot">&lt;-</span> geepack<span class="sc">::</span><span class="fu">geeglm</span>(outcome_formula, <span class="at">id =</span> d<span class="sc">$</span>.row_id, <span class="at">weights =</span> w_one,</span>
+<span id="cb112-8"><a href="inverse-probability-of-censoring-weights.html#cb112-8" tabindex="-1"></a>                        <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> d)</span>
+<span id="cb112-9"><a href="inverse-probability-of-censoring-weights.html#cb112-9" tabindex="-1"></a></span>
+<span id="cb112-10"><a href="inverse-probability-of-censoring-weights.html#cb112-10" tabindex="-1"></a><span class="fu">bind_rows</span>(<span class="st">&quot;IPCW weighted&quot;</span> <span class="ot">=</span> broom<span class="sc">::</span><span class="fu">tidy</span>(wfit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb112-11"><a href="inverse-probability-of-censoring-weights.html#cb112-11" tabindex="-1"></a>          <span class="st">&quot;Unweighted&quot;</span>    <span class="ot">=</span> broom<span class="sc">::</span><span class="fu">tidy</span>(ufit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb112-12"><a href="inverse-probability-of-censoring-weights.html#cb112-12" tabindex="-1"></a>          <span class="at">.id =</span> <span class="st">&quot;analysis&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb112-13"><a href="inverse-probability-of-censoring-weights.html#cb112-13" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">&quot;statin&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb112-14"><a href="inverse-probability-of-censoring-weights.html#cb112-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(estimate, conf.low, conf.high), exp)) <span class="sc">|&gt;</span></span>
+<span id="cb112-15"><a href="inverse-probability-of-censoring-weights.html#cb112-15" tabindex="-1"></a>  <span class="fu">select</span>(analysis, <span class="at">odds_ratio =</span> estimate, conf.low, conf.high) <span class="sc">|&gt;</span></span>
+<span id="cb112-16"><a href="inverse-probability-of-censoring-weights.html#cb112-16" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">analysis</th>
+<th align="right">odds_ratio</th>
+<th align="right">conf.low</th>
+<th align="right">conf.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">IPCW weighted</td>
+<td align="right">0.430</td>
+<td align="right">0.295</td>
+<td align="right">0.628</td>
+</tr>
+<tr class="even">
+<td align="left">Unweighted</td>
+<td align="right">0.422</td>
+<td align="right">0.290</td>
+<td align="right">0.616</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="inverse-probability-of-censoring-weights.html#cb113-1" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand_grid</span>(<span class="at">statin =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">tstop =</span> <span class="dv">1</span><span class="sc">:</span>admin_end)</span>
+<span id="cb113-2"><a href="inverse-probability-of-censoring-weights.html#cb113-2" tabindex="-1"></a></span>
+<span id="cb113-3"><a href="inverse-probability-of-censoring-weights.html#cb113-3" tabindex="-1"></a>risk_at <span class="ot">&lt;-</span> <span class="cf">function</span>(fit) {</span>
+<span id="cb113-4"><a href="inverse-probability-of-censoring-weights.html#cb113-4" tabindex="-1"></a>  grid <span class="sc">|&gt;</span></span>
+<span id="cb113-5"><a href="inverse-probability-of-censoring-weights.html#cb113-5" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">h =</span> <span class="fu">predict</span>(fit, <span class="at">newdata =</span> grid, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb113-6"><a href="inverse-probability-of-censoring-weights.html#cb113-6" tabindex="-1"></a>    <span class="fu">group_by</span>(statin) <span class="sc">|&gt;</span></span>
+<span id="cb113-7"><a href="inverse-probability-of-censoring-weights.html#cb113-7" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">risk =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">cumprod</span>(<span class="dv">1</span> <span class="sc">-</span> h)) <span class="sc">|&gt;</span></span>
+<span id="cb113-8"><a href="inverse-probability-of-censoring-weights.html#cb113-8" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb113-9"><a href="inverse-probability-of-censoring-weights.html#cb113-9" tabindex="-1"></a>    <span class="fu">filter</span>(tstop <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">5</span>, admin_end))</span>
+<span id="cb113-10"><a href="inverse-probability-of-censoring-weights.html#cb113-10" tabindex="-1"></a>}</span>
+<span id="cb113-11"><a href="inverse-probability-of-censoring-weights.html#cb113-11" tabindex="-1"></a></span>
+<span id="cb113-12"><a href="inverse-probability-of-censoring-weights.html#cb113-12" tabindex="-1"></a><span class="fu">bind_rows</span>(<span class="st">&quot;IPCW weighted&quot;</span> <span class="ot">=</span> <span class="fu">risk_at</span>(wfit), <span class="st">&quot;Unweighted&quot;</span> <span class="ot">=</span> <span class="fu">risk_at</span>(ufit),</span>
+<span id="cb113-13"><a href="inverse-probability-of-censoring-weights.html#cb113-13" tabindex="-1"></a>          <span class="at">.id =</span> <span class="st">&quot;analysis&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb113-14"><a href="inverse-probability-of-censoring-weights.html#cb113-14" tabindex="-1"></a>  <span class="fu">select</span>(analysis, statin, <span class="at">years =</span> tstop, risk) <span class="sc">|&gt;</span></span>
+<span id="cb113-15"><a href="inverse-probability-of-censoring-weights.html#cb113-15" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">analysis</th>
+<th align="right">statin</th>
+<th align="right">years</th>
+<th align="right">risk</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">IPCW weighted</td>
+<td align="right">0</td>
+<td align="right">5</td>
+<td align="right">0.0560</td>
+</tr>
+<tr class="even">
+<td align="left">IPCW weighted</td>
+<td align="right">0</td>
+<td align="right">10</td>
+<td align="right">0.0997</td>
+</tr>
+<tr class="odd">
+<td align="left">IPCW weighted</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">0.0246</td>
+</tr>
+<tr class="even">
+<td align="left">IPCW weighted</td>
+<td align="right">1</td>
+<td align="right">10</td>
+<td align="right">0.0444</td>
+</tr>
+<tr class="odd">
+<td align="left">Unweighted</td>
+<td align="right">0</td>
+<td align="right">5</td>
+<td align="right">0.0564</td>
+</tr>
+<tr class="even">
+<td align="left">Unweighted</td>
+<td align="right">0</td>
+<td align="right">10</td>
+<td align="right">0.1014</td>
+</tr>
+<tr class="odd">
+<td align="left">Unweighted</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">0.0243</td>
+</tr>
+<tr class="even">
+<td align="left">Unweighted</td>
+<td align="right">1</td>
+<td align="right">10</td>
+<td align="right">0.0443</td>
+</tr>
+</tbody>
+</table>
+<p>The weighted odds ratio for <code>statin</code> is 0.430 against
+0.422 unweighted, and the five-year risk difference
+moves from -3.21 percentage points to
+-3.14. Nothing happened. The confidence
+intervals are effectively identical. The weighted five-year risks,
+5.6% without a statin and
+2.5% with one, also land near
+Chapter 10’s Kaplan–Meier estimates of
+5.7% and
+2.9% — reassurance that the pooled logistic
+is estimating the same curve, with the remaining gap the price of
+describing a hazard with three degrees of freedom.</p>
+<p>This is the expected result and it is worth sitting with rather than
+apologizing for. Weights near 1 cannot move an estimate, and the weights
+are near 1 because the variables we measured do not predict who left. The
+correction was available, we applied it, and the data said the correction
+was not needed <em>for the censoring that baseline covariates can see</em>. The
+limits of that sentence are the whole point. If dropping out is driven by
+something we did not record — a symptom that worsened, a decision to stop
+attending, the unmeasured prognosis in Chapter 10’s diagram — then the
+collider is still being conditioned on, the estimate is still biased, and
+this analysis looks exactly as it does now. A well-behaved weight
+distribution is evidence that the censoring model found little to
+correct, never evidence that there was little to correct. That is the
+uncomfortable symmetry with Chapter 9’s unmeasured confounding, and it is
+why Chapter 14 exists.</p>
+<p>One more thing is missing from the model above, deliberately. A complete
+analysis of this question would weight for both problems at once: build
+Chapter 9’s stabilized treatment weight from a model for <code>statin</code> given
+<code>sta_covs</code>, build this chapter’s censoring weight for each interval,
+multiply them per row, and fit the same pooled logistic marginal
+structural model with the product as its weight. The two weights address
+different arrows and compose cleanly, and their product is the standard
+recipe for time-to-event marginal structural models. Chapter 12 assembles
+it, in service of a harder question than a point treatment.</p>
+</div>
+<div id="exercises-9" class="section level2 hasAnchor" number="11.6">
+<h2><span class="header-section-number">11.6</span> Exercises<a href="inverse-probability-of-censoring-weights.html#exercises-9" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li>Refit the censoring model without the comorbidity variables — keep
+only <code>age</code>, <code>sex</code>, <code>race</code>, <code>region</code>, and <code>year</code> alongside the spline in
+time. Report the mean, standard deviation, and maximum of the
+resulting weights and the <code>statin</code> odds ratio. Which of the two
+changes more, and what does that tell you about how much of the
+censoring signal the comorbidities carried?</li>
+<li>Rerun <code>ipcw_estimator()</code> with <code>numerator_model = NULL</code> to get
+unstabilized weights. Report their mean and maximum and explain why
+the mean is no longer near 1. Then explain why the <code>statin</code> estimate
+barely changes even though the weights are much larger, and describe a
+situation in which stabilization would matter more.</li>
+<li>Set <code>truncate_at = 0.95</code> and compare the weight distribution and the
+estimate against the 99th-percentile version. Given the largest
+untruncated weight in this cohort, was truncation ever going to matter
+here? Describe the features of a censoring model — number of
+intervals, strength of the covariate-censoring association — that
+would make the answer different.</li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="survival-outcomes-and-censoring.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="clone-censor-weight.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": null,
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 7 Outcome regression and standardization | Causal Inference in Epidemiology Using R</title>
+  <meta name="description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 7 Outcome regression and standardization | Causal Inference in Epidemiology Using R" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 7 Outcome regression and standardization | Causal Inference in Epidemiology Using R" />
+  
+  <meta name="twitter:description" content="An introduction to causal inference with epidemiologic applications in R, using data from the National Ambulatory Medical Care Survey (NAMCS)." />
+  
+
+<meta name="author" content="M. Alan Brookhart" />
+
+
+<meta name="date" content="2026-08-23" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="study-design-for-causal-questions.html"/>
+<link rel="next" href="propensity-scores.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+<style type="text/css">
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { color: #008000; } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { color: #008000; font-weight: bold; } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+<style type="text/css">
+  
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+</style>
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">Causal Inference in Epidemiology Using R</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<ul>
+<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+</ul></li>
+<li class="part"><span><b>I Foundations</b></span></li>
+<li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="why.html"><a href="why.html#questions-epidemiology-cannot-answer-with-association-alone"><i class="fa fa-check"></i><b>1.1</b> Questions epidemiology cannot answer with association alone</a></li>
+<li class="chapter" data-level="1.2" data-path="why.html"><a href="why.html#a-first-look-at-the-data"><i class="fa fa-check"></i><b>1.2</b> A first look at the data</a></li>
+<li class="chapter" data-level="1.3" data-path="why.html"><a href="why.html#what-this-book-covers"><i class="fa fa-check"></i><b>1.3</b> What this book covers</a></li>
+<li class="chapter" data-level="1.4" data-path="why.html"><a href="why.html#how-to-read-this-book"><i class="fa fa-check"></i><b>1.4</b> How to read this book</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html"><i class="fa fa-check"></i><b>2</b> Getting started with R and the NAMCS data</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#r-rstudio-and-the-tidyverse"><i class="fa fa-check"></i><b>2.1</b> R, RStudio, and the tidyverse</a></li>
+<li class="chapter" data-level="2.2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-teaching-cohorts"><i class="fa fa-check"></i><b>2.2</b> The NAMCS teaching cohorts</a></li>
+<li class="chapter" data-level="2.3" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#plotting-with-ggplot2"><i class="fa fa-check"></i><b>2.3</b> Plotting with ggplot2</a></li>
+<li class="chapter" data-level="2.4" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1"><i class="fa fa-check"></i><b>2.4</b> Your first reusable functions: Table 1</a></li>
+<li class="chapter" data-level="2.5" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#exercises"><i class="fa fa-check"></i><b>2.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html"><i class="fa fa-check"></i><b>3</b> Potential outcomes and causal effects</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#two-futures-for-every-patient"><i class="fa fa-check"></i><b>3.1</b> Two futures for every patient</a></li>
+<li class="chapter" data-level="3.2" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#a-gods-eye-view-simulation"><i class="fa fa-check"></i><b>3.2</b> A god’s-eye view: simulation</a></li>
+<li class="chapter" data-level="3.3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#average-causal-effects-and-estimands"><i class="fa fa-check"></i><b>3.3</b> Average causal effects and estimands</a></li>
+<li class="chapter" data-level="3.4" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#the-identification-conditions"><i class="fa fa-check"></i><b>3.4</b> The identification conditions</a></li>
+<li class="chapter" data-level="3.5" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html"><i class="fa fa-check"></i><b>4</b> The randomized trial as the benchmark</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#why-randomization-works"><i class="fa fa-check"></i><b>4.1</b> Why randomization works</a></li>
+<li class="chapter" data-level="4.2" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#intention-to-treat-and-per-protocol"><i class="fa fa-check"></i><b>4.2</b> Intention-to-treat and per-protocol</a></li>
+<li class="chapter" data-level="4.3" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#the-target-trial"><i class="fa fa-check"></i><b>4.3</b> The target trial</a></li>
+<li class="chapter" data-level="4.4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#exercises-2"><i class="fa fa-check"></i><b>4.4</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="causal-diagrams.html"><a href="causal-diagrams.html"><i class="fa fa-check"></i><b>5</b> Causal diagrams</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="causal-diagrams.html"><a href="causal-diagrams.html#drawing-causal-assumptions"><i class="fa fa-check"></i><b>5.1</b> Drawing causal assumptions</a></li>
+<li class="chapter" data-level="5.2" data-path="causal-diagrams.html"><a href="causal-diagrams.html#the-nsaidpud-diagram"><i class="fa fa-check"></i><b>5.2</b> The NSAID–PUD diagram</a></li>
+<li class="chapter" data-level="5.3" data-path="causal-diagrams.html"><a href="causal-diagrams.html#confounders-colliders-and-mediators"><i class="fa fa-check"></i><b>5.3</b> Confounders, colliders, and mediators</a></li>
+<li class="chapter" data-level="5.4" data-path="causal-diagrams.html"><a href="causal-diagrams.html#selection-bias-as-collider-stratification"><i class="fa fa-check"></i><b>5.4</b> Selection bias as collider stratification</a></li>
+<li class="chapter" data-level="5.5" data-path="causal-diagrams.html"><a href="causal-diagrams.html#exercises-3"><i class="fa fa-check"></i><b>5.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html"><i class="fa fa-check"></i><b>6</b> Study design for causal questions</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#design-before-analysis"><i class="fa fa-check"></i><b>6.1</b> Design before analysis</a></li>
+<li class="chapter" data-level="6.2" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#new-user-designs"><i class="fa fa-check"></i><b>6.2</b> New-user designs</a></li>
+<li class="chapter" data-level="6.3" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#active-comparator-designs"><i class="fa fa-check"></i><b>6.3</b> Active-comparator designs</a></li>
+<li class="chapter" data-level="6.4" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#immortal-time-and-other-time-zero-problems"><i class="fa fa-check"></i><b>6.4</b> Immortal time and other time-zero problems</a></li>
+<li class="chapter" data-level="6.5" data-path="study-design-for-causal-questions.html"><a href="study-design-for-causal-questions.html#exercises-4"><i class="fa fa-check"></i><b>6.5</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>II Core Methods</b></span></li>
+<li class="chapter" data-level="7" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html"><i class="fa fa-check"></i><b>7</b> Outcome regression and standardization</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#adjusting-with-regression"><i class="fa fa-check"></i><b>7.1</b> Adjusting with regression</a></li>
+<li class="chapter" data-level="7.2" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#standardization-predict-then-average"><i class="fa fa-check"></i><b>7.2</b> Standardization: predict, then average</a></li>
+<li class="chapter" data-level="7.3" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#the-bootstrap"><i class="fa fa-check"></i><b>7.3</b> The bootstrap</a></li>
+<li class="chapter" data-level="7.4" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#effect-modification"><i class="fa fa-check"></i><b>7.4</b> Effect modification</a></li>
+<li class="chapter" data-level="7.5" data-path="outcome-regression-and-standardization.html"><a href="outcome-regression-and-standardization.html#exercises-5"><i class="fa fa-check"></i><b>7.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="8" data-path="propensity-scores.html"><a href="propensity-scores.html"><i class="fa fa-check"></i><b>8</b> Propensity scores</a>
+<ul>
+<li class="chapter" data-level="8.1" data-path="propensity-scores.html"><a href="propensity-scores.html#one-number-that-summarizes-confounding"><i class="fa fa-check"></i><b>8.1</b> One number that summarizes confounding</a></li>
+<li class="chapter" data-level="8.2" data-path="propensity-scores.html"><a href="propensity-scores.html#estimating-the-score"><i class="fa fa-check"></i><b>8.2</b> Estimating the score</a></li>
+<li class="chapter" data-level="8.3" data-path="propensity-scores.html"><a href="propensity-scores.html#stratification"><i class="fa fa-check"></i><b>8.3</b> Stratification</a></li>
+<li class="chapter" data-level="8.4" data-path="propensity-scores.html"><a href="propensity-scores.html#matching"><i class="fa fa-check"></i><b>8.4</b> Matching</a></li>
+<li class="chapter" data-level="8.5" data-path="propensity-scores.html"><a href="propensity-scores.html#choosing-the-ps-model"><i class="fa fa-check"></i><b>8.5</b> Choosing the PS model</a></li>
+<li class="chapter" data-level="8.6" data-path="propensity-scores.html"><a href="propensity-scores.html#exercises-6"><i class="fa fa-check"></i><b>8.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="9" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html"><i class="fa fa-check"></i><b>9</b> Inverse probability of treatment weighting</a>
+<ul>
+<li class="chapter" data-level="9.1" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#reweighting-to-a-pseudo-population"><i class="fa fa-check"></i><b>9.1</b> Reweighting to a pseudo-population</a></li>
+<li class="chapter" data-level="9.2" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#building-the-weights"><i class="fa fa-check"></i><b>9.2</b> Building the weights</a></li>
+<li class="chapter" data-level="9.3" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#estimating-the-effect"><i class="fa fa-check"></i><b>9.3</b> Estimating the effect</a></li>
+<li class="chapter" data-level="9.4" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#truncation-and-diagnostics"><i class="fa fa-check"></i><b>9.4</b> Truncation and diagnostics</a></li>
+<li class="chapter" data-level="9.5" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#standardized-mortality-ratio-weights"><i class="fa fa-check"></i><b>9.5</b> Standardized mortality ratio weights</a></li>
+<li class="chapter" data-level="9.6" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#msms-and-where-weighting-shines"><i class="fa fa-check"></i><b>9.6</b> MSMs and where weighting shines</a></li>
+<li class="chapter" data-level="9.7" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#three-estimators-one-estimand"><i class="fa fa-check"></i><b>9.7</b> Three estimators, one estimand</a></li>
+<li class="chapter" data-level="9.8" data-path="inverse-probability-of-treatment-weighting.html"><a href="inverse-probability-of-treatment-weighting.html#exercises-7"><i class="fa fa-check"></i><b>9.8</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>III Time, Censoring, and Survival</b></span></li>
+<li class="chapter" data-level="10" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html"><i class="fa fa-check"></i><b>10</b> Survival outcomes and censoring</a>
+<ul>
+<li class="chapter" data-level="10.1" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#the-statin-question"><i class="fa fa-check"></i><b>10.1</b> The statin question</a></li>
+<li class="chapter" data-level="10.2" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#anatomy-of-time-to-event-data"><i class="fa fa-check"></i><b>10.2</b> Anatomy of time-to-event data</a></li>
+<li class="chapter" data-level="10.3" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#kaplanmeier"><i class="fa fa-check"></i><b>10.3</b> Kaplan–Meier</a></li>
+<li class="chapter" data-level="10.4" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#death-as-a-competing-risk"><i class="fa fa-check"></i><b>10.4</b> Death as a competing risk</a></li>
+<li class="chapter" data-level="10.5" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#risks-versus-hazards"><i class="fa fa-check"></i><b>10.5</b> Risks versus hazards</a></li>
+<li class="chapter" data-level="10.6" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#when-censoring-lies"><i class="fa fa-check"></i><b>10.6</b> When censoring lies</a></li>
+<li class="chapter" data-level="10.7" data-path="survival-outcomes-and-censoring.html"><a href="survival-outcomes-and-censoring.html#exercises-8"><i class="fa fa-check"></i><b>10.7</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="11" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html"><i class="fa fa-check"></i><b>11</b> Inverse probability of censoring weights</a>
+<ul>
+<li class="chapter" data-level="11.1" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weighting-returns"><i class="fa fa-check"></i><b>11.1</b> Weighting returns</a></li>
+<li class="chapter" data-level="11.2" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#person-period-data"><i class="fa fa-check"></i><b>11.2</b> Person-period data</a></li>
+<li class="chapter" data-level="11.3" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#building-censoring-weights"><i class="fa fa-check"></i><b>11.3</b> Building censoring weights</a></li>
+<li class="chapter" data-level="11.4" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#weight-diagnostics"><i class="fa fa-check"></i><b>11.4</b> Weight diagnostics</a></li>
+<li class="chapter" data-level="11.5" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#did-it-matter"><i class="fa fa-check"></i><b>11.5</b> Did it matter?</a></li>
+<li class="chapter" data-level="11.6" data-path="inverse-probability-of-censoring-weights.html"><a href="inverse-probability-of-censoring-weights.html#exercises-9"><i class="fa fa-check"></i><b>11.6</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="12" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html"><i class="fa fa-check"></i><b>12</b> Clone-censor-weight</a>
+<ul>
+<li class="chapter" data-level="12.1" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#from-point-treatments-to-treatment-strategies"><i class="fa fa-check"></i><b>12.1</b> From point treatments to treatment strategies</a></li>
+<li class="chapter" data-level="12.2" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#the-clone-censor-weight-recipe"><i class="fa fa-check"></i><b>12.2</b> The clone-censor-weight recipe</a></li>
+<li class="chapter" data-level="12.3" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#deviation-in-the-statin-cohort"><i class="fa fa-check"></i><b>12.3</b> Deviation in the statin cohort</a></li>
+<li class="chapter" data-level="12.4" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#estimating-per-protocol-risk-curves"><i class="fa fa-check"></i><b>12.4</b> Estimating per-protocol risk curves</a></li>
+<li class="chapter" data-level="12.5" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#interpreting-the-per-protocol-effect"><i class="fa fa-check"></i><b>12.5</b> Interpreting the per-protocol effect</a></li>
+<li class="chapter" data-level="12.6" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#exercises-10"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
+</ul></li>
+<li class="part"><span><b>IV Beyond Exchangeability</b></span></li>
+<li class="chapter" data-level="13" data-path="instrumental-variables.html"><a href="instrumental-variables.html"><i class="fa fa-check"></i><b>13</b> Instrumental variables</a>
+<ul>
+<li class="chapter" data-level="13.1" data-path="instrumental-variables.html"><a href="instrumental-variables.html#when-exchangeability-fails"><i class="fa fa-check"></i><b>13.1</b> When exchangeability fails</a></li>
+<li class="chapter" data-level="13.2" data-path="instrumental-variables.html"><a href="instrumental-variables.html#provider-preference-as-an-instrument"><i class="fa fa-check"></i><b>13.2</b> Provider preference as an instrument</a></li>
+<li class="chapter" data-level="13.3" data-path="instrumental-variables.html"><a href="instrumental-variables.html#the-wald-and-two-stage-estimators"><i class="fa fa-check"></i><b>13.3</b> The Wald and two-stage estimators</a></li>
+<li class="chapter" data-level="13.4" data-path="instrumental-variables.html"><a href="instrumental-variables.html#interpreting-the-late"><i class="fa fa-check"></i><b>13.4</b> Interpreting the LATE</a></li>
+<li class="chapter" data-level="13.5" data-path="instrumental-variables.html"><a href="instrumental-variables.html#exercises-11"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+</ul></li>
+<li class="chapter" data-level="14" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html"><i class="fa fa-check"></i><b>14</b> Sensitivity analysis</a>
+<ul>
+<li class="chapter" data-level="14.1" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#what-we-assumed-and-cannot-check"><i class="fa fa-check"></i><b>14.1</b> What we assumed and cannot check</a></li>
+<li class="chapter" data-level="14.2" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#external-adjustment"><i class="fa fa-check"></i><b>14.2</b> External adjustment</a></li>
+<li class="chapter" data-level="14.3" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#the-e-value"><i class="fa fa-check"></i><b>14.3</b> The E-value</a></li>
+<li class="chapter" data-level="14.4" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#negative-control-outcomes"><i class="fa fa-check"></i><b>14.4</b> Negative control outcomes</a></li>
+<li class="chapter" data-level="14.5" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#reporting-a-causal-analysis"><i class="fa fa-check"></i><b>14.5</b> Reporting a causal analysis</a></li>
+<li class="chapter" data-level="14.6" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html#exercises-12"><i class="fa fa-check"></i><b>14.6</b> Exercises</a></li>
+</ul></li>
+<li class="appendix"><span><b>Appendices</b></span></li>
+<li class="chapter" data-level="A" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html"><i class="fa fa-check"></i><b>A</b> R and RStudio setup</a>
+<ul>
+<li class="chapter" data-level="A.1" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-r-and-rstudio"><i class="fa fa-check"></i><b>A.1</b> Installing R and RStudio</a></li>
+<li class="chapter" data-level="A.2" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-packages-this-book-uses"><i class="fa fa-check"></i><b>A.2</b> Installing the packages this book uses</a></li>
+<li class="chapter" data-level="A.3" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#installing-the-namcs-teaching-package"><i class="fa fa-check"></i><b>A.3</b> Installing the NAMCS teaching package</a></li>
+<li class="chapter" data-level="A.4" data-path="r-and-rstudio-setup.html"><a href="r-and-rstudio-setup.html#loading-everything-a-chapter-needs"><i class="fa fa-check"></i><b>A.4</b> Loading everything a chapter needs</a></li>
+</ul></li>
+<li class="chapter" data-level="B" data-path="namcs-codebook.html"><a href="namcs-codebook.html"><i class="fa fa-check"></i><b>B</b> NAMCS codebook</a>
+<ul>
+<li class="chapter" data-level="B.1" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-nsaid-cohort-ns"><i class="fa fa-check"></i><b>B.1</b> The NSAID cohort (<code>ns</code>)</a></li>
+<li class="chapter" data-level="B.2" data-path="namcs-codebook.html"><a href="namcs-codebook.html#the-statin-cohort-sta"><i class="fa fa-check"></i><b>B.2</b> The statin cohort (<code>sta</code>)</a></li>
+<li class="chapter" data-level="B.3" data-path="namcs-codebook.html"><a href="namcs-codebook.html#a-note-on-the-outcomes"><i class="fa fa-check"></i><b>B.3</b> A note on the outcomes</a></li>
+</ul></li>
+<li class="chapter" data-level="C" data-path="the-estimator-toolkit.html"><a href="the-estimator-toolkit.html"><i class="fa fa-check"></i><b>C</b> The estimator toolkit</a></li>
+<li class="chapter" data-level="D" data-path="course-map-phs-921.html"><a href="course-map-phs-921.html"><i class="fa fa-check"></i><b>D</b> Course map: PHS 921</a></li>
+<li class="chapter" data-level="E" data-path="further-reading.html"><a href="further-reading.html"><i class="fa fa-check"></i><b>E</b> Further reading</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Causal Inference in Epidemiology Using R</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="outcome-regression-and-standardization" class="section level1 hasAnchor" number="7">
+<h1><span class="header-section-number">Chapter 7</span> Outcome regression and standardization<a href="outcome-regression-and-standardization.html#outcome-regression-and-standardization" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Part I built the vocabulary: potential outcomes and estimands in
+Chapter 3, the target trial in Chapter 4, a diagram and an adjustment
+set in Chapter 5, and a design that earns the right to compare two arms
+in Chapter 6. What Part I never did was produce a number. Part II does.
+Over the next three chapters we answer the question we have been
+circling since Chapter 1 — does initiating a Cox-2 selective inhibitor,
+rather than a nonselective NSAID, change the risk of peptic ulcer
+disease? — three separate times, with three estimators that make the
+same identification assumptions and reach the same estimand by
+different routes: standardization here, propensity scores in Chapter 8,
+and inverse probability of treatment weighting in Chapter 9. They are
+not rival philosophies but three ways of using the covariates in
+<code>ns_covs</code> to repair the imbalance Chapter 6’s Table 1 laid out, and part
+of the point of running all three is to see how little the answer moves
+when the machinery changes. We also start building the toolkit promised
+in the preface, with the book’s first estimator function,
+<code>standardize()</code>.</p>
+<div id="adjusting-with-regression" class="section level2 hasAnchor" number="7.1">
+<h2><span class="header-section-number">7.1</span> Adjusting with regression<a href="outcome-regression-and-standardization.html#adjusting-with-regression" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Let us start where most epidemiologic analyses start, with a regression
+model for the outcome. Chapter 6’s Table 1 told us that Cox-2
+initiators are older, sicker, and more likely to be on corticosteroids
+than nonselective initiators, so the crude comparison of PUD risk
+between arms is confounded — and confounded in a direction we can
+anticipate, since the patients steered toward the Cox-2 drug were
+steered there partly <em>because</em> their physicians judged them to be at
+higher GI risk.</p>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="outcome-regression-and-standardization.html#cb45-1" tabindex="-1"></a>ns <span class="sc">|&gt;</span></span>
+<span id="cb45-2"><a href="outcome-regression-and-standardization.html#cb45-2" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_init) <span class="sc">|&gt;</span></span>
+<span id="cb45-3"><a href="outcome-regression-and-standardization.html#cb45-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">cases =</span> <span class="fu">sum</span>(pud), <span class="at">risk =</span> <span class="fu">mean</span>(pud), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb45-4"><a href="outcome-regression-and-standardization.html#cb45-4" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="right">cox2_init</th>
+<th align="right">n</th>
+<th align="right">cases</th>
+<th align="right">risk</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0</td>
+<td align="right">2642</td>
+<td align="right">258</td>
+<td align="right">0.098</td>
+</tr>
+<tr class="even">
+<td align="right">1</td>
+<td align="right">240</td>
+<td align="right">30</td>
+<td align="right">0.125</td>
+</tr>
+</tbody>
+</table>
+<p>The crude risks run 12.5% in the Cox-2 arm
+against 9.8% among nonselective
+initiators — a crude risk difference of
++2.7 percentage points and a crude risk
+ratio of 1.28. Taken at face value that says the
+Cox-2 drug <em>raises</em> ulcer risk, against its entire clinical rationale —
+the signature of confounding by indication, and the number adjustment
+has to work on.</p>
+<p>The standard first move is a logistic model for <code>pud</code> that includes the
+treatment indicator alongside every covariate in the adjustment set.
+Rather than typing nineteen covariate names, we let <code>reformulate()</code>
+assemble the formula from <code>ns_covs</code>, which keeps <code>R/setup.R</code> as the
+single source of truth for what “adjusted” means in this book.</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="outcome-regression-and-standardization.html#cb46-1" tabindex="-1"></a><span class="fu">library</span>(broom)</span></code></pre></div>
+<pre><code>## Warning: package &#39;broom&#39; was built under R version 4.3.3</code></pre>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="outcome-regression-and-standardization.html#cb48-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb48-2"><a href="outcome-regression-and-standardization.html#cb48-2" tabindex="-1"></a>  <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, ns_covs), <span class="st">&quot;pud&quot;</span>),</span>
+<span id="cb48-3"><a href="outcome-regression-and-standardization.html#cb48-3" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
+<span id="cb48-4"><a href="outcome-regression-and-standardization.html#cb48-4" tabindex="-1"></a>  <span class="at">data =</span> ns</span>
+<span id="cb48-5"><a href="outcome-regression-and-standardization.html#cb48-5" tabindex="-1"></a>)</span>
+<span id="cb48-6"><a href="outcome-regression-and-standardization.html#cb48-6" tabindex="-1"></a></span>
+<span id="cb48-7"><a href="outcome-regression-and-standardization.html#cb48-7" tabindex="-1"></a><span class="fu">tidy</span>(fit, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb48-8"><a href="outcome-regression-and-standardization.html#cb48-8" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;arthritisYes&quot;</span>, <span class="st">&quot;corticosteroid_useYes&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb48-9"><a href="outcome-regression-and-standardization.html#cb48-9" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<colgroup>
+<col width="28%" />
+<col width="11%" />
+<col width="12%" />
+<col width="12%" />
+<col width="10%" />
+<col width="11%" />
+<col width="12%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">conf.low</th>
+<th align="right">conf.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">cox2_init</td>
+<td align="right">0.929</td>
+<td align="right">0.223</td>
+<td align="right">-0.331</td>
+<td align="right">0.74</td>
+<td align="right">0.591</td>
+<td align="right">1.418</td>
+</tr>
+<tr class="even">
+<td align="left">age</td>
+<td align="right">1.066</td>
+<td align="right">0.005</td>
+<td align="right">13.321</td>
+<td align="right">0.00</td>
+<td align="right">1.056</td>
+<td align="right">1.076</td>
+</tr>
+<tr class="odd">
+<td align="left">arthritisYes</td>
+<td align="right">2.175</td>
+<td align="right">0.137</td>
+<td align="right">5.655</td>
+<td align="right">0.00</td>
+<td align="right">1.662</td>
+<td align="right">2.849</td>
+</tr>
+<tr class="even">
+<td align="left">corticosteroid_useYes</td>
+<td align="right">3.202</td>
+<td align="right">0.620</td>
+<td align="right">1.879</td>
+<td align="right">0.06</td>
+<td align="right">0.837</td>
+<td align="right">10.036</td>
+</tr>
+</tbody>
+</table>
+<p>Adjustment does what we hoped. The coefficient on <code>cox2_init</code>,
+exponentiated, is an odds ratio of 0.93 (95% CI
+0.59 to 1.42) —
+moved from the crude odds ratio of 1.32 to just
+below the null, though with an interval far too wide to rule out either
+a modest benefit or a modest harm. Age carries an odds ratio of
+1.07 per year, which is where much of the
+confounding lived.</p>
+<p>Now the awkward part. That 0.93 is a
+<strong>conditional</strong> odds ratio: the odds ratio comparing two patients who
+are identical on all nineteen covariates and differ only in which NSAID
+they started. It is not the marginal contrast we defined in Chapter 3.
+The ATE was written <span class="math inline">\(E[Y^1] - E[Y^0]\)</span>, an average over the whole
+population of what would happen under each treatment — a single number
+attached to a population, not to a stratum. Nothing in a regression
+coefficient delivers that, and the gap is not merely a matter of
+rescaling from odds to risks.</p>
+<p>The reason is <strong>noncollapsibility</strong>. If treatment truly has no effect,
+the conditional and marginal odds ratios agree at 1. Otherwise, even
+with no confounding at all, the odds ratio averaged over strata is
+pulled toward the null relative to the odds ratio within any stratum,
+simply because the odds scale is nonlinear and the strata have different
+baseline risks. The conditional odds ratio and the marginal odds ratio
+are answering different questions, and the difference between them is
+not bias in either — it is a property of the scale. Greenland, Robins,
+and Pearl (1999) are the standard reference for keeping this distinction
+straight, and for the point that noncollapsibility and confounding are
+different phenomena that the same numerical gap can express. Risk
+differences and risk ratios do not behave this way; they collapse. So the fix is not to
+choose a better model, it is to stop reading the estimand off a
+coefficient. We want a marginal contrast, and standardization is how we
+get one from the very same fitted model.</p>
+</div>
+<div id="standardization-predict-then-average" class="section level2 hasAnchor" number="7.2">
+<h2><span class="header-section-number">7.2</span> Standardization: predict, then average<a href="outcome-regression-and-standardization.html#standardization-predict-then-average" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The recipe, in words, is four steps. Fit an outcome model that includes
+treatment and the covariates. Then take the entire cohort and set every
+patient’s treatment to 1 — including the patients who actually took the
+nonselective drug — and ask the model to predict each patient’s risk in
+that hypothetical world. Take the whole cohort again, set everyone’s
+treatment to 0, and predict again. Average each set of predictions and
+contrast the two averages. This is the <strong>parametric g-formula</strong>, due to
+Robins (1986): the model is used only as a device for interpolating what
+each individual’s risk would have been under each treatment, and the
+averaging — over the observed covariate distribution of the whole
+cohort — is what turns those individual predictions into a marginal,
+population-level contrast.</p>
+<p>It takes five lines.</p>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="outcome-regression-and-standardization.html#cb49-1" tabindex="-1"></a>ns1 <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cox2_init =</span> <span class="dv">1</span>)</span>
+<span id="cb49-2"><a href="outcome-regression-and-standardization.html#cb49-2" tabindex="-1"></a>ns0 <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cox2_init =</span> <span class="dv">0</span>)</span>
+<span id="cb49-3"><a href="outcome-regression-and-standardization.html#cb49-3" tabindex="-1"></a>risk1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> ns1, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb49-4"><a href="outcome-regression-and-standardization.html#cb49-4" tabindex="-1"></a>risk0 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> ns0, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb49-5"><a href="outcome-regression-and-standardization.html#cb49-5" tabindex="-1"></a><span class="fu">c</span>(<span class="at">risk0 =</span> risk0, <span class="at">risk1 =</span> risk1, <span class="at">rd =</span> risk1 <span class="sc">-</span> risk0, <span class="at">rr =</span> risk1 <span class="sc">/</span> risk0)</span></code></pre></div>
+<pre><code>##        risk0        risk1           rd           rr 
+##  0.100531704  0.095016560 -0.005515145  0.945140244</code></pre>
+<p>Notice what the two copies of the data are doing. <code>ns1</code> is the cohort as
+it would look if every one of these 2882 patients had started a
+Cox-2 inhibitor, with every covariate left exactly as observed; <code>ns0</code> is
+the same cohort under the nonselective strategy. Because both averages
+are taken over the <em>same</em> covariate distribution — everybody, once each,
+in both worlds — the difference between them cannot be attributed to a
+difference in case mix. That is the whole trick, and it is the same
+trick as classical direct standardization to a reference population,
+with the fitted model standing in for the stratum-specific rates.</p>
+<p>Every step of that reasoning leans on Chapter 3’s identification
+conditions. Consistency lets us read a predicted risk under
+<code>cox2_init = 1</code> as a potential outcome; conditional exchangeability,
+which Chapter 5’s diagram is our argument for, is what makes a model fit
+partly to treated patients usable for predicting untreated ones. And
+positivity is what keeps the prediction honest: with only 240
+Cox-2 initiators among 2882 patients, the model extrapolates
+fairly hard when it imagines a Cox-2 world for covariate patterns where
+almost no Cox-2 initiator was observed. Standardization will produce a
+number anyway, without complaining — a reason to keep Chapter 6’s Table
+1 in view rather than trusting the estimator blindly.</p>
+<p>We are going to want this in Chapters 8 and 9, so let us package it.
+The function takes the data, a model formula, and the name of the
+treatment column, and returns one row per estimand. Two details are
+worth pausing on. The <code>"{treat}" := 1</code> syntax inside <code>mutate()</code> is
+<code>dplyr</code>’s glue notation for assigning to a column whose name is held in
+a variable, which is what lets the same function work for <code>cox2_init</code>
+here and <code>statin</code> later. And the point estimates are wrapped in their
+own inner function, <code>point_estimates()</code>, because the bootstrap in the
+next section needs to run exactly the same computation on a resampled
+data set — fitting the model <em>inside</em> the resample, not reusing the
+original fit.</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="outcome-regression-and-standardization.html#cb51-1" tabindex="-1"></a>standardize <span class="ot">&lt;-</span> <span class="cf">function</span>(data, outcome_model, treat, <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
+<span id="cb51-2"><a href="outcome-regression-and-standardization.html#cb51-2" tabindex="-1"></a>                        <span class="at">n_boot =</span> <span class="dv">200</span>, <span class="at">conf_level =</span> <span class="fl">0.95</span>, <span class="at">seed =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb51-3"><a href="outcome-regression-and-standardization.html#cb51-3" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(seed)) <span class="fu">set.seed</span>(seed)</span>
+<span id="cb51-4"><a href="outcome-regression-and-standardization.html#cb51-4" tabindex="-1"></a></span>
+<span id="cb51-5"><a href="outcome-regression-and-standardization.html#cb51-5" tabindex="-1"></a>  point_estimates <span class="ot">&lt;-</span> <span class="cf">function</span>(d) {</span>
+<span id="cb51-6"><a href="outcome-regression-and-standardization.html#cb51-6" tabindex="-1"></a>    fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(outcome_model, <span class="at">family =</span> family, <span class="at">data =</span> d)</span>
+<span id="cb51-7"><a href="outcome-regression-and-standardization.html#cb51-7" tabindex="-1"></a>    d1 <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="st">&quot;{treat}&quot;</span> <span class="sc">:=</span> <span class="dv">1</span>)</span>
+<span id="cb51-8"><a href="outcome-regression-and-standardization.html#cb51-8" tabindex="-1"></a>    d0 <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="st">&quot;{treat}&quot;</span> <span class="sc">:=</span> <span class="dv">0</span>)</span>
+<span id="cb51-9"><a href="outcome-regression-and-standardization.html#cb51-9" tabindex="-1"></a>    risk1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> d1, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb51-10"><a href="outcome-regression-and-standardization.html#cb51-10" tabindex="-1"></a>    risk0 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> d0, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb51-11"><a href="outcome-regression-and-standardization.html#cb51-11" tabindex="-1"></a>    <span class="fu">c</span>(<span class="at">risk0 =</span> risk0, <span class="at">risk1 =</span> risk1, <span class="at">rd =</span> risk1 <span class="sc">-</span> risk0, <span class="at">rr =</span> risk1 <span class="sc">/</span> risk0)</span>
+<span id="cb51-12"><a href="outcome-regression-and-standardization.html#cb51-12" tabindex="-1"></a>  }</span>
+<span id="cb51-13"><a href="outcome-regression-and-standardization.html#cb51-13" tabindex="-1"></a></span>
+<span id="cb51-14"><a href="outcome-regression-and-standardization.html#cb51-14" tabindex="-1"></a>  est <span class="ot">&lt;-</span> <span class="fu">point_estimates</span>(data)</span>
+<span id="cb51-15"><a href="outcome-regression-and-standardization.html#cb51-15" tabindex="-1"></a>  boot_est <span class="ot">&lt;-</span> <span class="fu">replicate</span>(n_boot, {</span>
+<span id="cb51-16"><a href="outcome-regression-and-standardization.html#cb51-16" tabindex="-1"></a>    <span class="fu">point_estimates</span>(<span class="fu">slice_sample</span>(data, <span class="at">prop =</span> <span class="dv">1</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb51-17"><a href="outcome-regression-and-standardization.html#cb51-17" tabindex="-1"></a>  })</span>
+<span id="cb51-18"><a href="outcome-regression-and-standardization.html#cb51-18" tabindex="-1"></a>  alpha <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> conf_level</span>
+<span id="cb51-19"><a href="outcome-regression-and-standardization.html#cb51-19" tabindex="-1"></a></span>
+<span id="cb51-20"><a href="outcome-regression-and-standardization.html#cb51-20" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb51-21"><a href="outcome-regression-and-standardization.html#cb51-21" tabindex="-1"></a>    <span class="at">estimand  =</span> <span class="fu">names</span>(est),</span>
+<span id="cb51-22"><a href="outcome-regression-and-standardization.html#cb51-22" tabindex="-1"></a>    <span class="at">estimate  =</span> <span class="fu">unname</span>(est),</span>
+<span id="cb51-23"><a href="outcome-regression-and-standardization.html#cb51-23" tabindex="-1"></a>    <span class="at">conf_low  =</span> <span class="fu">apply</span>(boot_est, <span class="dv">1</span>, quantile, <span class="at">probs =</span> alpha <span class="sc">/</span> <span class="dv">2</span>),</span>
+<span id="cb51-24"><a href="outcome-regression-and-standardization.html#cb51-24" tabindex="-1"></a>    <span class="at">conf_high =</span> <span class="fu">apply</span>(boot_est, <span class="dv">1</span>, quantile, <span class="at">probs =</span> <span class="dv">1</span> <span class="sc">-</span> alpha <span class="sc">/</span> <span class="dv">2</span>)</span>
+<span id="cb51-25"><a href="outcome-regression-and-standardization.html#cb51-25" tabindex="-1"></a>  )</span>
+<span id="cb51-26"><a href="outcome-regression-and-standardization.html#cb51-26" tabindex="-1"></a>}</span></code></pre></div>
+<p>That code lives in <code>R/standardize.R</code>, so from here on we source it
+rather than retype it.</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="outcome-regression-and-standardization.html#cb52-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/standardize.R&quot;</span>)</span>
+<span id="cb52-2"><a href="outcome-regression-and-standardization.html#cb52-2" tabindex="-1"></a>std <span class="ot">&lt;-</span> <span class="fu">standardize</span>(</span>
+<span id="cb52-3"><a href="outcome-regression-and-standardization.html#cb52-3" tabindex="-1"></a>  ns,</span>
+<span id="cb52-4"><a href="outcome-regression-and-standardization.html#cb52-4" tabindex="-1"></a>  <span class="at">outcome_model =</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, ns_covs), <span class="st">&quot;pud&quot;</span>),</span>
+<span id="cb52-5"><a href="outcome-regression-and-standardization.html#cb52-5" tabindex="-1"></a>  <span class="at">treat =</span> <span class="st">&quot;cox2_init&quot;</span>, <span class="at">n_boot =</span> <span class="dv">200</span>, <span class="at">seed =</span> <span class="dv">921</span></span>
+<span id="cb52-6"><a href="outcome-regression-and-standardization.html#cb52-6" tabindex="-1"></a>)</span>
+<span id="cb52-7"><a href="outcome-regression-and-standardization.html#cb52-7" tabindex="-1"></a>std <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">estimand</th>
+<th align="right">estimate</th>
+<th align="right">conf_low</th>
+<th align="right">conf_high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">risk0</td>
+<td align="right">0.101</td>
+<td align="right">0.090</td>
+<td align="right">0.112</td>
+</tr>
+<tr class="even">
+<td align="left">risk1</td>
+<td align="right">0.095</td>
+<td align="right">0.064</td>
+<td align="right">0.124</td>
+</tr>
+<tr class="odd">
+<td align="left">rd</td>
+<td align="right">-0.006</td>
+<td align="right">-0.038</td>
+<td align="right">0.025</td>
+</tr>
+<tr class="even">
+<td align="left">rr</td>
+<td align="right">0.945</td>
+<td align="right">0.624</td>
+<td align="right">1.240</td>
+</tr>
+</tbody>
+</table>
+<p>Here is the answer, on the scale Chapter 3 asked for. Had every patient
+in <code>ns</code> started a nonselective NSAID, the model puts PUD risk at
+10.1%; had every one of them started a
+Cox-2 inhibitor, 9.5%. The standardized
+risk difference is -0.6 percentage points
+(95% CI -3.8 to
++2.5) and the standardized
+risk ratio 0.95
+(0.62 to
+1.24). Adjustment has moved the
+crude risk ratio of 1.28 to
+0.95 — from apparent harm to a point estimate
+slightly on the protective side of the null — but the interval
+comfortably includes 1, so what the data support is “no large effect
+either way,” not “a benefit.” With 288 ulcer cases and
+240 Cox-2 initiators, that is about as much precision as this
+cohort has to offer.</p>
+<p>Note also what noncollapsibility looks like in the arithmetic. The
+standardized risks imply a <em>marginal</em> odds ratio of
+0.939, while the regression coefficient gave a
+conditional odds ratio of 0.929 — the conditional
+one sitting slightly further from the null, exactly as predicted. The
+gap is small here only because PUD is uncommon; with a common outcome it
+can be substantial.</p>
+</div>
+<div id="the-bootstrap" class="section level2 hasAnchor" number="7.3">
+<h2><span class="header-section-number">7.3</span> The bootstrap<a href="outcome-regression-and-standardization.html#the-bootstrap" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The point estimates came out of a <code>glm()</code> fit, so it is tempting to
+reach for that model’s standard errors. They do not apply. The
+standardized risk difference is not a parameter of the logistic model at
+all — it is a nonlinear function of <em>every</em> coefficient in the model,
+combined with the empirical covariate distribution of the cohort. There
+is no line in the <code>summary()</code> output whose standard error describes it,
+and the delta-method calculation that would produce one by hand is
+tedious and specification-specific.</p>
+<p>Resampling sidesteps the algebra. The logic is this: the sampling
+variability of our estimate comes from the fact that <code>ns</code> is one draw of
+2882 patients from some larger population, so we mimic that draw
+by sampling 2882 patients from <code>ns</code> <em>with replacement</em>, and
+recompute the whole estimator — refit the model, re-predict both worlds,
+re-average, re-contrast — on each resample. The spread of those
+recomputed estimates approximates the spread we would see across
+repeated samples from the population, and the 2.5th and 97.5th
+percentiles of that spread give a 95% percentile confidence interval.
+The critical discipline is that everything downstream of sampling must
+be redone inside each replicate, model fitting included; bootstrapping
+only the averaging step, with the coefficients held fixed, would ignore
+the largest source of uncertainty in the whole procedure.</p>
+<p><code>n_boot</code> trades precision for time. Each replicate is a full <code>glm()</code> fit
+on 2882 rows, and our default of 200 is enough to place an
+interval roughly while keeping a book that re-renders often tolerable to
+build. The percentile endpoints are themselves noisy at that size,
+though, so a different seed will shift them in the second decimal place;
+for a result you intend to publish, 1,000 or 2,000 is the right order of
+magnitude, and <code>seed</code> is what makes whichever number you choose
+reproducible.</p>
+</div>
+<div id="effect-modification" class="section level2 hasAnchor" number="7.4">
+<h2><span class="header-section-number">7.4</span> Effect modification<a href="outcome-regression-and-standardization.html#effect-modification" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>So far we have estimated one effect for everybody. But the effect of a
+Cox-2 inhibitor might plausibly differ by whether a patient is also
+taking aspirin, since aspirin damages gastric mucosa through the same
+prostaglandin pathway the Cox-2 drug was designed to spare. When a
+causal effect differs across levels of a covariate, we call that
+<strong>effect modification</strong> (or heterogeneity of treatment effect), and we
+look for it by letting the treatment coefficient depend on that
+covariate — an interaction term.</p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="outcome-regression-and-standardization.html#cb53-1" tabindex="-1"></a>fit_int <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb53-2"><a href="outcome-regression-and-standardization.html#cb53-2" tabindex="-1"></a>  <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, ns_covs, <span class="st">&quot;cox2_init:aspirin_use&quot;</span>), <span class="st">&quot;pud&quot;</span>),</span>
+<span id="cb53-3"><a href="outcome-regression-and-standardization.html#cb53-3" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> ns</span>
+<span id="cb53-4"><a href="outcome-regression-and-standardization.html#cb53-4" tabindex="-1"></a>)</span>
+<span id="cb53-5"><a href="outcome-regression-and-standardization.html#cb53-5" tabindex="-1"></a></span>
+<span id="cb53-6"><a href="outcome-regression-and-standardization.html#cb53-6" tabindex="-1"></a><span class="fu">tidy</span>(fit_int, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb53-7"><a href="outcome-regression-and-standardization.html#cb53-7" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(term, <span class="st">&quot;cox2_init&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb53-8"><a href="outcome-regression-and-standardization.html#cb53-8" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="30%" />
+<col width="11%" />
+<col width="12%" />
+<col width="12%" />
+<col width="9%" />
+<col width="11%" />
+<col width="12%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">p.value</th>
+<th align="right">conf.low</th>
+<th align="right">conf.high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">cox2_init</td>
+<td align="right">0.936</td>
+<td align="right">0.228</td>
+<td align="right">-0.291</td>
+<td align="right">0.771</td>
+<td align="right">0.588</td>
+<td align="right">1.443</td>
+</tr>
+<tr class="even">
+<td align="left">cox2_init:aspirin_useYes</td>
+<td align="right">0.870</td>
+<td align="right">0.995</td>
+<td align="right">-0.140</td>
+<td align="right">0.889</td>
+<td align="right">0.098</td>
+<td align="right">5.480</td>
+</tr>
+</tbody>
+</table>
+<p>The interaction term is a ratio of odds ratios,
+0.87 with a p-value of
+0.89 — no evidence of modification, which is
+unsurprising given that only 92 of the 2882 patients use
+aspirin and only 9 of those started a Cox-2 inhibitor. But
+the coefficient is not what we want anyway, for the same reason as
+before: it is a conditional, noncollapsible quantity on the odds scale.
+The subgroup effects we actually care about are two standardized risk
+differences, one per aspirin stratum.</p>
+<p>Standardizing within a subgroup means changing the population we average
+over: instead of predicting both worlds for the whole cohort, we predict
+both worlds for the aspirin users only, then repeat for the non-users.
+Fitting a separate model within each stratum is the fully flexible
+version of the interaction above — it lets every coefficient, not just
+treatment’s, differ by aspirin use — so we can get subgroup effects by
+calling <code>standardize()</code> on each subset. One adjustment is forced on us:
+<code>aspirin_use</code> is constant within a stratum by construction and has to
+leave the covariate list, and among aspirin users
+<code>anti_coagulant_use</code> turns out to be constant too. With only
+92 aspirin users we cannot support nineteen covariates in that
+stratum in any case. We fit a deliberately lean model in both strata so the
+two are comparable.</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="outcome-regression-and-standardization.html#cb54-1" tabindex="-1"></a>lean <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;arthritis&quot;</span>), <span class="st">&quot;pud&quot;</span>)</span>
+<span id="cb54-2"><a href="outcome-regression-and-standardization.html#cb54-2" tabindex="-1"></a></span>
+<span id="cb54-3"><a href="outcome-regression-and-standardization.html#cb54-3" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb54-4"><a href="outcome-regression-and-standardization.html#cb54-4" tabindex="-1"></a>  <span class="fu">standardize</span>(<span class="fu">filter</span>(ns, aspirin_use <span class="sc">==</span> <span class="st">&quot;No&quot;</span>),  lean, <span class="st">&quot;cox2_init&quot;</span>, <span class="at">seed =</span> <span class="dv">922</span>) <span class="sc">|&gt;</span></span>
+<span id="cb54-5"><a href="outcome-regression-and-standardization.html#cb54-5" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">aspirin =</span> <span class="st">&quot;No&quot;</span>, <span class="at">.before =</span> <span class="dv">1</span>),</span>
+<span id="cb54-6"><a href="outcome-regression-and-standardization.html#cb54-6" tabindex="-1"></a>  <span class="fu">standardize</span>(<span class="fu">filter</span>(ns, aspirin_use <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span>), lean, <span class="st">&quot;cox2_init&quot;</span>, <span class="at">seed =</span> <span class="dv">923</span>) <span class="sc">|&gt;</span></span>
+<span id="cb54-7"><a href="outcome-regression-and-standardization.html#cb54-7" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">aspirin =</span> <span class="st">&quot;Yes&quot;</span>, <span class="at">.before =</span> <span class="dv">1</span>)</span>
+<span id="cb54-8"><a href="outcome-regression-and-standardization.html#cb54-8" tabindex="-1"></a>)</span>
+<span id="cb54-9"><a href="outcome-regression-and-standardization.html#cb54-9" tabindex="-1"></a>sub <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<table>
+<thead>
+<tr class="header">
+<th align="left">aspirin</th>
+<th align="left">estimand</th>
+<th align="right">estimate</th>
+<th align="right">conf_low</th>
+<th align="right">conf_high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">No</td>
+<td align="left">risk0</td>
+<td align="right">0.098</td>
+<td align="right">0.087</td>
+<td align="right">0.108</td>
+</tr>
+<tr class="even">
+<td align="left">No</td>
+<td align="left">risk1</td>
+<td align="right">0.091</td>
+<td align="right">0.061</td>
+<td align="right">0.120</td>
+</tr>
+<tr class="odd">
+<td align="left">No</td>
+<td align="left">rd</td>
+<td align="right">-0.007</td>
+<td align="right">-0.040</td>
+<td align="right">0.021</td>
+</tr>
+<tr class="even">
+<td align="left">No</td>
+<td align="left">rr</td>
+<td align="right">0.930</td>
+<td align="right">0.609</td>
+<td align="right">1.214</td>
+</tr>
+<tr class="odd">
+<td align="left">Yes</td>
+<td align="left">risk0</td>
+<td align="right">0.196</td>
+<td align="right">0.117</td>
+<td align="right">0.276</td>
+</tr>
+<tr class="even">
+<td align="left">Yes</td>
+<td align="left">risk1</td>
+<td align="right">0.193</td>
+<td align="right">0.000</td>
+<td align="right">0.353</td>
+</tr>
+<tr class="odd">
+<td align="left">Yes</td>
+<td align="left">rd</td>
+<td align="right">-0.003</td>
+<td align="right">-0.204</td>
+<td align="right">0.165</td>
+</tr>
+<tr class="even">
+<td align="left">Yes</td>
+<td align="left">rr</td>
+<td align="right">0.986</td>
+<td align="right">0.000</td>
+<td align="right">2.048</td>
+</tr>
+</tbody>
+</table>
+<p>Aspirin users start from a much higher baseline: a standardized
+nonselective-NSAID risk of 19.6%
+against 9.8% among non-users,
+which is the pathway acting as advertised. The standardized risk
+differences, though, are
+-0.3 points among aspirin users
+and -0.7 points among non-users,
+and the aspirin-user interval runs from
+-20.4 to
++16.5 percentage
+points — wide enough to contain nearly any clinically meaningful effect
+in either direction. The risk ratio row is worse still, with a lower
+bound at essentially zero: in some resamples the handful of
+aspirin-using Cox-2 initiators produced a predicted risk near zero, and
+the bootstrap reports that instability faithfully. It is a signal about
+the data, not a discovery about the drug. We suppressed R’s separation
+warnings in that chunk to keep the output readable, but they tell the
+same story.</p>
+<p>It is worth being precise about how effect modification differs from
+confounding, because both get described loosely as “a covariate that
+matters.” Confounding is a problem of identification: a common cause of
+treatment and outcome makes the observed contrast fail to equal the
+causal one, and we adjust for it to recover a valid estimate. Effect
+modification is not a problem at all — it is a feature of the causal
+effect itself. A confounder must be handled or the answer is wrong; an
+effect modifier is something we choose to report on, and the estimand
+changes when we do, from one ATE for the cohort to a set of
+subgroup-specific ATEs. A variable can be one, the other, or both:
+aspirin use here is a candidate for either role. Note also that the
+overall standardized risk difference of
+-0.6 points is a weighted average of the
+subgroup effects, weighted by how common each subgroup is — which is why
+a cohort-level ATE can be small while an effect in a small subgroup is
+large, and why the population you standardize to is part of the
+estimand, not an implementation detail.</p>
+</div>
+<div id="exercises-5" class="section level2 hasAnchor" number="7.5">
+<h2><span class="header-section-number">7.5</span> Exercises<a href="outcome-regression-and-standardization.html#exercises-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li>The model above enters <code>age</code> linearly on the log-odds scale. Refit it
+with <code>poly(age, 2)</code> in place of <code>age</code> and rerun <code>standardize()</code> with
+the same seed. How much do the standardized risks and the risk
+difference move? Does the confidence interval change enough to alter
+what you would conclude, and what does your answer suggest about how
+sensitive this estimate is to the functional form of the strongest
+confounder?</li>
+<li><code>ppi_use</code> and <code>h2_antagonist_use</code> are gastroprotective drugs, so they
+may be markers of a physician’s concern about GI risk rather than
+causes of it. Drop both from the covariate list and rerun
+<code>standardize()</code>. Report the standardized risk difference with and
+without them. This is an informal sensitivity analysis to the choice
+of adjustment set; using Chapter 5’s language, sketch the DAG under
+which including them is right and the DAG under which it is wrong.</li>
+<li>Everything in this chapter estimated the ATE, averaging predictions
+over the whole cohort. The ATT averages over the treated only.
+Modify <code>point_estimates()</code> inside a copy of <code>standardize()</code> so that
+the two predicted risks are averaged over <code>filter(d, cox2_init == 1)</code>
+while the model is still fit on all of <code>d</code>, and estimate the ATT for
+the Cox-2 question. Why must the <em>model</em> still be fit on the full
+data even though the <em>averaging</em> is restricted, and would you expect
+the ATT here to sit above or below the ATE given Chapter 6’s Table 1?</li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="study-design-for-causal-questions.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="propensity-scores.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+  "sharing": null,
+  "fontsettings": {
+    "theme": "white",
+    "family": "sans",
+    "size": 2
+  },
+  "edit": {
+    "link": null,
+    "text": null
+  },
+  "history": {
+    "link": null,
+    "text": null
+  },
+  "view": {
+    "link": null,
+    "text": null
+  },
+  "download": null,
+  "search": {
+    "engine": "fuse",
+    "options": null
+  },
+  "toc": {
+    "collapse": "section"
+  }
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
