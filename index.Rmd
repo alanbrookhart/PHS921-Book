@@ -42,23 +42,23 @@ you have had an introductory course in epidemiology and one in
 biostatistics — you should be comfortable with concepts like confounding,
 odds ratios, and hazard ratios, and with fitting a regression model. I do
 not assume any prior exposure to causal inference as a formal framework,
-and I do not assume any prior experience with R. Both are things we will
-build up together, chapter by chapter.
+and I do not assume any prior experience with R. We will develop both
+over the course of the book.
 
 ## How the book works
 
-The ideas in this book are easiest to learn when they are attached to a
-real analysis rather than left as abstractions, so we will return
-throughout to two running examples drawn from the National Ambulatory
-Medical Care Survey (NAMCS). The first asks whether treatment with a
+The ideas in this book are easier to learn when they are attached to a
+real analysis, so we will return throughout to two running examples
+drawn from the National Ambulatory Medical Care Survey (NAMCS). The
+first asks whether treatment with a
 selective Cox-2 inhibitor, compared with a nonselective NSAID, changes
 the risk of peptic ulcer disease. The second asks whether initiating a
 statin changes the risk of a cardiovascular event, and brings in
 follow-up time, censoring, and survival outcomes. As we work through
 these examples, we will also build a small toolkit of R functions for
-estimating causal effects — standardization, propensity score weighting,
-censoring weights, and so on — that you will write once and then reuse,
-and extend, in later chapters.
+estimating causal effects, including standardization, propensity score
+weighting, and censoring weights, which you will write once and then
+reuse and extend in later chapters.
 
 ## Software
 

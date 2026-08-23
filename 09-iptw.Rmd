@@ -4,20 +4,20 @@
 source("R/setup.R")
 ```
 
-Chapter 8 built a propensity score and then spent it two ways, both of
-which threw something away: stratification coarsened the score into five
-bands, and matching discarded every nonselective initiator who failed to
-pair with a Cox-2 patient. This chapter puts the same fitted score to a
-third use that keeps every patient. Rather than grouping people who
-resemble each other, we leave the cohort intact and give each patient a
-*weight* — larger for those who received the treatment their covariates
-made unlikely, smaller for those who received the expected one. In the
-reweighted cohort treatment and covariates are unrelated by
-construction, so a plain comparison of two weighted means estimates the
-causal contrast. This is **inverse probability of treatment weighting**,
-the last of Part II's three estimators and the one whose logic carries
-furthest, since it alone extends cleanly to treatments that change over
-time.
+Chapter 8 built a propensity score and used it in two ways, each of
+which discarded information: stratification coarsened the score into
+five bands, and matching dropped every nonselective initiator who failed
+to pair with a Cox-2 patient. This chapter puts the same fitted score to
+a third use that retains every patient. Although the earlier estimators
+worked by grouping people who resemble each other, here we leave the
+cohort intact and assign each patient a *weight*, larger for
+those who received the treatment their covariates made unlikely and
+smaller for those who received the expected one. In the reweighted cohort
+treatment and covariates are unrelated by construction, so a comparison
+of two weighted means estimates the causal contrast. This is **inverse
+probability of treatment weighting**, the last of Part II's three
+estimators and the one that generalizes most readily, since it extends
+cleanly to treatments that change over time.
 
 ## Reweighting to a pseudo-population
 
@@ -66,35 +66,36 @@ she stands in for two and a half. Look at `pseudo_n`: both arms now
 contain 400 frail and 600 non-frail patients, 1,000 apiece — each arm
 inflated into a copy of the whole cohort. In this
 **pseudo-population** — Hernán and Robins's term for the reweighted
-cohort — frailty is distributed identically across arms, its association
-with treatment broken not by conditioning on frailty but by duplicating
-people until it no longer matters, and the weighted risks come out at
+cohort — frailty is distributed identically across arms; the association
+between frailty and treatment has been broken by duplicating patients
+rather than by conditioning on frailty, and the weighted risks come out at
 `r sprintf("%.1f", 100 * wtd_toy[2])`% and
 `r sprintf("%.1f", 100 * wtd_toy[1])`%, a risk difference of exactly
 zero.
 
-That is the whole idea. The general form of the weight for a patient
-with covariates $L$ who received treatment $A$ is
+That is the essential idea, and the general form of the weight follows
+directly. For a patient with covariates $L$ who received treatment $A$
+the weight is
 
 $$W = \frac{1}{P(A \mid L)} = \frac{A}{e(L)} + \frac{1-A}{1 - e(L)},$$
 
-the reciprocal of the probability of the treatment actually received —
+the reciprocal of the probability of the treatment actually received,
 which is where the estimator's name comes from. Each patient represents
 herself plus everyone with her covariates who *would* have gone the
 other way, and Chapter 3's identification conditions license that
 substitution: consistency, conditional exchangeability given $L$, and
-positivity. Positivity now does visible work. As $e(L)$ approaches zero
-for a treated patient her weight grows without bound, and a handful of
-patients come to speak for the entire pseudo-population.
+positivity. Positivity is doing conspicuous work here, because as $e(L)$
+approaches zero for a treated patient her weight grows without bound, and
+a handful of patients can come to speak for the entire pseudo-population.
 
 ## Building the weights
 
 The weight above, $1/P(A \mid L)$, is the **unstabilized** weight. It
-averages to about 2, because each arm is blown up to the size of the
+averages to about 2, because each arm is inflated to the size of the
 full cohort and the pseudo-population is therefore roughly twice the
-real one. Nothing is wrong with that, but it makes the weights larger
-and more variable than they need to be, and variance in the weights is
-variance in the estimate.
+real one. Nothing is wrong with that, although it makes the weights
+larger and more variable than they need to be, and variability in the
+weights inflates the variance of the estimate.
 
 **Stabilized** weights fix this by multiplying by the marginal
 probability of the treatment received,
@@ -102,7 +103,7 @@ probability of the treatment received,
 $$W^{s} = \frac{P(A)}{P(A \mid L)} = A\,\frac{\Pr(A=1)}{e(L)} + (1-A)\,\frac{1 - \Pr(A=1)}{1 - e(L)}.$$
 
 The numerator does not depend on covariates, so it cannot undo the
-balancing the denominator achieves; it simply rescales each arm so that
+balancing the denominator achieves; it does no more than rescale each arm so that
 the pseudo-population is about the size of the real cohort. The
 diagnostic consequence is convenient: stabilized weights should average
 close to 1, and a mean far from 1 is a sign that the treatment model is
@@ -150,12 +151,13 @@ that also adjusted for `ns_covs` would be a different, doubly adjusted
 estimator. And the fit goes through `geepack::geeglm()` with
 `id = seq_len(nrow(data))`, making every patient her own cluster under an
 independent working correlation. That is an elaborate way to reproduce a
-`glm()` point estimate; what it buys is the sandwich standard error. A
-weighted `glm()` treats the weights as counts of real observations and
-reports intervals far too narrow; the robust variance from `geeglm()`
-does not.
+`glm()` point estimate, but it delivers the sandwich standard error,
+which is what we need here. A weighted `glm()` treats the weights as
+counts of real observations and reports intervals that are far too
+narrow, whereas the robust variance from `geeglm()` is estimated
+empirically rather than from the weighted likelihood.
 
-That code lives in `R/iptw_estimator.R`. Before using it, look at the
+That code lives in `R/iptw_estimator.R`. Before using it, we look at the
 weights themselves.
 
 ```{r ch09-weights}
@@ -210,17 +212,17 @@ effective sample size, $(\sum w)^2 / \sum w^2$, falls from
 weights and all the way to `r sprintf("%.0f", ess_un)` unstabilized: a
 compact measure of how much information a few large weights consume.
 
-The histogram shows where the asymmetry lives. Nonselective initiators
+The histogram shows where the asymmetry lies. Nonselective initiators
 are the common case, so their weights cluster tightly around 1, while
-the Cox-2 arm spreads out with a long right tail —
+the Cox-2 arm spreads out with a long right tail:
 `r n_big` patients carry a stabilized weight above 1.5, of whom
-`r big_trt` are Cox-2 initiators. Extreme weights are not a numerical
-annoyance to be tidied away; they are the positivity assumption
-complaining. That patient sits in the sparse left tail of Chapter 8's
-density plot, where matching declined to find a partner: matching
-reported the difficulty by leaving her out, weighting reports it by
-making her enormously influential, which is easier to overlook — so the
-weight distribution should be printed and plotted every time.
+`r big_trt` are Cox-2 initiators. Extreme weights are best read as a
+symptom of a positivity problem rather than as a numerical nuisance to be
+tidied away. The patient with the largest weight sits in the sparse left
+tail of Chapter 8's density plot, where matching declined to find a
+partner. Matching reported that difficulty by leaving her out, whereas
+weighting reports it by making her highly influential, which is easier to
+miss, so the weight distribution should be printed and plotted routinely.
 
 ## Estimating the effect
 
@@ -259,19 +261,19 @@ interval from `r sprintf("%.1f", 100 * ipw_lo)` to
 `r sprintf("%+.1f", 100 * ipw_hi)` points, and the weighted risk ratio
 is `r sprintf("%.2f", ipw_rr)`
 (`r sprintf("%.2f", ipw_rr_lo)` to `r sprintf("%.2f", ipw_rr_hi)`).
-Both sit essentially on the null. The Poisson fit deserves a note: the
-outcome is binary, not a count, so the likelihood is deliberately wrong —
-but the coefficient of a log-link regression on a 0/1 outcome still
-estimates a log risk ratio, and the sandwich variance repairs the
-standard error the wrong likelihood would give. This is the modified
-Poisson approach to risk ratios, and another reason the `geeglm()`
-machinery is there.
+Both estimates sit essentially on the null. The Poisson fit deserves a
+note. The outcome is binary rather than a count, so the likelihood is
+deliberately wrong, although the coefficient of a log-link regression on
+a 0/1 outcome still estimates a log risk ratio, and the sandwich variance
+repairs the standard error that the wrong likelihood would give. This is
+the modified Poisson approach to risk ratios, and it is a further reason
+for the `geeglm()` machinery.
 
-Notice how little there is to the outcome side: the regression has one
-covariate. Everything we know about age, arthritis, steroids, and the
-other seventeen variables entered through the weights, built without ever
-looking at `pud` — Chapter 8's design-stage discipline carried through to
-the estimate.
+There is very little on the outcome side of this analysis: the regression
+has one covariate. Everything we know about age, arthritis, steroids, and
+the other seventeen variables entered through the weights, which were
+built without ever looking at `pud`, so Chapter 8's design-stage
+discipline carries through to the estimate.
 
 ## Truncation and diagnostics
 
@@ -300,22 +302,23 @@ Capping at the 99th percentile touches `r n_cap` of the
 `r sprintf("%+.2f", 100 * ipw_rd)` to
 `r sprintf("%+.2f", 100 * tr_rd)` percentage points, with the standard
 error changing from `r sprintf("%.4f", un_se)` to
-`r sprintf("%.4f", tr_se)`. In this cohort truncation buys almost
-nothing, which is the most useful thing it could have told us: the
-estimate does not hang on a few influential patients.
+`r sprintf("%.4f", tr_se)`. Truncation therefore buys almost nothing in
+this cohort, which is itself informative: the estimate is robust to the
+handful of most influential patients.
 
-The trade-off is worth stating plainly. Truncation is a
-deliberate exchange of bias for variance: the untruncated estimator is
-consistent for the ATE if the treatment model is right, and the
+The trade-off deserves to be stated explicitly, since truncation is a
+deliberate exchange of bias for variance. If the treatment model is
+correct, the untruncated estimator is consistent for the ATE and the
 truncated one is not, because we have knowingly misrepresented how much
 of the pseudo-population the extreme patients should represent. What we
-get back is stability, and when a single weight dominates the sum a
-little bias can be a good trade. The honest way to use truncation is as
-a sensitivity analysis rather than a default: report the untruncated
-estimate, report it capped at the 99th and 95th percentiles, and if they
-disagree materially, say so — a result that depends on whether one
-patient counts thirty times or ten is a result driven by extrapolation
-into a region where the data are thin, and no cap repairs that.
+get in return is stability, and when a single weight dominates the sum a
+small amount of bias can be worth accepting. Truncation is therefore
+better used as a sensitivity analysis than as a default: report the
+untruncated estimate, report it capped at the 99th and 95th percentiles,
+and if they disagree materially, say so. An estimate that depends on
+whether one patient counts thirty times or ten is being driven by
+extrapolation into a region where the data are thin, and no choice of cap
+will remedy that.
 Trimming, which drops patients outside a range of the propensity score
 altogether, is the other common option; it changes the population and
 therefore the estimand, and should be described as such. The distinction
@@ -371,15 +374,16 @@ The SMR-weighted risk difference is
 `r sprintf("%+.1f", 100 * smr_hi)`). Set beside the ATE of
 `r sprintf("%+.2f", 100 * ipw_rd)` points from the same score and
 Chapter 8's matched estimate of `r sprintf("%+.2f", 100 * smr_att)`
-points on the same cohort, it lands between them. That is a reasonable
-place to be: SMR weighting targets the ATT, as matching did, but reaches
-it by keeping the unmatched controls at reduced weight rather than
+points on the same cohort, it lands between them. That is unsurprising.
+SMR weighting targets the ATT, as matching did, although it reaches the
+ATT by retaining the unmatched controls at reduced weight rather than
 discarding them, so the two ATT estimates need not coincide, and neither
-sits far from the null. The weights themselves show what that costs:
+sits far from the null. The weights themselves indicate what this costs:
 among the untreated they average only `r sprintf("%.2f", smr_mean)` and
 none exceeds `r sprintf("%.2f", smr_max)`, because the common arm has to
-be shrunk hard to resemble the rare one. The interval widens
-accordingly — the price of asking about the treated rather than everyone.
+be shrunk substantially to resemble the rare one. The confidence interval
+widens accordingly, which is the price of asking about the treated rather
+than about everyone.
 
 ## MSMs and where weighting shines
 
@@ -400,23 +404,23 @@ treatment it has one parameter per arm and so cannot be misspecified.
 Larger MSMs can be, and often carry baseline effect modifiers on the
 right-hand side to allow subgroup effects.
 
-The deeper reason to learn weighting is that this framework survives
-time-varying treatment, and conditioning does not. Suppose patients
-start and stop a drug over months of follow-up while their covariates
-evolve. A confounder measured at month six is affected by treatment at
-month three — a mediator as well as a confounder. Adjust for it in an
-outcome regression and you block part of the effect you are trying to
-measure, and may induce collider bias besides; leave it out and the
-later treatment stays confounded. No covariate set resolves that
-conflict by conditioning. Weighting does: build a weight from a
-treatment model at each time point, multiply the per-visit weights along
-each patient's history, and fit a marginal structural model in the
-resulting pseudo-population. The time-varying covariates appear in the
-weight models, where they cause no trouble, and never in the outcome
-model, so nothing is blocked. Chapter 11 applies the identical logic to
-censoring rather than treatment, and Chapter 12 uses it to emulate
-trials with sustained strategies. Part III is largely a series of
-variations on this chapter.
+The more important reason to learn weighting is that the framework
+extends to time-varying treatment, whereas conditioning does not.
+Suppose patients start and stop a drug over months of follow-up while
+their covariates evolve. A confounder measured at month six may itself be
+affected by treatment at month three, making it a mediator as well as a
+confounder. If we adjust for it in an outcome regression we block part of
+the effect we are trying to measure and may induce collider bias as well,
+whereas if we leave it out the later treatment remains confounded. No
+choice of covariate set resolves that conflict by conditioning, but
+weighting can: build a weight from a treatment model at each time point,
+multiply the per-visit weights along each patient's history, and fit a
+marginal structural model in the resulting pseudo-population. The
+time-varying covariates then appear only in the weight models, where they
+cause no trouble, and never in the outcome model, so nothing is blocked.
+Chapter 11 applies the same logic to censoring rather than treatment, and
+Chapter 12 uses it to emulate trials with sustained strategies; much of
+Part III consists of variations on this chapter.
 
 ## Three estimators, one estimand
 
@@ -464,30 +468,32 @@ The crude risk difference of
 `r sprintf("%+.1f", 100 * crude_rd)` percentage points is the confounded
 starting point, and both adjusted estimators pull it across the null:
 standardization to `r sprintf("%+.2f", 100 * std_rd)` points and IPTW to
-`r sprintf("%+.2f", 100 * ipw_rd)`. The agreement is no accident. Both
-target the ATE, both use the same nineteen covariates, and both rest on
-the same identification assumptions; they differ only in which nuisance
-model carries the load — an outcome model for `pud` in Chapter 7, a
-treatment model for `cox2_init` here. Two estimators leaning on
-different models landing in the same place is mild evidence that neither
-model is badly wrong. It is not evidence that the assumptions hold,
-since both would be wrong together if `ns_covs` were missing an
-important confounder.
+`r sprintf("%+.2f", 100 * ipw_rd)`. The agreement is expected rather than
+coincidental. Both target the ATE, both use the same nineteen covariates,
+and both rest on the same identification assumptions; they differ only in
+which nuisance model carries the load —
+an outcome model for `pud` in Chapter 7, a treatment model for
+`cox2_init` here. That two estimators relying on different nuisance
+models land in the same place is mild evidence that neither model is
+badly wrong, although it is not evidence that the assumptions hold, since
+both would be wrong together if `ns_covs` were missing an important
+confounder.
 
 Chapter 8's matched analysis, recomputed here, gave a risk difference of
 `r sprintf("%+.1f", 100 * att_rd)` percentage points, further from the
-null than either of these — not a contradiction, since matching targeted
-the ATT, as the SMR weights above did, averaging over the older and
-sicker Cox-2 initiators rather than the whole cohort, and did so with
-roughly a sixth of the data. Its interval overlaps these comfortably.
+null than either of these, which is not a contradiction, since
+matching targeted the ATT, as the SMR weights above did, averaging over
+the older and sicker Cox-2 initiators rather than over the whole cohort,
+and did so using roughly a sixth of the data. Its confidence interval
+overlaps these comfortably.
 
-What all three agree on is the shape of the answer: the crude signal of
-harm is confounding, and once the arms are comparable the estimates
-hover near the null with intervals wide enough to admit a modest benefit
-or a modest harm. With `r sum(ns$pud)` ulcer cases and
-`r sum(ns$cox2_init)` Cox-2 initiators, that is the honest summary. No
-choice of estimator will sharpen it, because better estimators cannot
-manufacture information the cohort does not contain.
+All three estimators agree on the shape of the answer. The crude signal
+of harm is confounding, and once the arms are made comparable the
+estimates hover near the null, with intervals wide enough to admit either
+a modest benefit or a modest harm. With `r sum(ns$pud)` ulcer cases and
+`r sum(ns$cox2_init)` Cox-2 initiators, that is as far as these data can
+take us, and no alternative estimator would sharpen the conclusion, since
+a better estimator cannot supply information the cohort does not contain.
 
 ## Exercises
 

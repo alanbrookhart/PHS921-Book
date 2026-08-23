@@ -4,13 +4,13 @@
 source("R/setup.R")
 ```
 
-Every idea in this book is attached to code, and the code is R. If you
-have never used R before, this chapter is for you: it introduces just
-enough of the tidyverse to read and write the data manipulations in the
-chapters that follow, walks through the two example cohorts you will be
-living with for the rest of the semester, and ends by building your first
-reusable function — a "Table 1" generator you will reach for in every
-observational study you ever run, in this course and after it. If you
+Every idea in this book is attached to code written in R. If you
+have never used R before, this chapter introduces enough of the
+tidyverse to read and write the data manipulations used in the
+chapters that follow, describes the two example cohorts we will work
+with for the rest of the semester, and ends by building a first
+reusable function: a "Table 1" generator that will be useful in most
+observational studies you conduct, in this course and after it. If you
 already know R and the tidyverse well, skim this chapter for the two data
 sets and read the Table 1 section, since `table1_continuous()` and
 `table1_categorical()` are used again in later chapters.
@@ -29,11 +29,11 @@ rectangular data set with rows and columns (a **data frame**, or in the
 tidyverse a **tibble**). A **function** takes some input, does something
 to it, and returns an output; `mean(x)` takes a vector `x` and returns
 its average. A **package** is a bundle of functions someone else wrote
-and shared, loaded with `library()`. The tidyverse is one such bundle —
-really a collection of packages, including `dplyr` for manipulating data
-frames and `ggplot2` for plotting — built around a shared design that
-tries to make code read like a description of what you want done rather
-than a set of instructions for how a computer should do it.
+and shared, loaded with `library()`. The tidyverse is one such bundle,
+or more precisely a collection of packages, including `dplyr` for
+manipulating data frames and `ggplot2` for plotting, built around a
+shared design intended to make code read as a description of what you
+want done rather than as instructions for how a computer should do it.
 
 The setup chunk at the top of this chapter already did the loading for
 us: `source("R/setup.R")` runs a script that attaches the tidyverse,
@@ -81,9 +81,9 @@ fourth groups patients by which drug class they initiated and reports
 the number of patients and mean age in each group — a first, very small
 taste of the comparisons we will spend the rest of the book refining. The
 fifth cross-tabulates sex against treatment group. None of this is
-causal inference yet; it is just description, but description is where
-every analysis starts, and it is worth being fluent in it before adding
-any causal machinery on top.
+causal inference yet; it is description, but description is where an
+analysis begins, and it is worth being fluent in it before adding
+any causal machinery.
 
 ## The NAMCS teaching cohorts
 
@@ -141,9 +141,9 @@ loss to follow-up, or the administrative end of the study (`admin_end`,
 set to `r admin_end` years) happened first, and a `cv_event` indicator for whether
 that first thing was actually the cardiovascular event. We will not need
 any of that machinery until Chapter 10, on survival outcomes and
-censoring; for now it is enough to know that `sta` exists, that it is
-bigger and slower-moving than `ns`, and that it is where the book turns
-once we start worrying about follow-up time.
+censoring. For now it is enough to know that `sta` is larger than `ns`,
+that its outcomes accrue over years of follow-up, and that it is the
+cohort the book turns to once follow-up time matters.
 
 Appendix B collects a full codebook for both cohorts, generated directly
 from the data rather than typed out by hand, so it will always match
@@ -171,11 +171,10 @@ ggplot(ns, aes(age)) +
        title = "Age distribution by initiated drug class")
 ```
 
-The two distributions are not identical, and that alone is worth
-sitting with for a moment: it means age could confound any simple
-comparison of peptic ulcer risk between the groups, since age is
-plausibly related to both which drug a physician chooses to prescribe
-and the baseline risk of peptic ulcer disease.
+The two distributions are not identical, so age could confound any
+simple comparison of peptic ulcer risk between the groups, since age is
+plausibly related both to which drug a physician chooses to prescribe
+and to the baseline risk of peptic ulcer disease.
 
 A second question is whether the two groups differ in their burden of
 relevant comorbidities and comedications. A bar chart of prevalence, one
@@ -196,30 +195,27 @@ ns |>
 ```
 
 Arthritis, in particular, is more common among Cox-2 initiators than
-among nonselective NSAID initiators, which makes clinical sense — Cox-2
-selective drugs are often chosen specifically for patients thought to be
-at higher gastrointestinal risk — and is exactly the kind of pattern that
-will occupy us once we start asking how to adjust for confounding.
+among nonselective NSAID initiators. This is clinically unsurprising,
+since Cox-2 selective drugs are often chosen for patients thought to be
+at higher gastrointestinal risk, and it is the kind of imbalance that
+will concern us once we take up adjustment for confounding.
 
 ## Your first reusable functions: Table 1
 
-Every observational paper you will ever read, and every one you will
-ever write, opens with a table comparing the characteristics of the
-groups being compared — universally, if a little unimaginatively, called
-"Table 1." It is descriptive, not causal, but it is also indispensable:
-it is where a reader first sees whether the groups look similar,
-and it is often where a reader first suspects they don't. You will make
-some version of this table for every study you ever do, so rather than
-rebuild it from scratch each time, we are going to write it once, as a
-function, and reuse it for the rest of this book.
+Nearly every observational paper opens with a table comparing the
+characteristics of the groups under comparison, conventionally called
+"Table 1." It is descriptive rather than causal, but it is where a
+reader first sees whether the groups appear comparable, and often where
+a reader first suspects that they are not. Because some version of this
+table is needed for nearly every study, we will write it once, as a
+function, and reuse it for the rest of the book.
 
 A function in R is defined with `function(...)`, naming its arguments,
 followed by a body that computes something from them and returns it (by
 default, the value of the last expression evaluated). Writing your own
-functions is the single habit that will save you the most time as an R
-user, because it turns a block of code you would otherwise copy, paste,
-and slightly mis-edit into something you write once, test once, and
-trust afterward.
+functions will save a great deal of time, because it turns a block of
+code that would otherwise be copied, pasted, and slightly mis-edited
+into something written and tested once.
 
 A Table 1 needs to summarize two kinds of variables differently:
 continuous variables as a mean and standard deviation, and categorical
@@ -251,9 +247,10 @@ table1_continuous <- function(data, vars, by) {
 A couple of details are worth pointing out because they recur throughout
 this book. `all_of(vars)` tells `select()` and `pivot_longer()` that
 `vars` is a character vector of column names supplied by the caller,
-rather than a single column to look up literally — this is what lets the
-function work for any set of variables, not just the ones we happen to
-try first. `.data[[by]]` does the analogous thing for `group_by()`,
+rather than a single column to look up literally, which is what allows
+the function to work for any set of variables rather than only the ones
+we happen to try first. `.data[[by]]` does the analogous thing for
+`group_by()`,
 letting the name of the grouping column be a string passed in as an
 argument rather than hard-coded. Together these are what make the
 function *reusable*: nothing about age or treatment group is written
@@ -296,10 +293,10 @@ table1_categorical(
 Look at the two tables side by side. Cox-2 initiators are, on average,
 older than nonselective NSAID initiators, and a substantially larger
 share of them have a history of arthritis. Neither table tells us
-whether Cox-2 selectivity affects peptic ulcer risk — that question
-needs the rest of this book — but both are exactly the kind of evidence
-an epidemiologist reaches for first, and both came from two functions
-you now understand well enough to have written yourself.
+whether Cox-2 selectivity affects peptic ulcer risk, a question that
+occupies the rest of the book, but both are the kind of descriptive
+evidence an epidemiologist examines first, and both came from two
+functions short enough to read line by line.
 
 ## Exercises
 

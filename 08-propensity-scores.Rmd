@@ -19,8 +19,8 @@ studies the appeal is arithmetic, because exposure is far more common
 than the outcome and the treatment model therefore has more information
 to work with; here, with `r sum(ns$cox2_init)` Cox-2 initiators against
 `r sum(ns$pud)` cases, the two are comparably rare and the appeal is
-conceptual instead. What we gain is a separation between the work of
-making groups comparable and the work of estimating an effect.
+conceptual instead. The gain is a separation between the work of making
+the groups comparable and the work of estimating an effect.
 
 ## One number that summarizes confounding
 
@@ -48,19 +48,19 @@ covariates.
 The consequence for us is the second half of the theorem. If
 conditional exchangeability holds given the full covariate vector $L$ —
 Chapter 3's assumption, for which Chapter 5's diagram is the argument —
-then it also holds given $e(L)$ alone. So we may condition on one
-scalar in place of nineteen variables and lose nothing. Nineteen
-dimensions of confounding collapse into one number.
+then it also holds given $e(L)$ alone. So we may condition on a single
+scalar in place of nineteen variables without loss, reducing nineteen
+dimensions of confounding to one number.
 
 Two cautions belong here at the outset. First, the propensity score is
-a **nuisance parameter**: nobody wants to know a patient's probability
-of getting a Cox-2 inhibitor for its own sake, and we should resist
-interpreting the treatment model's coefficients causally. It exists only
-to be conditioned on. Second, the balancing property is a property of
-the *true* score, which we do not have. We estimate it, and the honest
-justification for the estimate is not that the model is correctly
-specified but that it demonstrably balances the covariates — something
-we can check directly, and will.
+a **nuisance parameter**: a patient's probability of receiving a Cox-2
+inhibitor is of no interest in itself, and the coefficients of the
+treatment model should not be interpreted causally, since the score
+serves only as something to condition on. Second, the balancing property
+holds for the *true* score, which we do not observe. We estimate it, and
+the justification for the estimate rests less on the model being
+correctly specified than on its demonstrably balancing the covariates,
+which is something we can check directly and do check below.
 
 ## Estimating the score
 
@@ -106,14 +106,15 @@ hi <- ns_ps |> filter(ps > quantile(ps, 0.99))
 ```
 
 Notice the formula. `reformulate(ns_covs, "cox2_init")` puts treatment
-on the left and the covariates on the right — the mirror image of
-Chapter 7's outcome model, and with no mention of `pud` anywhere. That
-is more than a technicality. The whole model can be built, inspected,
-and revised without ever looking at the outcome, so we cannot tune it,
-however unconsciously, toward an answer we like. It restores something
-outcome modeling gives up: a **design** stage, prior to and separate
-from analysis, in which we work only with treatment and covariates. It
-is the closest an observational study comes to writing a randomization
+on the left and the covariates on the right, the mirror image of
+Chapter 7's outcome model and with no mention of `pud` anywhere. This is
+more than a technicality, because the model can be built, inspected,
+and revised without ever looking at the outcome, so it cannot be tuned,
+however unconsciously, toward an answer we like. Propensity-score
+analysis therefore restores something outcome modeling gives up: a
+**design** stage, prior to and separate from analysis, in which we work
+only with treatment and covariates, and which is as close as an
+observational study comes to specifying a randomization
 scheme. Rubin (2008) makes this the central argument for propensity
 scores — that in observational work design trumps analysis, and that the
 discipline of settling the comparison before the outcome is ever
@@ -123,9 +124,9 @@ The fitted scores average `r sprintf("%.3f", mean(ps1))` in the Cox-2
 arm against `r sprintf("%.3f", mean(ps0))` among nonselective
 initiators, straddling the cohort-wide treatment prevalence of
 `r sprintf("%.1f", 100 * prev)`%. That separation is the confounding of
-Chapter 6's Table 1, now expressed as one number: the model can tell the
-arms apart because the arms genuinely differ. What matters more is how
-much the two distributions overlap.
+Chapter 6's Table 1, now expressed as one number: the model can
+distinguish the arms because the arms genuinely differ. Of more interest
+is how much the two distributions overlap.
 
 ```{r ch08-overlap}
 ggplot(ns_ps, aes(x = ps, fill = factor(cox2_init))) +
@@ -136,25 +137,25 @@ ggplot(ns_ps, aes(x = ps, fill = factor(cox2_init))) +
   theme_minimal()
 ```
 
-This plot is the practical face of the positivity assumption, and the
-first thing to look at before any propensity-score analysis: we want the
-region where treated patients live to be a region where untreated
-patients also live, and vice versa, because conditioning on the score
-only makes sense where both arms are represented. Formally the ranges
+This plot is where the positivity assumption becomes visible, and it is
+the first thing to examine before any propensity-score analysis: the
+region of the score occupied by treated patients should also be occupied
+by untreated patients, and conversely, since conditioning on the score
+is informative only where both arms are represented. Formally the ranges
 nest: the count of nonselective initiators above the highest treated
 score is `r n_ctrl_above`, and the count of Cox-2 initiators below the
-lowest untreated score is `r n_trt_below`. But the tails are where the
-assumption gets thin. The bottom percentile of the score holds
+lowest untreated score is `r n_trt_below`. The tails, however, are where
+the assumption becomes thin. The bottom percentile of the score holds
 `r nrow(lo)` patients, of whom `r sum(lo$cox2_init)` started a Cox-2
 inhibitor; the top percentile holds `r nrow(hi)` patients, of whom
 `r sum(hi$cox2_init)` did. The
-left tail, then, contains patients for whom we have essentially no
+left tail therefore contains patients for whom we have almost no
 information about what a Cox-2 inhibitor would have done, and the right
-tail is thin in the other direction. Chapter 7's standardization ran
-into exactly this problem but ran into it silently, extrapolating
-wherever it had to. Here the difficulty is visible on a plot, which is
-one of the plainer arguments for looking at a propensity score even when
-one intends to adjust some other way.
+tail is sparse in the other direction. Chapter 7's standardization
+encountered the same problem, but silently, extrapolating
+wherever it had to. Here the difficulty can be seen on a plot, which is
+one reason to estimate a propensity score even when one intends to
+adjust in some other way.
 
 ## Stratification
 
@@ -204,10 +205,10 @@ becomes clear. The lowest quintile holds only
 `r strata$n_treat[1]` Cox-2 initiators against
 `r strata$n_ctrl[1]` nonselective ones, so its risk difference of
 `r sprintf("%+.1f", 100 * strata$rd[1])` percentage points rests on a
-handful of patients and should not be taken seriously on its own.
+handful of patients and should not be interpreted on its own.
 
-Pooling is therefore essential, and *how* we pool is a choice about the
-estimand rather than a computational detail. Weighting each stratum by
+Pooling is therefore necessary, and the choice of how to pool determines
+the estimand. Weighting each stratum by
 the inverse of its variance — precision weighting, the logic behind the
 Mantel–Haenszel estimator — gives the most statistically efficient
 combination:
@@ -229,17 +230,17 @@ the cohort's own covariate distribution, and so estimates the ATE of
 Chapter 3. The precision-weighted average is standardized to a
 population defined by where the information happens to be, which
 coincides with the ATE only if the risk difference is constant across
-strata. When effects vary, efficiency and interpretability pull apart,
-and it is worth being explicit about which one has been bought.
+strata. When effects vary across strata, efficiency and interpretability
+diverge, and it is worth stating which of the two has been chosen.
 
 Either way, both sit on the protective side of the null while the crude
 risk difference was `r sprintf("%+.1f", 100 * (crude[2] - crude[1]))`
 points, and both have intervals wide enough to include no effect.
 
-Does the stratification actually balance anything? Because the score is
-a balancing score, covariates should look similar between arms *within*
-a stratum even though they differ sharply overall. Chapter 2's
-`table1_categorical()` will show us, applied to the top quintile.
+Whether the stratification balances the covariates can be checked
+directly. Because the score is a balancing score, covariates should be
+similar between arms *within* a stratum even though they differ sharply
+overall. We apply Chapter 2's `table1_categorical()` to the top quintile.
 
 ```{r ch08-strata-balance}
 source("R/table1.R")
@@ -257,29 +258,30 @@ age_gap_q5  <- diff(tapply(top_q$age, top_q$cox2_init, mean))
 arth_all <- 100 * tapply(ns$arthritis == "Yes", ns$cox2_init, mean)
 ```
 
-It does. Across the whole cohort, Cox-2 initiators are
-`r sprintf("%.1f", age_gap_all)` years older on average and
+The balance is much improved. Across the whole cohort, Cox-2 initiators
+are `r sprintf("%.1f", age_gap_all)` years older on average and
 `r sprintf("%.0f", diff(arth_all))` percentage points more likely to
-carry an arthritis diagnosis. Inside the top propensity quintile the age
-gap has shrunk to `r sprintf("%.1f", abs(age_gap_q5))` years — and in
-the opposite direction — and the arthritis, steroid, and hypertension
+carry an arthritis diagnosis. Within the top propensity quintile the age
+gap has shrunk to `r sprintf("%.1f", abs(age_gap_q5))` years, and in
+the opposite direction, while the arthritis, steroid, and hypertension
 percentages are within a few points of each other. Both arms of this
-stratum are high-propensity patients, so both are old and arthritic;
-what distinguished them has been absorbed into the stratum itself.
+stratum consist of high-propensity patients and are therefore older and
+more often arthritic, so much of what distinguished the arms overall has
+been absorbed into the stratum itself.
 
-Balance within quintiles is good but not perfect, and it cannot be.
-Patients with scores of 0.12 and 0.50 land in the same top quintile
-despite being quite different, so some confounding survives inside each
-band — Cochran's (1968) classic result is that five strata remove roughly 90%
-of the bias from a single continuous confounder, leaving the rest.
-Matching addresses that residual directly, by insisting that comparisons
-happen between individuals rather than within bands.
+Balance within quintiles is good but necessarily imperfect.
+Patients with scores of 0.12 and 0.50 fall in the same top quintile
+despite differing considerably, so some confounding remains within each
+band; Cochran's (1968) classic result is that five strata remove roughly 90%
+of the bias from a single continuous confounder, leaving the remainder.
+Matching addresses that residual by making comparisons between
+individuals rather than within bands.
 
 ## Matching
 
 Matching pairs each treated patient with an untreated patient whose
 propensity score is close, and analyzes the paired sample. The version
-below is the simplest one that is still respectable: **greedy 1:1
+below is the simplest form that remains defensible: **greedy 1:1
 nearest-neighbor matching without replacement, within a caliper**.
 
 ```{r ch08-ps-match-def, eval=FALSE}
@@ -312,11 +314,12 @@ control appears twice — keeping the paired analysis honest at the cost
 of using fewer controls. The `arrange(desc())` orders treated
 patients from the highest score down, so the hardest patients to match,
 the ones out at the sparse end of the distribution, get first pick of
-the control pool. And the *caliper* is the refusal: if the nearest
-available control is further than 0.05 on the propensity scale, that
-treated patient is left unmatched rather than paired with someone
-implausible. Unmatched patients are how a matched analysis reports a
-positivity problem instead of extrapolating through one.
+the control pool. The *caliper* sets a limit on how poor a match will be
+accepted: if the nearest available control differs by more than 0.05 on
+the propensity scale, that treated patient is left unmatched rather than
+paired with an implausible comparator. Unmatched patients are how a
+matched analysis registers a positivity problem rather than
+extrapolating past one.
 
 ```{r ch08-match}
 matched <- ps_match(ns_ps, treat = "cox2_init", caliper = 0.05)
@@ -325,16 +328,18 @@ c(pairs = n_pairs, treated_available = sum(ns_ps$cox2_init),
   unmatched = sum(ns_ps$cox2_init) - n_pairs)
 ```
 
+The matching yields
 `r n_pairs` pairs from `r sum(ns_ps$cox2_init)` Cox-2 initiators, a
-shortfall of `r sum(ns_ps$cox2_init) - n_pairs`: out at the extreme
-right of the density plot sits a treated patient for whom no
-nonselective initiator falls inside the caliper. Losing so little is a
-consequence of having a
-control pool `r sprintf("%.0f", (nrow(ns) - sum(ns$cox2_init)) / sum(ns$cox2_init))`
+shortfall of `r sum(ns_ps$cox2_init) - n_pairs`: at the extreme
+right of the density plot there is a treated patient for whom no
+nonselective initiator falls inside the caliper. The loss is small here
+because the control pool is roughly
+`r sprintf("%.0f", (nrow(ns) - sum(ns$cox2_init)) / sum(ns$cox2_init))`
 times the size of the treated group; in a cohort with a more common
 exposure the loss would be larger and more consequential.
 
-Now the check that matters. The `cobalt` package computes standardized
+The important check is on balance. The `cobalt` package computes
+standardized
 mean differences before and after matching and plots them. We pass the
 full cohort along with a 0/1 weight flagging which rows survived
 matching, which lets `bal.tab()` compute both columns at once.
@@ -380,7 +385,8 @@ standardized difference drops from `r sprintf("%.3f", mean(smd_un))` to
 The exceptions deserve attention rather than concealment, since
 `r sum(smd_adj > 0.1)` terms still sit above the threshold after
 matching, the worst of them the coronary artery disease indicator at
-`r sprintf("%.2f", max(smd_adj))`. Look at the counts, though: coronary
+`r sprintf("%.2f", max(smd_adj))`. The counts, however, are informative:
+coronary
 artery disease appears in `r cad[1, 2]` matched controls and
 `r cad[2, 2]` matched Cox-2 initiators. A gap of
 `r cad[1, 2] - cad[2, 2]` patients out of
@@ -427,57 +433,59 @@ includes zero.
 
 That point estimate is further from the null than the
 `r sprintf("%+.1f", 100 * std_rd)` points standardization gave us, and
-two things account for the gap. The obvious one is precision: we
+two things account for the gap. The first is precision: we
 discarded `r nrow(ns) - 2 * n_pairs` patients, so the matched interval
-is much wider than Chapter 7's and the point estimate is free to wander
-within it. The subtler one is that **matching estimates a different
+is much wider than Chapter 7's and the point estimate correspondingly
+less stable. The second is that **matching estimates a different
 estimand**. Every treated patient is kept and controls are recruited to
 resemble them, so the covariate distribution we have averaged over is
 that of the Cox-2 initiators — the ATT of Chapter 3, not the ATE. Given
 that the Cox-2 arm is older and sicker, and therefore at higher baseline
 risk, there is no reason to expect the ATT and the ATE to agree, and the
 matched estimate should not be read as a failed replication of the
-standardized one. It is an answer to a neighboring question, and
-arguably the more clinically natural one: what did this drug do for the
-patients who actually received it?
+standardized one. It answers a related question, and in many settings
+the more clinically relevant one: what the drug did for the patients who
+actually received it.
 
 ## Choosing the PS model
 
 Everything above depends on which variables enter `ps_model`, and the
-selection rule is not "whatever predicts treatment best." Judging a
-propensity-score model by its c-statistic is actively misleading: a
-model that separated the arms perfectly would push the two densities
-apart until nothing overlapped, destroying the very comparability we
-need. The model is good if it produces balance and preserves overlap,
-which is what the love plot and the density plot were for.
+selection rule is not to include whatever predicts treatment best.
+Judging a propensity-score model by its c-statistic is misleading,
+because a model that separated the arms perfectly would push the two
+densities apart until they no longer overlapped, removing the
+comparability the method depends on. A propensity-score model is
+adequate if it produces balance and preserves overlap, which is what the
+love plot and the density plot were used to assess.
 
-Chapter 5's diagram is the guide to what belongs. Confounders — common
-causes of treatment and outcome, such as age, arthritis, and steroid use
-— must be included; that is the whole point. Pure outcome predictors,
+Chapter 5's diagram guides what belongs in the model. Confounders —
+common causes of treatment and outcome, such as age, arthritis, and
+steroid use — must be included. Pure outcome predictors,
 variables that affect the outcome but not treatment, should generally be
-included too: they cannot introduce bias, and conditioning on them
-tightens the estimate. The variables to keep out are **instruments**:
-things that influence treatment but have no effect on the outcome except
-through treatment. Physician prescribing preference is the classic
-example. Including an instrument sharpens the treatment model, which is
-exactly why it hurts — it spreads the propensity scores apart, reduces
-overlap, inflates the variance of the estimate, and, worse, amplifies
-whatever bias unmeasured confounding was already contributing. And as in
-Chapter 5, colliders and anything on the causal pathway from treatment
-to outcome stay out; the propensity score offers no exemption from the
-rules for reading a DAG.
+included as well, since they cannot introduce bias and conditioning on
+them improves precision. The variables to leave out are **instruments**:
+variables that influence treatment but have no effect on the outcome
+except through treatment, of which physician prescribing preference is
+the standard example. Including an instrument improves the fit of the
+treatment model, and that is why it causes trouble: it spreads the
+propensity scores apart, reduces overlap, inflates the variance of the
+estimate, and can amplify bias from unmeasured confounding. As in
+Chapter 5, colliders and variables on the causal pathway from treatment
+to outcome are excluded; the propensity score provides no exemption from
+the rules for reading a DAG.
 
-That last consequence deserves its name, because it is the one that
-surprises people. **Bias amplification** is not merely a loss of
+That last consequence has a name of its own. **Bias amplification**
+refers to more than a loss of
 precision: conditioning on an instrument-like variable can make the bias
 from an unmeasured confounder *larger* than it was before adjustment.
-Intuitively, the instrument explains away the part of treatment variation
-that was innocent, leaving the residual variation more heavily loaded with
-the unmeasured confounder, and the estimate is then contrasted across
+The instrument accounts for the part of the variation in treatment that
+was unrelated to the confounder, so the residual variation is more
+heavily loaded with
+the unmeasured confounder, and the estimate then contrasts
 patients who differ more on $U$ than the full cohort did. Brookhart et al.
-(2006, AJE) demonstrated the effect in simulation, and it is why "include
-everything that predicts treatment" is bad advice rather than merely
-wasteful. The opposite extreme is also defensible in the right setting: in
+(2006, AJE) demonstrated the effect in simulation, which is why advice to
+include everything that predicts treatment can do real damage rather than
+merely waste degrees of freedom. The opposite extreme is also defensible in the right setting: in
 large claims databases, high-dimensional proxy adjustment — the **hd-PS**
 algorithm of Schneeweiss et al. (2009) — screens thousands of diagnosis
 and dispensing codes for empirical proxies of unmeasured confounders and
@@ -487,14 +495,14 @@ the course's variable-selection session lands, and the tension between it
 and the diagram-first rule above is a real one rather than a
 misunderstanding.
 
-Two habits follow. Choose the covariate set from substantive knowledge
-and the diagram before looking at the outcome — the design stage exists
-precisely so this is possible. And when a variable's role is genuinely
-unclear, prefer including it if it plausibly affects the outcome and
-excluding it if it plausibly affects only treatment, then report the
+Two habits follow. First, choose the covariate set from substantive
+knowledge and the diagram before looking at the outcome, which is what
+the design stage makes possible. Second, when a variable's role is
+genuinely unclear, include it if it plausibly affects the outcome and
+exclude it if it plausibly affects only treatment, and report the
 analysis both ways. `ns_covs` was assembled on that reasoning, and its
-arguable members — `ppi_use` and `h2_antagonist_use` from Chapter 7's
-exercises among them — are the ones worth varying.
+arguable members, among them `ppi_use` and `h2_antagonist_use` from
+Chapter 7's exercises, are the ones worth varying.
 
 ## Exercises
 

@@ -3,9 +3,9 @@
 # R and RStudio setup
 
 This appendix collects the one-time setup we assumed you had already
-done, back in Chapter 2. If everything already works — you can knit a
-chapter and see `ns` and `sta` load without complaint — you can skip
-straight past it.
+done, back in Chapter 2. If everything already works, meaning that you
+can knit a chapter and see `ns` and `sta` load without complaint, you can
+skip past it.
 
 ## Installing R and RStudio
 
@@ -119,23 +119,23 @@ As Chapter 2 mentioned, both cohorts are built from real NAMCS office
 visits, but their outcomes are simulated: `incident_pud` in `ns`, and the
 event-time variables (`cv_time`, `death_time`, `loss_fu_time`) that
 `R/setup.R` combines into `event_time` and `cv_event` in `sta`. Nothing
-about the covariates or the treatment assignment is invented — only the
-outcome, generated from a data-generating process that whoever built the
-simulation knows exactly, because they wrote it. That is a deliberate
-choice for a teaching book: it means every chapter's estimate can in
-principle be checked against a right answer, which is a luxury no real
-analysis has. We analyze the cohorts here the way we would analyze real
-data, arguing for each assumption rather than looking the truth up, but
-the truth is there behind the file — which is what makes these two
-cohorts safe to learn on.
+about the covariates or the treatment assignment is invented; only the
+outcome is, generated from a data-generating process known exactly to
+whoever wrote the simulation. That is a deliberate choice for a teaching
+book, since it means every chapter's estimate can in principle be checked
+against a right answer, which is a luxury no real analysis has. We
+analyze the cohorts here the way we would analyze real data, arguing for
+each assumption rather than looking the truth up, although the truth is
+there behind the file, which is what makes these two cohorts safe to
+learn on.
 
 # The estimator toolkit
 
 Across the book we wrote one small function per chapter, each solving
 the identification or estimation problem that chapter introduced, and
 each built to be reused rather than thrown away. This table collects all
-of them in one place — what they are called, which chapter introduced
-them, what you hand them, and what you get back. Every one of them lives
+of them in one place, giving the name of each, the chapter that
+introduced it, what you hand it, and what it returns. Every one of them lives
 in its own file under `R/`, and is loaded with `source("R/<file>")` after
 the `source("R/setup.R")` that opens every chapter — exactly as the
 chapters do it. One dependency is worth naming: `iptw_estimator()` calls
@@ -232,9 +232,9 @@ the two disagree, follow the map rather than the page numbers.
 
 # Further reading
 
-This book is deliberately narrow: two running examples, one estimator
-per chapter, just enough theory to justify each one. The sources below
-go further, in different directions.
+This book is deliberately narrow, with two running examples, one
+estimator per chapter, and just enough theory to justify each one. The
+sources below go further, in a number of directions.
 
 **On the framework as a whole.** Miguel Hernán and James Robins, *Causal
 Inference: What If* (Chapman & Hall/CRC) covers the same potential-outcomes framework at greater depth and rigor, with a fuller treatment of time-varying treatments, g-methods, and the assumptions each identification strategy needs. It is available free online and is the natural next stop after this course.

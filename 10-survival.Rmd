@@ -6,18 +6,19 @@
 source("R/setup.R")
 ```
 
-Part II asked one question three ways and got one answer: whatever Cox-2
-selectivity does to ulcer risk, the `ns` cohort cannot see it clearly,
-and the crude signal of harm was confounding by indication. That question
-had a convenient shape — one row, one treatment, and one binary outcome
-per patient, so a risk was a proportion and an adjusted risk a weighted
-proportion. Part III gives the convenience up. We move to `sta`, the
-statin cohort, where the outcome is a cardiovascular event that may occur
-at any point over a decade and where patients stop being observed at
-wildly different times: because they die, because they disappear from the
-data, or because the study ends. Confounding does not go away; a second
-problem is layered on top of it, and this chapter is about learning to
-see that second problem before adjusting for either.
+Part II asked one question three ways and arrived at one answer: whatever
+Cox-2 selectivity does to ulcer risk, the `ns` cohort cannot see it
+clearly, and the crude signal of harm was confounding by indication. That
+question had a convenient shape, with one row, one treatment, and one
+binary outcome per patient, so that a risk was a proportion and an
+adjusted risk a weighted proportion. Part III gives up that convenience.
+We move to `sta`, the statin cohort, in which the outcome is a
+cardiovascular event that may occur at any point over a decade and in
+which patients stop being observed at very different times: because they
+die, because they disappear from the data, or because the study ends.
+Confounding does not go away, but a second problem is now layered on top
+of it, and this chapter is concerned with learning to see that second
+problem before adjusting for either.
 
 ## The statin question
 
@@ -38,9 +39,9 @@ The two rows that changed, Follow-up and Causal contrast, changed
 together. In Part II "risk" needed no qualifier because everyone was
 followed for the same nominal period. Here it does: a risk is always a
 risk *by some time*, and the trial must name the horizon before the
-analysis can estimate anything. Ignore that and the Part II machinery
-still runs, which is the danger — there is a `cv_event` column of zeros
-and ones, and `mean(cv_event)` will happily return a number.
+analysis can estimate anything. The danger is that the Part II machinery
+still runs if we ignore this: there is a `cv_event` column of zeros and
+ones, and `mean(cv_event)` returns a number without objection.
 
 ```{r ch10-naive}
 sta |>
@@ -76,9 +77,9 @@ need estimators built for unequal follow-up.
 ## Anatomy of time-to-event data
 
 Time-to-event data have exactly two columns at their core: a time and an
-indicator of what happened at that time. `R/setup.R` builds both, and it
-is worth reading that code as the substantive statement it is rather than
-as boilerplate.
+indicator of what happened at that time. `R/setup.R` builds both, and the
+code is worth reading as a substantive statement about the study rather
+than as boilerplate.
 
 ```{r ch10-build, eval=FALSE}
 admin_end <- 10  # administrative end of follow-up (years)
@@ -129,42 +130,43 @@ d_by_arm <- tapply(as.integer(ended$ended_by == "Death"), ended$statin, mean)
 `r n_ev` patients of `r nrow(sta)` have an observed cardiovascular event;
 everyone else is censored, most of them by loss to follow-up or by the
 administrative end. Censoring at the administrative end is the benign
-kind. It happens at a calendar boundary that has nothing to do with any
-patient's prognosis, and every estimator in this chapter handles it
-without complaint.
+kind, since it happens at a calendar boundary that has nothing to do with
+any patient's prognosis, and every estimator in this chapter handles it
+without difficulty.
 
 Death is the uncomfortable case. `r n_dth` patients died before having a
 cardiovascular event, and the code above treats them exactly like the
 patients who moved away: censored, contributing follow-up up to the
-moment of death and nothing after. That is a substantive assumption, and
-a strong one. A patient who dies has not merely become unobservable — she
-can never have the outcome, so treating her as though she were still at
-risk in some unseen continuation of the study makes the estimated risk a
-risk in a hypothetical world where death from other causes has been
-removed. Worse, death is not evenly distributed here: it ends follow-up for
+moment of death and nothing after. That is a strong substantive
+assumption. A patient who dies has not merely become unobservable, since
+she can never have the outcome, so treating her as though she were still
+at risk in some unseen continuation of the study makes the estimated risk
+a risk in a hypothetical world in which death from other causes has been
+removed. Furthermore, death is not evenly distributed across the arms: it
+ends follow-up for
 `r sprintf("%.1f", 100 * d_by_arm[2])`% of statin initiators against
 `r sprintf("%.1f", 100 * d_by_arm[1])`% of non-initiators, so whatever
 distortion the assumption introduces is not the same in the two arms.
-The honest treatments of a **competing risk** are to report the
+The defensible treatments of a **competing risk** are to report the
 cumulative incidence function, which gives the fraction who actually
 experience a cardiovascular event first and leaves the deaths where they
 are, or to define a composite outcome of cardiovascular event or death.
 We take the conventional route in this book because it keeps the
 censoring machinery of Chapter 11 in one piece, and we flag it as a
-limitation rather than a solution — though not before returning to it
-below, once the Kaplan–Meier estimator has given us something to compare
-against.
+limitation rather than a solution, although we return to it below, once
+the Kaplan–Meier estimator has given us something to compare against.
 
 ## Kaplan–Meier
 
-The Kaplan–Meier estimator solves the unequal-follow-up problem by
-refusing to compute a single proportion. It walks forward through the
+The Kaplan–Meier estimator addresses the unequal-follow-up problem by
+declining to compute a single proportion. It works forward through the
 observed event times, asking at each one what fraction of the patients
 *still under observation just before that instant* survived it, and
 multiplies those conditional fractions together. A patient censored at
-2.3 years contributes to every factor up to 2.3 years and then quietly
-leaves the denominator, so her partial information is used without her
-absence being mistaken for good news. The product is the survival curve
+2.3 years contributes to every factor up to 2.3 years and then leaves the
+denominator, so her partial information is used without her absence being
+counted as evidence that she remained event-free. The product is the
+survival curve
 $S(t)$, and one minus it is the cumulative incidence — the risk by time
 $t$ — which is what we want to contrast.
 
@@ -233,10 +235,10 @@ against `r sprintf("%.1f", 100 * km_risk["statin", "y10"])`%. Both
 `r admin_end`-year risks exceed the naive proportions we started with,
 for the obvious reason: the naive calculation charged each arm only with
 the events its censored patients stayed under observation long enough to
-have. These are crude curves, mind — nothing has been adjusted, the arms
-differ at baseline, and the outcomes in `sta` are simulated. Treat the
-numbers as an illustration of what the estimator computes, not as
-evidence about statins.
+have. These are crude curves. Nothing has been adjusted, the arms differ
+at baseline, and the outcomes in `sta` are simulated, so the numbers
+should be read as an illustration of what the estimator computes rather
+than as evidence about statins.
 
 ## Death as a competing risk
 
@@ -251,9 +253,10 @@ answer different questions, and which to report depends on whether the
 reader wants to know what treatment would do absent competing mortality
 or what will happen to patients like these.
 
-Coding it needs a three-valued status rather than a yes-or-no one. Death
-competes only when it arrives first: a patient who has a cardiovascular
-event and dies a year later is a cardiovascular event and nothing else.
+Coding it requires a three-valued status rather than a yes-or-no one.
+Death competes only when it arrives first, so a patient who has a
+cardiovascular event and dies a year later contributes a cardiovascular
+event and nothing else.
 
 ```{r ch10-competing-type}
 sta_cr <- sta |>
@@ -268,8 +271,8 @@ table(sta_cr$event_type, sta_cr$statin)
 
 The `1` row recovers the `r n_ev` cardiovascular events exactly, and the
 `2` row isolates the `r n_dth` patients whose follow-up ended in death
-with no cardiovascular event before it — the patients the Kaplan–Meier
-analysis quietly treated as though they had merely moved away. Handing
+with no cardiovascular event before it, which are the patients the
+Kaplan–Meier analysis treated as though they had merely moved away. Handing
 `survfit()` a *factor* status instead of an indicator switches it into
 multi-state mode: the first level is censoring, and each remaining level
 gets a curve of its own. The cardiovascular curve is the
@@ -307,10 +310,10 @@ two curves visibly.
 
 The regression analog of this estimator is **Fine–Gray** subdistribution
 hazards regression, which models the cumulative incidence function
-directly the way Cox regression models the cause-specific hazard. We do
-not pursue it here; the point of this section is to make the assumption
-behind the rest of the chapter visible and quantified rather than merely
-disclosed.
+directly in the way that Cox regression models the cause-specific hazard.
+We do not pursue it here, since the purpose of this section is to make
+the assumption behind the rest of the chapter visible and quantified
+rather than only disclosed.
 
 ## Risks versus hazards
 
@@ -354,16 +357,17 @@ hr_l <- broom::tidy(coxph(Surv(event_time, cv_event) ~ statin, data = late),
 One hazard ratio for the whole decade comes out at
 `r sprintf("%.2f", hr_all)`. Split the decade in two and the first
 interval gives `r sprintf("%.2f", hr_e)` and the remainder
-`r sprintf("%.2f", hr_l)`. The single number was an average over periods
-that do not agree, which is the mildest of the interpretive problems.
+`r sprintf("%.2f", hr_l)`. The single number was therefore an average
+over periods that do not agree, which is the milder of two interpretive
+problems.
 
-The serious one is what the second interval conditions on. Its risk set
-holds only patients who reached two years event-free and still observed,
-and surviving two years is not a baseline characteristic — it is an
+The more serious problem is what the second interval conditions on. Its
+risk set holds only patients who reached two years event-free and still
+observed, and surviving two years is not a baseline characteristic but an
 outcome, influenced by treatment and by every unmeasured prognostic
-factor a patient carries. Comparing arms within that risk set conditions
-on a post-treatment common effect: the collider stratification of Chapter
-5, arriving uninvited. If a statin genuinely prevents early events, the
+factor a patient carries. Comparing arms within that risk set therefore
+conditions on a post-treatment common effect, which is the collider
+stratification of Chapter 5. If a statin genuinely prevents early events, the
 statin patients still at risk at two years include people the other arm
 has already lost, and the arms are no longer exchangeable however
 carefully we adjusted at time zero. This is what Hernán (2010) called
@@ -373,8 +377,9 @@ beyond the first instant is conditional on survival, so a hazard ratio
 is not a contrast of two potential outcomes
 in a common population, and our two period-specific estimates cannot
 distinguish a truly time-varying effect from selection. Nor is
-proportional hazards a technical detail a test can rescue; the assumption
-is that this awkward ratio happens to be constant.
+proportional hazards a technical detail that a diagnostic test can
+rescue, since the assumption being made is that this awkward conditional
+ratio happens to be constant over follow-up.
 
 Risks do not have this problem. $\Pr(Y(1) \le t)$ and
 $\Pr(Y(0) \le t)$ are both defined over everyone who started, so their
@@ -432,14 +437,14 @@ hypertensive than the rest, but every standardized difference in the
 table is below `r sprintf("%.2f", ceiling(100 * max_smd) / 100)` in
 absolute value, and loss is about equally common in the two arms. On the
 measured variables, then, this cohort's censoring looks close to
-non-informative — a genuinely reassuring finding and a strictly limited
-one. The comparison speaks only to covariates recorded at baseline, while
-the assumption we need concerns whatever drives dropping out at each
-moment of follow-up: a worsening symptom, a change of insurer, a decision
-to stop attending. None of that is in the table.
+non-informative, which is reassuring as far as it goes. The comparison
+speaks only to covariates recorded at baseline, whereas the assumption we
+need concerns whatever drives dropping out at each moment of follow-up: a
+worsening symptom, a change of insurer, a decision to stop attending.
+None of those variables is available in these data.
 
-The structure of the worry is one we have already drawn. Suppose an
-unmeasured element of prognosis affects both the cardiovascular hazard
+The structure of the problem is one we have already diagrammed. Suppose
+an unmeasured element of prognosis affects both the cardiovascular hazard
 and the chance of staying under observation, and suppose treatment also
 influences whether a patient stays.
 
@@ -458,14 +463,14 @@ ggdag(dag_censor, text = FALSE, use_labels = "label") + theme_dag()
 Loss to follow-up is a collider: treatment points into it and unmeasured
 prognosis points into it. Every risk set beyond time zero consists of
 patients who have not yet been lost, so the analysis conditions on that
-collider at every step, whether or not anyone wrote a `filter()` call —
-the same argument Chapter 5 made about selection bias, now indexed by
-time. The consequence is an association between `statin` and `cv` running
+collider at every step, whether or not anyone wrote a `filter()` call.
+This is the same argument Chapter 5 made about selection bias, now
+indexed by time. The consequence is an association between `statin` and `cv` running
 through `u` that no amount of baseline adjustment removes, because the
 bias is created after time zero by who is left to observe.
 
-The fix follows the logic of Chapter 9 rather than of Chapter 7. If we
-cannot condition our way out of a collider, we can reweight: model the
+The remedy follows the logic of Chapter 9 rather than that of Chapter 7.
+If we cannot condition our way out of a collider, we can reweight: model the
 probability of remaining uncensored, given treatment and the covariates
 that predict dropping out, and give each patient still under observation
 a weight inversely proportional to that probability, so that those who

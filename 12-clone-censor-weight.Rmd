@@ -5,41 +5,43 @@ source("R/setup.R")
 ```
 
 Chapter 11 corrected a comparison for one thing that happens after time
-zero — patients disappearing from view — and left another untouched.
-Patients also stop taking the drug they started, and start the drug they
-did not. Chapter 10's Kaplan–Meier curves ignore that entirely: a patient
-assigned to the statin arm by her `statin` value at time zero stays in
-that arm for ten years whatever she swallows afterward. That is a
-respectable estimand, and this chapter is about the other one — what
-would happen if patients actually followed the strategy their arm
-describes — and about the machinery that estimand requires.
+zero, namely patients disappearing from view, and left another
+untouched. Patients also stop the drug they started, and patients who
+began untreated start one. Chapter 10's Kaplan–Meier curves ignore that
+entirely: a patient assigned to the statin arm by her `statin` value at
+time zero stays in that arm for ten years whatever she swallows
+afterward. Although that is a respectable estimand, it is not the only
+one worth estimating, and this chapter turns to the other one, which asks
+what would happen if patients actually followed the strategy their arm
+describes, and to the machinery that estimand requires.
 
 ## From point treatments to treatment strategies
 
 The contrast in Chapter 10 was between two *point interventions*:
 initiate a statin at time zero, or do not. Nothing was said about the
 years after, so the estimate answers a question about assignment. In a
-trial the analogue is the intention-to-treat effect, which is what a
-trial can deliver without further assumptions and what a patient rarely
-asks about. The question underneath is usually the **per-protocol**
+trial the analogue is the intention-to-treat effect, which a trial can
+deliver without further assumptions, although it is rarely the question a
+patient asks. The question underneath is usually the **per-protocol**
 one: what happens if you initiate a statin *and stay on it* for the next
-decade, compared with never initiating one? Two strategies, each
-sustained over time, rather than two decisions taken once.
+decade, compared with never initiating one? These are two strategies,
+each sustained over time, rather than two decisions taken once.
 
-Sustained strategies bring their own price. The intention-to-treat
+Sustained strategies carry their own price. The intention-to-treat
 contrast is identified by baseline exchangeability alone, because
 assignment is complete at time zero and nothing later can confound it.
 Once the strategy extends over time, adherence becomes part of the
-treatment, and the people who adhere are not the people who do not: they
-are healthier, or more careful, or better attended, in ways that also
-predict cardiovascular events. Deviating from protocol is a post-baseline
+treatment, and patients who adhere differ from those who do not, in that
+they tend to be healthier and better attended, in ways that also predict
+cardiovascular events. Deviating from protocol is a post-baseline
 variable with its own causes, and it needs its own adjustment.
 
-The obvious move — keep the patients who followed protocol and analyze
-them as though they had been randomized — is the wrong one, and wrong in
-a way Chapter 5 already named. Deviation happens *after* time zero, so
-selecting on it selects on the future. A patient who has an event in year
-two never had the chance to stop her statin in year six, so she stays in
+The obvious move is to keep the patients who followed protocol and
+analyze them as though they had been randomized, and it is the wrong
+one, wrong in a way Chapter 5 already named. Because deviation happens
+*after* time zero, selecting on it conditions on the future. A patient
+who has an event in year two never had the chance to stop her statin in
+year six, so she stays in
 the analysis; a patient who survived to year six and then stopped is
 deleted from it retrospectively, along with her early event-free time.
 The comparison is between people conditioned on their own subsequent
@@ -55,10 +57,10 @@ with the protocol she was assigned, come from Hernán and Robins's
 target-trial work (Hernán and Robins 2016; Hernán and Robins 2017).
 
 **Clone.** Every eligible person is copied into each strategy arm whose
-protocol her data are compatible with at baseline. A clone is not a
-duplicate observation to be counted twice by accident; it is the same
+protocol her data are compatible with at baseline. A clone is the same
 person entered into two different bookkeeping systems, each asking a
-different question of her follow-up.
+different question of her follow-up, rather than a duplicate observation
+to be counted twice by accident.
 
 **Censor.** Each clone is followed until her observed data first
 contradict the strategy of the arm she sits in, at which point that clone
@@ -77,12 +79,12 @@ for the similar patients who did not.
 
 Here the first step is nearly vacuous, and it is worth being explicit
 about why. Our two strategies are distinguished by what happens at time
-zero — initiate, or do not — and `statin` records exactly that, with no
-grace period in which either strategy is still possible. So each person's
-baseline data are compatible with one arm and one arm only, cloning
-assigns each person to her observed arm, and the cohort we analyze has
-the same number of rows as the cohort we started with. Censoring and
-weighting do all the work.
+zero, that is, by whether a statin is initiated, and `statin` records
+exactly that, with no grace period in which either strategy is still
+possible. Each person's baseline data are therefore compatible with one
+arm and one arm only, cloning assigns each person to her observed arm,
+and the cohort we analyze has the same number of rows as the cohort we
+started with, so that censoring and weighting do all of the work.
 
 Literal cloning earns its name when the protocol allows a window. Suppose
 the strategies were "initiate a statin within six months of the
@@ -142,9 +144,10 @@ pp <- make_person_period(sta_ccw, time = "split_time", event = "deviated",
   mutate(event = as.integer(event_c == 1 & fu_end > tstart & fu_end <= tstop))
 ```
 
-Four points of bookkeeping, each of which changes the analysis if it goes
-wrong. Patients who never deviate get `dev_time = Inf`, so `pmin()` leaves
-their follow-up at `event_time`. The `deviated` indicator is 1 when
+Four points of bookkeeping deserve comment, since each changes the
+analysis if it goes wrong. Patients who never deviate get
+`dev_time = Inf`, so `pmin()` leaves their follow-up at `event_time`.
+The `deviated` indicator is 1 when
 deviation came first, with the `!(cv_event == 1 & ...)` clause settling
 ties in the outcome's favour: a patient whose event and deviation are
 recorded at the same instant had the event, and `event_c` — the outcome
@@ -191,7 +194,8 @@ happened after their patient had already left her protocol. The statin arm
 is hit hardest: `r by_arm$ev_pp[2]` of its `r by_arm$ev_all[2]` events
 survive the censoring, against `r by_arm$ev_pp[1]` of
 `r by_arm$ev_all[1]` among non-initiators. Per-protocol questions are
-answered with less information than intention-to-treat questions, always.
+therefore always answered with less information than intention-to-treat
+questions.
 
 ## Estimating per-protocol risk curves
 
@@ -262,8 +266,7 @@ crude   <- ccw_estimator(pp, censor_model = deviated ~ 1, treat = "statin",
 
 The second call is a device worth knowing: identical numerator and
 denominator models give every row a weight of exactly 1, so `crude`
-is the same analysis with the censoring left uncorrected — censor at
-deviation and hope.
+is the same analysis with the artificial censoring left uncorrected.
 
 ```{r ch12-dev-check, include=FALSE}
 dev_fit <- glm(dev_form, family = binomial(), data = pp)
@@ -341,15 +344,14 @@ protocol vary across patients, and ten intervals of variation compound.
 
 Extreme weights are the positivity assumption complaining, as in
 Chapter 9. A weight of `r sprintf("%.0f", max(w))` says that somewhere in
-covariate-and-time space staying on protocol was close to impossible —
-`r sum(p_dev > 0.5)` of the `r format(nrow(pp), big.mark = ",")` rows carry
-a fitted deviation probability above one half — so the few patients there
-who did stay must speak for everyone who did not. Positivity is a heavier
-demand for a sustained strategy than for a point treatment, because it has
-to hold in *every* interval.
-Truncation at the 99th percentile, a formality last chapter, is doing
-visible work here, and would be the first thing to vary in a sensitivity
-analysis.
+covariate-and-time space staying on protocol was close to impossible,
+since `r sum(p_dev > 0.5)` of the `r format(nrow(pp), big.mark = ",")`
+rows carry a fitted deviation probability above one half, so that the few
+patients there who did stay must speak for everyone who did not.
+Positivity is a heavier demand for a sustained strategy than for a point
+treatment, because it has to hold in *every* interval. Truncation at the
+99th percentile, a formality in the last chapter, is doing visible work
+here, and would be the first thing to vary in a sensitivity analysis.
 
 A single number for the contrast needs an interval, and the weights make
 the model-based one untrustworthy: the curve is a function of two fitted
@@ -418,19 +420,20 @@ rd_itt <- km5[2] - km5[1]
 ci     <- quantile(rd_boot, c(0.025, 0.975))
 ```
 
-Read down the difference column. The intention-to-treat analogue puts the
+Consider the difference column. The intention-to-treat analogue puts the
 five-year risk difference at `r sprintf("%+.1f", 100 * rd_itt)` percentage
 points; the clone-censor-weight estimate is
 `r sprintf("%+.1f", 100 * rd_pp)`, with a bootstrap interval of
 `r sprintf("%.1f", 100 * ci[1])` to `r sprintf("%.1f", 100 * ci[2])`. The
-per-protocol contrast is larger, which is the expected direction — a
+per-protocol contrast is larger, which is the expected direction, since a
 strategy followed for five years should do more than a strategy assigned
-and then abandoned — and in these simulated outcomes the gap is
-substantial. It rests on thin evidence: the sustained-statin curve is built from `r by_arm$ev_pp[2]` events, which is why it sits flat for whole
-intervals and should not be read closely. The naive
-analysis that simply deletes deviators lands
-between the two, close enough to be mistaken for a reasonable answer and
-arrived at by conditioning on the future.
+and then abandoned, and in these simulated outcomes the gap is
+substantial. It rests on thin evidence, however, because the
+sustained-statin curve is built from `r by_arm$ev_pp[2]` events, which is
+why it sits flat for whole intervals and should not be read closely. The
+naive analysis that deletes deviators lands between the two, close enough
+to be mistaken for a reasonable answer, although it was arrived at by
+conditioning on the future.
 
 The weights also matter within the per-protocol column: uncorrected,
 censoring at deviation understates risk in both arms, because the patients
@@ -452,7 +455,7 @@ and this analysis looks exactly as it does now, which is Chapter 11's
 uncomfortable symmetry once more. It needs positivity at every interval
 besides: in each stratum the model uses, some patients like her must
 actually have stayed on protocol. Unlike exchangeability, that assumption
-leaves a trace — in the weights we just looked at.
+leaves a trace in the weights we have just examined.
 
 Two further limits belong on the record. The comparison here is still
 crude with respect to baseline confounding: the arms differ at time zero
@@ -461,9 +464,9 @@ the end of Chapter 11, multiplies three weights per row — Chapter 9's
 stabilized treatment weight, Chapter 11's loss-to-follow-up weight, and
 this chapter's deviation weight — and the product goes into exactly the
 calculation above. We carry one factor at a time so the mechanism stays
-visible. And "stay on it" is the crudest possible version of a sustained
-strategy; real protocols specify doses, gaps, and restarts, and each
-refinement changes both the estimand and the deviation model.
+visible. Furthermore, "stay on it" is a crude version of a sustained
+strategy, since real protocols specify doses, gaps, and restarts, and
+each such refinement changes both the estimand and the deviation model.
 
 ## Exercises
 

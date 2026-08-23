@@ -8,13 +8,13 @@ Chapter 13 went looking for a source of variation in treatment that no
 unmeasured confounder could reach, and found one too small to settle
 anything. This chapter takes the other road out of the same difficulty.
 Instead of replacing the no-unmeasured-confounding assumption, we keep it
-— and ask what it would cost us to be wrong. How prevalent, and how
+and ask what it would cost us to be wrong. How prevalent, and how
 prognostic, would a confounder we never recorded have to be before it
 accounted for the association we reported? Unlike the assumption itself,
-that question has a computable answer. Sensitivity analysis will never
-tell us whether an estimate is right; it tells us how much unmeasured
-confounding it would take to make it wrong, and that is a number a reader
-can weigh against what she knows about clinical practice.
+that question has a computable answer. A sensitivity analysis does not
+tell us whether an estimate is right, but it does tell us how much
+unmeasured confounding would be required to make it wrong, which is a
+number a reader can weigh against what she knows about clinical practice.
 
 ## What we assumed and cannot check
 
@@ -22,19 +22,20 @@ Every estimate in this book has leaned on conditional exchangeability.
 The mechanics varied a great deal: Chapter 7 put the covariates in an
 outcome model, Chapters 8 and 9 put them in a treatment model, Chapter 11
 added a censoring model and Chapter 12 a deviation model at every
-interval. Four different places to put the same list of nineteen
-variables, and one assumption underneath all of them — that within levels
-of that list, patients who received a Cox-2 selective agent and patients
-who received a nonselective NSAID were exchangeable.
+interval. These are four different places to put the same list of
+nineteen variables, and one assumption sits underneath all of them: that
+within levels of that list, patients who received a Cox-2 selective agent
+and patients who received a nonselective NSAID were exchangeable.
 
 Notice the asymmetry between that assumption and its companion.
 Positivity leaves traces: Chapter 9's long tail of large weights and
 Chapter 8's unmatchable patients were the data complaining that some
-covariate regions were nearly empty. Exchangeability leaves nothing. A
-cohort with a severe unmeasured confounder looks exactly like a cohort
-with none — same balance table, same overlap plot, same effective sample
-size. Chapter 8's diagnostics confirm that the covariates we recorded are
-balanced and are silent, by construction, about the ones we did not.
+covariate regions were nearly empty. Exchangeability, in contrast, leaves
+nothing behind. A cohort with a severe unmeasured confounder looks exactly
+like a cohort with none, with the same balance table, the same overlap
+plot, and the same effective sample size. Chapter 8's diagnostics speak
+to the covariates we recorded and, by construction, cannot speak to the
+ones we did not.
 
 So there is no test to run, only two useful responses. One is to change
 the assumption, which is what Chapter 13 did. The other is to hold it and
@@ -73,19 +74,20 @@ adjust_rr_unmeasured <- function(rr_obs, p_u1, p_u0, rr_ud) {
 Two special cases are worth reading off the formula first. If
 $p_1 = p_0$ the fraction is 1 however strong $U$ is: a risk factor
 distributed identically across arms confounds nothing. If $RR_{UD} = 1$
-the fraction is 1 however unequally $U$ is distributed. This is Chapter
-5's requirement — a confounder needs an arrow into treatment *and* an
-arrow into the outcome — restated as arithmetic.
+the fraction is 1 however unequally $U$ is distributed. This restates
+Chapter 5's requirement, that a confounder needs an arrow into treatment
+*and* an arrow into the outcome, as arithmetic.
 
-Now a concrete confounder. Cox-2 selective agents were marketed on
+Consider a concrete confounder. Cox-2 selective agents were marketed on
 gastrointestinal safety, so a clinician worried about a patient's stomach
-had reason to prefer one. Some of that worry is in `ns_covs`: `ppi_use`,
-`h2_antagonist_use`, `corticosteroid_use`, and `aspirin_use` are all
-partial proxies for perceived ulcer risk. Some of it is not.
-Over-the-counter NSAID use — the ibuprofen a patient buys herself, on top
-of what she is prescribed — appears in no survey field, and heavy alcohol
-use is asked inconsistently and recorded worse. Both raise ulcer risk,
-and both plausibly differ between the arms.
+had reason to prefer one. Some of that worry is captured in `ns_covs`,
+since `ppi_use`, `h2_antagonist_use`, `corticosteroid_use`, and
+`aspirin_use` are all partial proxies for perceived ulcer risk, and some
+of it is not. Over-the-counter NSAID use, meaning the ibuprofen a patient
+buys herself on top of what she is prescribed, appears in no survey
+field, and heavy alcohol use is asked inconsistently and recorded
+incompletely. Both raise ulcer risk, and both plausibly differ between
+the arms.
 
 Take a prevalence of 20% among nonselective initiators and sweep the
 other two parameters.
@@ -140,7 +142,7 @@ flip_05 <- flip(-0.05); flip_10 <- flip(-0.10); flip_15 <- flip(-0.15)
 
 The flat line is the case with no imbalance; every curve pivots away from
 it, and which way it pivots depends entirely on the sign of the prevalence
-gap. Read the upper family first, where the confounder is more common
+gap. Consider the upper family first, where the confounder is more common
 among the *untreated*. If over-the-counter ibuprofen use were rarer among
 Cox-2 initiators than among nonselective initiators, part of the apparent
 safety of the Cox-2 arm would be that advantage rather than the drug, and
@@ -149,42 +151,44 @@ lift the adjusted estimate to the null once $RR_{UD}$ reaches
 `r sprintf("%.2f", flip_05)`; a ten-point gap needs only
 `r sprintf("%.2f", flip_10)`, a fifteen-point gap
 `r sprintf("%.2f", flip_15)`, and at $RR_{UD} = 3$ that last curve has
-carried the estimate to `r sprintf("%.2f", adj_m15_3)`. None of those are
-heroic parameters. A risk factor that raises ulcer risk by a fifth and
-differs by fifteen percentage points between arms is thoroughly
-unremarkable, and it is enough to turn our estimate of nothing into an
-estimate of harm.
+carried the estimate to `r sprintf("%.2f", adj_m15_3)`. None of those
+parameter values is extreme. A risk factor that raises ulcer risk by a
+fifth and differs by fifteen percentage points between arms is
+unremarkable, and yet it is enough to turn our estimate of nothing into
+an estimate of harm.
 
 The lower family runs the other way and is the story we would probably
-tell first. **Channeling** — steering the patients with the worst
-stomachs toward the drug advertised as gentler on stomachs — implies
-exactly the opposite gap, and correcting for it pushes the risk ratio
+tell first. **Channeling**, meaning the steering of patients with the
+worst stomachs toward the drug advertised as gentler on the stomach,
+implies exactly the opposite gap, and correcting for it pushes the risk ratio
 down: `r sprintf("%.2f", adj_p15_2)` at $RR_{UD} = 2$ with a
 fifteen-point gap, `r sprintf("%.2f", adj_p15_3)` at $RR_{UD} = 3$. Under
 that story our near-null result understates a genuine benefit.
 
 Both families come from the same formula and the same data, and the data
-cannot choose between them. That is the point, and also the method's main
-limitation. It is called *external* adjustment because the three
-parameters must come from outside the analysis — a validation substudy
-that measured $U$ on a subsample, a survey, a published cohort. When they
-come from nowhere we are not correcting an estimate but drawing a picture
-of what-if, which is worth doing so long as it is labeled as such. One
+cannot choose between them, which is both the point of the exercise and
+the method's main limitation. It is called *external* adjustment because
+the three parameters must come from outside the analysis, whether from a
+validation substudy that measured $U$ on a subsample, a survey, or a
+published cohort. When they come from nowhere, the exercise draws a
+picture of what-if rather than correcting an estimate, which is worth
+doing so long as it is labeled as such. One
 further caution: the formula describes a single binary confounder, and
 several correlated unmeasured confounders do not collapse into one, so
 the arithmetic can understate the joint bias.
 
 ## The E-value
 
-External adjustment needed three numbers we do not have. The **E-value**
-needs none. It is the minimum strength of association, expressed as a risk
+External adjustment needed three numbers we do not have, whereas the
+**E-value** needs none. It is the minimum strength of association,
+expressed as a risk
 ratio, that an unmeasured confounder would have to have with *both* the
 treatment and the outcome — conditional on the covariates we did measure —
-to explain away the association we observed. "Both" carries the weight:
-a variable strongly associated with Cox-2 initiation but unrelated to
-ulcers does no damage, and neither does a powerful ulcer risk factor that
-is balanced across arms. The E-value is the common value both
-associations would have to reach; no smaller equal pair will do.
+to explain away the association we observed. The word "both" is doing the
+work here, since a variable strongly associated with Cox-2 initiation but
+unrelated to ulcers does no damage, and neither does a powerful ulcer risk
+factor that is balanced across arms. The E-value is the common value both
+associations would have to reach, and no smaller equal pair will do.
 
 The derivation (VanderWeele and Ding 2017) shows that a confounder with
 treatment association $a$ and outcome association $b$ can inflate an
@@ -242,19 +246,20 @@ ccw_risk1 <- 0.0161; ccw_risk0 <- 0.0578
 ev_ccw <- evalue_rr(ccw_risk1 / ccw_risk0)$e_value[1]
 ```
 
-Read the first row plainly. An unmeasured confounder associated with both
-Cox-2 initiation and peptic ulcer disease by risk ratios of about
+The first row is straightforward. An unmeasured confounder associated with
+both Cox-2 initiation and peptic ulcer disease by risk ratios of about
 `r sprintf("%.2f", ev_pt)` each, over and above the nineteen covariates,
-would suffice to move this estimate to the null — a very weak confounder,
-weaker than most of the variables we did adjust for. The second row is
-blunter still: the interval runs from
+would suffice to move this estimate to the null, which is a very weak
+confounder, weaker than most of the variables we did adjust for. The
+second row is blunter still: the interval runs from
 `r sprintf("%.2f", ipw_rr_fit$conf.low)` to
 `r sprintf("%.2f", ipw_rr_fit$conf.high)` and so already contains 1, so
 the E-value is 1 by definition. No unmeasured confounding whatsoever is
 required for these data to be compatible with no effect.
 
-It is tempting to read a small E-value as an indictment of the analysis.
-It is not; it is a property of the estimate. Near-null estimates always
+It is tempting to read a small E-value as an indictment of the analysis,
+although it is better understood as a property of the estimate. Near-null
+estimates always
 have E-values near 1, because there is almost nothing to explain away, and
 the number is doing precisely its job by reporting that this result is
 fragile. What would be dishonest is to compute the E-value only when it
@@ -262,9 +267,9 @@ comes out large. The same formula applied to the crude risk ratio of
 `r sprintf("%.2f", crude_rr)` returns `r sprintf("%.2f", ev_crude)`, and
 applied to Chapter 12's five-year per-protocol risk ratio
 (`r sprintf("%.2f", ccw_risk1 / ccw_risk0)`) it returns about
-`r sprintf("%.1f", ev_ccw)`. One formula, three very different readings,
-and much of the difference is simply the size of the estimate being
-probed.
+`r sprintf("%.1f", ev_ccw)`. One formula gives three very different
+readings, and much of the difference reflects the size of the estimate
+being probed.
 
 That third reading needs a caution the others do not, and it is the
 caution that governs how we read any E-value. The quantity is always
@@ -277,21 +282,21 @@ plainly, it weighted for deviation from protocol and left baseline
 confounding alone, so the two arms differ at time zero. Its
 `r sprintf("%.1f", ev_ccw)` therefore describes the *total* confounding,
 measured and unmeasured together, that would be needed to explain the
-result away — and a good deal of that total is measured, sitting in
-`sta_covs` waiting to be used. Patients who sustain a statin for five
-years are healthier at baseline than patients who never start one, in
-ways the statin cohort records. So the large number is not evidence of
-robustness; it is mostly a restatement of how far from the null an
-unadjusted contrast sits. An E-value begins to say something about
-unmeasured confounding only once the measured kind has been handled.
+result away, and a good deal of that total is measured, sitting unused in
+`sta_covs`. Patients who sustain a statin for five years are healthier at
+baseline than patients who never start one, in ways the statin cohort
+records. The large number is therefore not evidence of robustness, but
+mostly a restatement of how far from the null an unadjusted contrast sits,
+and an E-value begins to say something about unmeasured confounding only
+once the measured kind has been handled.
 
-Two limits. The E-value takes the two associations to be equal; if one is
-known to be weaker the other must be correspondingly larger, and a contour
-plot over the pair is the fuller display. And it says nothing about
-whether such a confounder exists. What it does is convert an unanswerable
-question into a smaller and arguable one, which is the whole ambition of
-sensitivity analysis and the reason it belongs in the results rather than
-tucked into the discussion.
+Two limits deserve mention. The E-value takes the two associations to be
+equal, so that if one is known to be weaker the other must be
+correspondingly larger, and a contour plot over the pair is the fuller
+display. Furthermore, it says nothing about whether such a confounder
+exists. What it does is convert an unanswerable question into a smaller
+and arguable one, which is the ambition of a sensitivity analysis and the
+reason it belongs in the results rather than in the discussion.
 
 ## Negative control outcomes
 
@@ -301,8 +306,8 @@ is more ambitious: it tries to detect the confounding. A **negative
 control outcome** is an outcome the treatment could not plausibly cause,
 chosen because it is subject to the same confounding as the outcome we
 actually care about. Since the true effect is null by assumption, any
-association that survives adjustment cannot be an effect. It is bias, and
-it is bias of roughly the kind afflicting the real analysis. Lipsitch,
+association that survives adjustment cannot be an effect; it is bias, and
+bias of roughly the kind afflicting the real analysis. Lipsitch,
 Tchetgen Tchetgen, and Cohen (2010, *Epidemiology*) set out the logic and
 the conditions under which it licenses an inference about the primary
 estimate.
@@ -310,7 +315,7 @@ estimate.
 The examples that made the method famous are worth carrying around. When
 influenza vaccination in the elderly is studied in the weeks *before*
 influenza begins circulating, the vaccinated appear substantially
-protected from death — in a period when the vaccine cannot possibly be
+protected from death in a period when the vaccine cannot plausibly be
 working. That demonstration is Jackson and colleagues' (2006). What the
 negative control reveals is that the people who get vaccinated are in
 better functional health than the people who do not, in ways claims data
@@ -319,9 +324,10 @@ traffic accidents and fewer fractures than nonadherent patients, which
 is the healthy-adherer effect declaring itself on an outcome no
 lipid-lowering mechanism can reach; that comparison is Dormuth and
 colleagues' (2009). The course gives this a
-session of its own (session 23), and rightly: the technique is best used
-as a gate rather than a footnote. Run the negative control first, and if
-it comes back non-null, the primary estimate has not earned belief yet.
+session of its own (session 23), and rightly, since the technique is best
+used as a gate rather than a footnote: if the negative control is run
+first and comes back non-null, the primary estimate should not yet be
+believed.
 
 Our cohorts carry no true post-treatment negative outcome, so the most we
 can do is illustrate the logic with a *pre-treatment* one. `hyperlipidemia`
@@ -355,7 +361,7 @@ that never saw hyperlipidemia nonetheless remove essentially all of its
 imbalance, which is mild evidence that the confounding structure they do
 capture is broad enough to carry unmeasured correlates of it along.
 
-Read that with two qualifications. The first is why we had to use an
+That result carries two qualifications. The first is why we had to use an
 excluded covariate. Anything appearing in the treatment model is balanced
 by the fitting itself; running this check on `diabetes` would return a
 near-zero difference no matter how badly confounded the study was, and so
@@ -368,16 +374,15 @@ effects that a baseline covariate cannot speak to. A passing check here
 should be read as one failure mode ruled out, not as exchangeability
 established.
 
-The two ideas of this chapter are complements, and the contrast is the
-cleanest way to hold them apart: an E-value says how much confounding
-*could* explain an estimate, while a negative control asks whether
-confounding is *actually still there*.
+The two devices of this chapter are complements: an E-value says how much
+confounding *could* explain an estimate, whereas a negative control asks
+whether confounding is *still present* after adjustment.
 
 ## Reporting a causal analysis
 
 Almost everything in this book assembles into a checklist for reporting
-one causal analysis honestly. Six items, each of which has had a chapter
-of its own.
+one causal analysis honestly, in six items, each of which has had a
+chapter of its own.
 
 1. **State the target trial first** (Chapters 4 and 6). Eligibility, time zero,
    the arms, the outcome, the follow-up window, the estimand — written
@@ -392,8 +397,8 @@ of its own.
 3. **Show the design-stage diagnostics before any effect estimate**
    (Chapters 8 and 9). Balance on every covariate, propensity score
    overlap, the weight distribution, the effective sample size. Print
-   them whether or not they flatter you; the ugly ones are the
-   informative ones.
+   them whether or not they flatter the analysis, since the unflattering
+   ones are usually the informative ones.
 4. **Report marginal contrasts with intervals, and name the estimand**
    (Chapters 3, 7, and 10). ATE, ATT, LATE, or per-protocol — these are
    different quantities, and a table that mixes them without saying so is
@@ -423,8 +428,8 @@ mr <- tapply(matched$pud, matched$cox2_init, mean)
 att_rd <- mr[[2]] - mr[[1]]
 ```
 
-Run our own Cox-2 analysis through that list and the report writes
-itself. The crude comparison gave a risk difference of
+Running our own Cox-2 analysis through that list gives the following
+report. The crude comparison gave a risk difference of
 `r sprintf("%+.2f", 100 * (crude_r[2] - crude_r[1]))` percentage points
 and a risk ratio of `r sprintf("%.2f", crude_rr)`, apparent harm.
 Standardization moved it across the null to
@@ -441,22 +446,23 @@ struggle to notice. With `r sum(ns$pud)` ulcer cases and
 the crude signal of harm was confounding, and that these data cannot
 distinguish a modest harm from a modest benefit. A paper that reported
 the matched estimate as evidence of benefit and omitted the rest would be
-easy to write, hard to refute from the abstract, and wrong.
+easy to write and hard to refute from the abstract, and it would be
+wrong.
 
-That is where we finish, and the shape of the ending is not an accident.
-Over fourteen chapters we built a toolkit — standardization, propensity
-scores, weights for treatment and censoring and protocol deviation,
-cloned trials, instruments — applied all of it to one modest question
-about two drugs, and concluded that we do not know. The methods were not
-wasted on that. They are what let us say we do not know *and* say why, and
-what distinguishes that state from the false confidence of the crude
-comparison we started with. Causal inference is often taught as a set of
-estimators, because estimators are the part that fits into a chapter. What
-you carry away is the habit of asking, before any of them, what trial you
-are emulating, what would have to be true for the answer to mean what you
-want it to mean, and how far from true that could be before you would
-change your mind. The functions in `R/` are yours to reuse and rewrite.
-The habit is the part that transfers.
+Over fourteen chapters we assembled a toolkit of standardization,
+propensity scores, weights for treatment and censoring and protocol
+deviation, cloned trials, and instruments, applied all of it to one
+modest question about two drugs, and concluded that we do not know the
+answer. The methods were not wasted on that conclusion, since they are
+what allow us to say that we do not know *and* to say why, which is a
+different position from the false confidence of the crude comparison we
+began with. Causal inference is often taught as a collection of
+estimators, because estimators are the part that fits into a chapter. The
+more durable habit is to ask, before reaching for any of them, what trial
+is being emulated, what would have to be true for the answer to mean what
+we want it to mean, and how far from true that could be before we would
+change our minds. The functions in `R/` are there to be reused and
+rewritten; the habit is the part that transfers.
 
 ## Exercises
 

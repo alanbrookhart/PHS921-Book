@@ -6,14 +6,15 @@ source("R/setup.R")
 
 Chapter 1 asked whether Cox-2 selective NSAIDs cause less peptic ulcer
 disease than nonselective NSAIDs, and then showed that the obvious way of
-answering the question — comparing crude risks between the two groups —
+answering the question, comparing crude risks between the two groups,
 does not actually answer it, because Cox-2 initiators and nonselective
 initiators differ in ways connected to ulcer risk before either drug is
-ever taken. This chapter builds the vocabulary that makes precise what
-went wrong, and what a right answer would even mean. The framework is
-called **potential outcomes**, and once you have it, "causal effect" stops
-being a vague intuition and becomes something you can write down,
-simulate, and eventually estimate.
+ever taken. In this chapter we build the vocabulary needed to say
+precisely what went wrong in that comparison, and what an answer to the
+question would have to look like. The framework is called **potential
+outcomes**, and it allows a causal effect to be defined as a specific
+quantity that we can write down, simulate in code, and, under conditions
+we will state carefully, estimate from data.
 
 ## Two futures for every patient
 
@@ -22,78 +23,75 @@ shows up at her physician's office with joint pain that warrants an
 NSAID. Her physician has a choice: prescribe a nonselective NSAID, or
 prescribe a Cox-2 selective inhibitor. Whichever one is chosen, Patient
 47 either does or does not go on to develop peptic ulcer disease over
-the following year. But the question "would she have developed PUD if
-she had been treated differently" has a sensible answer even though it
-did not happen. If she was in fact given the Cox-2 drug and stayed
-ulcer-free, we can still ask, coherently, what would have happened to
-her, with everything else about her held fixed, if she had instead
-received the nonselective drug.
+the following year. Although only one prescription is written, the
+question of what would have happened under the other still has a
+sensible answer. If she was in fact given the Cox-2 drug and stayed
+ulcer-free, we can ask coherently what would have happened to her, with
+everything else about her held fixed, had she instead received the
+nonselective drug.
 
-Potential outcomes give that question a name and a symbol. Let $A$
+Potential outcomes provide notation for that question. Let $A$
 denote the treatment Patient 47 receives, coded $A = 1$ for the Cox-2
 selective drug and $A = 0$ for the nonselective drug, and let $Y$ denote
 whether she develops incident PUD. Then $Y(1)$ is the outcome she would
 have if she were treated with $A = 1$, and $Y(0)$ is the outcome she
 would have if she were treated with $A = 0$. These are **potential**
-outcomes — one for each treatment value she could in principle receive —
-and both exist, in the sense of being well-defined quantities, before we
-know which treatment she actually gets. Once treatment is assigned, one
-of them becomes the **observed** outcome and the other becomes
-counterfactual: contrary to the fact of what happened. If Patient 47
-actually receives the Cox-2 drug, we observe $Y(1)$; $Y(0)$ is what
-her chart would show in the world where her physician wrote the other
-prescription.
+outcomes, one for each treatment value she could in principle receive,
+and both are well-defined quantities before we know which treatment she
+actually gets. Once treatment is assigned, one of them becomes the
+**observed** outcome and the other becomes counterfactual: contrary to
+the fact of what happened. If Patient 47 actually receives the Cox-2
+drug, we observe $Y(1)$, and $Y(0)$ is what her chart would show in the
+world where her physician wrote the other prescription.
 
-A word on notation, because it varies more than the idea does. We write
-these potential outcomes as $Y(1)$ and $Y(0)$, matching the PHS 921
-lectures and exams, but many books — *Causal Inference: What If* among
-them — write superscripts, $Y^1$ and $Y^0$ or $Y^a$, and others write
+A note on notation is in order, since conventions differ across sources.
+We write these potential outcomes as $Y(1)$ and $Y(0)$, matching the PHS
+921 lectures and exams, whereas many books, including *Causal Inference:
+What If*, use superscripts, $Y^1$ and $Y^0$ or $Y^a$, and others write
 $Y_a$ for the outcome under a generic treatment value $a$. All three
-notations denote the same objects, so it is worth learning to move
-between them freely rather than attaching the concept to any one of
+notations denote the same objects, and it is worth becoming comfortable
+moving between them rather than attaching the concept to any one of
 them.
 
 With both potential outcomes in hand for a single patient, her
-**individual causal effect** of Cox-2 selectivity on PUD is simply the
-contrast between them, $Y(1) - Y(0)$. If $Y(1) = 0$ and $Y(0) = 1$, the
-Cox-2 drug prevented her ulcer; if both are 0, or both are 1, the choice
-of drug made no difference to her outcome, even though the drugs may
-differ enormously for other patients. This is a clean, well-defined
-quantity — and it is also, for any real patient, unobservable. We only
-ever see one of Patient 47's two potential outcomes, because she can
-only actually take one drug. This is what Holland (1986) called the
-**fundamental problem of causal inference**: for any individual, at
-most one potential outcome is ever realized, and the individual causal
-effect can never be computed from data on that individual alone, no
-matter how much we know about her or how long we follow her. Every method in this book is,
-at bottom, a strategy for getting around this problem — not by
-recovering the missing potential outcome for any one patient, but by
-using groups of patients to estimate causal effects that are well
-defined on average, even though they are unknowable one person at a
-time.
+**individual causal effect** of Cox-2 selectivity on PUD is the contrast
+between them, $Y(1) - Y(0)$. If $Y(1) = 0$ and $Y(0) = 1$, the Cox-2
+drug prevented her ulcer; if both are 0, or both are 1, the choice of
+drug made no difference to her outcome, even though the drugs may differ
+substantially for other patients. Although this quantity is well
+defined, for any real patient it is unobservable. We only ever see one of
+Patient 47's two potential outcomes, because she can only actually take
+one drug. This is what Holland (1986) called the **fundamental problem of
+causal inference**: for any individual, at most one potential outcome is
+ever realized, and the individual causal effect can never be computed
+from data on that individual alone, no matter how much we know about her
+or how long we follow her. Every method in this book is therefore a
+strategy for working around this problem. None of them recovers the
+missing potential outcome for any one patient; instead, they use groups
+of patients to estimate causal effects that are well defined on average,
+although they remain unknowable one person at a time.
 
 ## A god's-eye view: simulation
 
-The fundamental problem of causal inference is a genuine, permanent
-limitation of real data: no data set on real patients ever contains
-both of anyone's potential outcomes. But nothing stops us from
-simulating a toy population in which we, as the people writing the
-code, get to decide both potential outcomes for every patient, and then
-watch what happens when only one becomes observed. This is a god's-eye
-view of exactly the causal question Chapter 1 raised, and it lets us
-see confounding happen mechanically, in code, rather than only argue
-about it in prose.
+The fundamental problem of causal inference is a permanent limitation of
+real data: no data set on real patients ever contains both of anyone's
+potential outcomes. In a simulated population, however, we are the ones
+writing the code, and so we decide both potential outcomes for every
+patient and can then observe what happens when only one of them is
+recorded. Such a simulation reproduces the causal question Chapter 1
+raised, and it lets us watch confounding arise mechanically rather than
+merely describe it in words.
 
 Imagine 100,000 patients with a severity indicator, `severity`, that
-plays the role of an unmeasured driver of both treatment and outcome —
+plays the role of an unmeasured driver of both treatment and outcome,
 capturing whatever led some patients toward the Cox-2 drug and also
 independently raised their ulcer risk. For each patient we generate
 *both* potential outcomes, `y0` (the outcome under nonselective NSAID)
 and `y1` (the outcome under Cox-2 selective drug), with the Cox-2
-potential outcome built to carry a lower baseline risk — the drug is
-genuinely protective in this toy world. We then assign actual treatment
-`a` so that more severe patients are more likely to receive the Cox-2
-drug, exactly the channeling Chapter 1 described, and finally construct
+potential outcome built to carry a lower baseline risk, so that the drug
+is genuinely protective in this simulated world. We then assign actual
+treatment `a` so that more severe patients are more likely to receive the
+Cox-2 drug, which is the channeling Chapter 1 described, and construct
 the single outcome `y` actually recorded: the potential outcome
 matching the treatment each patient actually got.
 
@@ -125,31 +123,32 @@ Because we generated `y0` and `y1` ourselves, we can compute the true
 average causal effect directly from columns no real data set would ever
 have both of at once: `mean(y1) - mean(y0)` is
 `r sprintf("%.3f", sim_summary$ate)`, a negative number, confirming that
-treatment is, on average, beneficial in this toy population — it lowers
+treatment is on average beneficial in this simulated population, lowering
 the risk of the outcome by about
-`r sprintf("%.1f", -100 * sim_summary$ate)` percentage points. But the
-last line of the summary, `naive`, is the only contrast we could ever
-compute from a real observational data set — the mean of the *observed*
-outcome `y` among the treated minus the mean of `y` among the untreated
-— and it comes out to `r sprintf("%.3f", sim_summary$naive)`, positive
-and on the wrong side of zero. The naive comparison says Cox-2
-selectivity looks harmful; the truth we built into the simulation is
-that it is helpful. The gap between `r sprintf("%.3f", sim_summary$naive)`
+`r sprintf("%.1f", -100 * sim_summary$ate)` percentage points. The last
+line of the summary, `naive`, is the only contrast we could ever compute
+from a real observational data set, being the mean of the *observed*
+outcome `y` among the treated minus the mean of `y` among the untreated,
+and it comes out to `r sprintf("%.3f", sim_summary$naive)`, positive and
+on the wrong side of zero. The naive comparison therefore suggests that
+Cox-2 selectivity is harmful, although we built the simulation so that it
+is beneficial. The gap between `r sprintf("%.3f", sim_summary$naive)`
 and `r sprintf("%.3f", sim_summary$ate)` is confounding by `severity`,
-laid completely bare because in this one artificial world we happen to
-know the whole truth: severe patients were both more likely to be
-treated *and* more likely to have a bad outcome regardless of treatment,
-so the treated group looks worse than it would have if severity had
-been balanced across the two groups. Real data never hands you `y0` and
-`y1` side by side like this — but the machinery in the rest of the
-chapter exists precisely to close that gap without needing to.
+visible here only because in this artificial world we know how the data
+were generated: severe patients were both more likely to be treated
+*and* more likely to have a bad outcome regardless of treatment, so the
+treated group looks worse than it would have if severity had been
+balanced across the two groups. Real data never provide `y0` and `y1`
+side by side, and the remainder of the chapter takes up the conditions
+under which the gap can nonetheless be closed.
 
 ## Average causal effects and estimands
 
-The individual causal effect $Y(1) - Y(0)$ cannot be observed, but its
-*average* over a population can be, once we have the right tools —
-which is why causal inference works with population-level summaries
-called **estimands**. The one that shows up most often in this book is
+The individual causal effect $Y(1) - Y(0)$ cannot be observed, although
+its *average* over a population can be estimated once we have the right
+tools, which is why causal inference is framed in terms of
+population-level summaries called **estimands**. The one that shows up
+most often in this book is
 the **average treatment effect (ATE)**,
 $$\text{ATE} = E[Y(1)] - E[Y(0)],$$
 the average, over everyone in the population of interest, of what would
@@ -175,38 +174,38 @@ the population itself. Rerunning with a different seed would shift the
 gap around, and often shrink it, without ever making it disappear
 completely.
 
-The reason the two estimands can genuinely diverge, rather than merely
-look different by chance, is when the *effect itself* varies with
-whatever determines who gets treated. Which estimand you want then
-depends on the question. If a health system is deciding whether to
-switch every future NSAID prescription for arthritis patients to the
-Cox-2 selective drug, the ATE is the relevant quantity — it answers
-"what would happen if we treated everyone." If a clinician is instead
-trying to understand the effect of the prescriptions she has already
-written, on the patients who actually received them, the ATT is closer
-to what she wants — it answers "was this decision, for the patients who
-got it, a good one." The two estimands coincide only when treatment
-effects do not vary with whatever determines who gets treated, exactly
-the case built into this simulation; Exercise 3 asks you to break that
-by making the effect depend on `severity`, so that the ATE and ATT
-genuinely part ways.
+The two estimands diverge genuinely, rather than merely by chance, when
+the *effect itself* varies with whatever determines who gets treated.
+Which estimand is wanted then depends on the question being asked. If a
+health system is deciding whether to switch every future NSAID
+prescription for arthritis patients to the Cox-2 selective drug, the ATE
+is the relevant quantity, since it describes what would happen if
+everyone were treated. If a clinician is instead trying to understand the
+effect of the prescriptions she has already written, on the patients who
+actually received them, the ATT is closer to what she wants, since it
+describes whether that decision benefited the patients who received it.
+The two estimands coincide only when treatment
+effects do not vary with whatever determines who gets treated, which is
+the case built into this simulation; Exercise 3 asks you to relax that
+condition by making the effect depend on `severity`, so that the ATE and
+ATT genuinely differ.
 
 Any of these estimands can be reported on more than one scale. With $Y$
 binary, as PUD is, the most direct scale is the **risk difference**,
 $E[Y(1)] - E[Y(0)]$, interpretable as "how many fewer (or more) cases per
 100 patients treated." The **risk ratio**, $E[Y(1)] / E[Y(0)]$, expresses
-the same contrast multiplicatively — a risk ratio of 0.7 means treatment
-reduces risk by 30%, regardless of baseline risk, which often makes it
-more portable across populations than a difference. The **odds ratio**,
+the same contrast multiplicatively, so that a risk ratio of 0.7 means
+treatment reduces risk by 30% regardless of baseline risk, which often
+makes it more portable across populations than a difference. The **odds
+ratio**,
 $$\frac{E[Y(1)]/(1-E[Y(1)])}{E[Y(0)]/(1-E[Y(0)])},$$
 is the scale most familiar from logistic regression and case-control
 studies, but it approximates the risk ratio only when the outcome is
-rare, and can otherwise diverge from it substantially. None of
-consistency, exchangeability, or positivity — the identification
-conditions we turn to next — depend on which scale you eventually
-report; the choice of scale is a separate decision, made after
-identification, about how to communicate a causal contrast you have
-already secured.
+rare, and can otherwise diverge from it substantially. None of the
+identification conditions we turn to next, consistency, exchangeability,
+and positivity, depends on which scale is eventually reported. The choice
+of scale is a separate decision, made after identification, about how
+best to communicate a causal contrast.
 
 ## The identification conditions
 
@@ -214,53 +213,52 @@ Estimands like the ATE are defined in terms of potential outcomes we
 never fully observe. **Identification** is the step of showing that,
 under stated assumptions, an estimand written in potential outcomes is
 equal to some quantity we actually could compute from observed data.
-Three conditions do this work, and it is worth attaching each one to
-the NSAID cohort so that they read as claims about real patients rather
-than abstract axioms.
+Three conditions do this work, and we state each one in terms of the
+NSAID cohort so that they read as claims about real patients.
 
 **Consistency** says that a patient's observed outcome equals the
 potential outcome under the treatment she actually received: if Patient
 47 takes the Cox-2 drug, her observed $Y$ equals $Y(1)$, not some
-average or blend involving $Y(0)$. This sounds almost too obvious to
-state, but it is doing real work — it is what licenses the line
-`y = if_else(a == 1, y1, y0)` in the simulation above, and it can fail
-in practice when "treatment" is not well defined enough to pin down a
-single potential outcome. If "Cox-2 initiation" secretly bundles several
+average or blend involving $Y(0)$. Although this sounds almost too
+obvious to state, it is doing real work, since it is what licenses the
+line `y = if_else(a == 1, y1, y0)` in the simulation above, and it can
+fail in practice when "treatment" is not well defined enough to pin down
+a single potential outcome. If "Cox-2 initiation" in fact bundles several
 different doses, durations, or concurrent gastroprotective strategies,
-then $Y(1)$ is not one well-defined quantity but several, and consistency
-is violated before any statistical issue even arises.
+then $Y(1)$ refers to several distinct quantities rather than one, and
+consistency fails for reasons that have nothing to do with statistical
+estimation.
 
 **Exchangeability** (also called ignorability) says that the treated
 and untreated groups would have had the same average outcome had they
 received the same treatment — formally, $Y(1), Y(0) \perp A$, potential
 outcomes are statistically independent of the treatment actually
-received. This is exactly what fails in our simulation: because `a`
+received. This is the condition that fails in our simulation: because `a`
 depends on `severity`, and `severity` also drives `y0` and `y1`, treated
-and untreated patients are not exchangeable, and that is the entire
-reason the naive contrast diverged from the ATE. Exchangeability is what
-a randomized trial buys you by construction — Chapter 4 makes that
-precise — and it is what confounding by indication takes away in
-observational data like `ns`, where physicians route sicker-looking
-patients toward the Cox-2 drug for reasons connected to the very outcome
-we are studying.
+and untreated patients are not exchangeable, which is why the naive
+contrast diverged from the ATE. A randomized trial delivers
+exchangeability by construction, as Chapter 4 makes precise, whereas
+confounding by indication removes it in observational data like `ns`,
+where physicians route sicker-looking patients toward the Cox-2 drug for
+reasons connected to the very outcome we are studying.
 
 Full exchangeability is usually too much to hope for in observational
 data, which is why most of this book works with a weaker version,
 **conditional exchangeability**: $Y(1), Y(0) \perp A \mid L$ for some set
 of measured covariates $L$. Treatment need not be independent of
-potential outcomes overall, only *within levels* of $L$ — among
+potential outcomes overall, only *within levels* of $L$, so that among
 patients who share the same measured `severity`, say, treatment
-assignment is as good as random. This is a much more plausible
+assignment is as good as random. This is a considerably more plausible
 assumption whenever we can measure the variables driving treatment
-choice, and it is exactly what standardization, propensity scores, and
-IPTW in later chapters are built to exploit.
+choice, and it is the assumption that standardization, propensity scores,
+and IPTW in later chapters are built to exploit.
 
-We can see conditional exchangeability rescue our toy example directly,
-because we happen to have measured the one variable, `severity`, that
-was confounding the naive comparison. If we compute the same treated-
-minus-untreated contrast *separately within each level of severity*,
-using `group_by(severity)`, we are conditioning on the confounder
-exactly the way conditional exchangeability requires:
+Conditional exchangeability can be seen to work in our simulated example,
+since we have measured the one variable, `severity`, that was confounding
+the naive comparison. If we compute the same treated-minus-untreated
+contrast *separately within each level of severity*, using
+`group_by(severity)`, we are conditioning on the confounder in the way
+conditional exchangeability requires:
 
 ```{r cond-exch}
 by_severity <- truth |>
@@ -281,42 +279,41 @@ weighted_avg <- with(
 ```
 
 Within each level of `severity`, the treated-versus-untreated contrast
-comes out close to `r sprintf("%.3f", sim_summary$ate)` — the true ATE —
+comes out close to `r sprintf("%.3f", sim_summary$ate)`, the true ATE,
 rather than the badly biased `r sprintf("%.3f", sim_summary$naive)` we
-got by ignoring severity altogether. Averaging these two
+obtained by ignoring severity altogether. Averaging these two
 severity-specific contrasts back together, weighted by how many
 patients fall in each severity stratum, recovers
-`r sprintf("%.3f", weighted_avg)`, essentially the ATE. Nothing about the
-data changed; we only stopped comparing all treated patients to all
-untreated patients, and started comparing treated to untreated patients
-*within* the variable that was confounding the comparison. This
-hand-computed stratification is the seed of standardization, which
-Chapter 7 develops into a general tool for covariate sets far too large
-to stratify by hand.
+`r sprintf("%.3f", weighted_avg)`, essentially the ATE. The data
+themselves are unchanged; the only difference is that treated and
+untreated patients are now being compared *within* levels of the variable
+that was confounding the comparison. This hand-computed stratification is
+a simple case of standardization, which Chapter 7 develops into a general
+tool for covariate sets far too large to stratify by hand.
 
 **Positivity** (or overlap) says that every combination of covariates
 that occurs in the population has a nonzero probability of receiving
 either treatment level: $0 < P(A = 1 \mid L = l) < 1$ for every value
-$l$ of $L$ with positive probability. This is a logical precondition,
-not a statistical nicety — if every patient with `severity == 1` in our
-simulation had probability zero of getting the nonselective drug, there
-would be no untreated severe patients to compare to, and no amount of
-adjustment could recover what their outcome under nonselective
-treatment would have been. Positivity can fail structurally, when a
-covariate combination makes one treatment clinically unthinkable, or
-only practically, when the combination is simply rare in a finite
-sample; the second, less absolute failure is common enough in real
-cohorts like `ns` that later chapters return to it when diagnosing
+$l$ of $L$ with positive probability. Positivity is a logical
+precondition rather than a technical convenience. If every patient with
+`severity == 1` in our simulation had probability zero of receiving the
+nonselective drug, there would be no untreated severe patients available
+for comparison, and no amount of adjustment could recover what their
+outcome under nonselective treatment would have been. Positivity can fail
+structurally, when a covariate combination makes one treatment clinically
+unthinkable, or only practically, when the combination is merely rare in
+a finite sample. The second, less absolute failure is common enough in
+real cohorts like `ns` that later chapters return to it when diagnosing
 propensity score overlap.
 
 Together, consistency, exchangeability (or its conditional version),
 and positivity are what let us write an equals sign between a causal
 estimand defined on unobservable potential outcomes and a statistical
-quantity computable from an observed data set like `ns`. Every
-adjustment method in the rest of this book — standardization, propensity
-scores, weighting — is a different computational strategy for the same
-identified quantity; none of them can substitute for these three
-conditions actually holding.
+quantity computable from an observed data set like `ns`. The adjustment
+methods in the rest of this book, including standardization, propensity
+scores, and weighting, are different computational strategies for the
+same identified quantity, and none of them can substitute for these three
+conditions holding.
 
 ## Exercises
 
