@@ -332,27 +332,28 @@ received the nonselective drug.</p>
 <p>Potential outcomes give that question a name and a symbol. Let <span class="math inline">\(A\)</span>
 denote the treatment Patient 47 receives, coded <span class="math inline">\(A = 1\)</span> for the Cox-2
 selective drug and <span class="math inline">\(A = 0\)</span> for the nonselective drug, and let <span class="math inline">\(Y\)</span> denote
-whether she develops incident PUD. Then <span class="math inline">\(Y^1\)</span> is the outcome she would
-have if she were treated with <span class="math inline">\(A = 1\)</span>, and <span class="math inline">\(Y^0\)</span> is the outcome she
+whether she develops incident PUD. Then <span class="math inline">\(Y(1)\)</span> is the outcome she would
+have if she were treated with <span class="math inline">\(A = 1\)</span>, and <span class="math inline">\(Y(0)\)</span> is the outcome she
 would have if she were treated with <span class="math inline">\(A = 0\)</span>. These are <strong>potential</strong>
 outcomes — one for each treatment value she could in principle receive —
 and both exist, in the sense of being well-defined quantities, before we
 know which treatment she actually gets. Once treatment is assigned, one
 of them becomes the <strong>observed</strong> outcome and the other becomes
 counterfactual: contrary to the fact of what happened. If Patient 47
-actually receives the Cox-2 drug, we observe <span class="math inline">\(Y^1\)</span>; <span class="math inline">\(Y^0\)</span> is what
+actually receives the Cox-2 drug, we observe <span class="math inline">\(Y(1)\)</span>; <span class="math inline">\(Y(0)\)</span> is what
 her chart would show in the world where her physician wrote the other
 prescription.</p>
 <p>A word on notation, because it varies more than the idea does. We write
-these potential outcomes with superscripts, but many authors — and the
-PHS 921 lectures and exams — write <span class="math inline">\(Y(1)\)</span> and <span class="math inline">\(Y(0)\)</span>, and others write
+these potential outcomes as <span class="math inline">\(Y(1)\)</span> and <span class="math inline">\(Y(0)\)</span>, matching the PHS 921
+lectures and exams, but many books — <em>Causal Inference: What If</em> among
+them — write superscripts, <span class="math inline">\(Y^1\)</span> and <span class="math inline">\(Y^0\)</span> or <span class="math inline">\(Y^a\)</span>, and others write
 <span class="math inline">\(Y_a\)</span> for the outcome under a generic treatment value <span class="math inline">\(a\)</span>. All three
 notations denote the same objects, so it is worth learning to move
 between them freely rather than attaching the concept to any one of
 them.</p>
 <p>With both potential outcomes in hand for a single patient, her
 <strong>individual causal effect</strong> of Cox-2 selectivity on PUD is simply the
-contrast between them, <span class="math inline">\(Y^1 - Y^0\)</span>. If <span class="math inline">\(Y^1 = 0\)</span> and <span class="math inline">\(Y^0 = 1\)</span>, the
+contrast between them, <span class="math inline">\(Y(1) - Y(0)\)</span>. If <span class="math inline">\(Y(1) = 0\)</span> and <span class="math inline">\(Y(0) = 1\)</span>, the
 Cox-2 drug prevented her ulcer; if both are 0, or both are 1, the choice
 of drug made no difference to her outcome, even though the drugs may
 differ enormously for other patients. This is a clean, well-defined
@@ -434,12 +435,12 @@ chapter exists precisely to close that gap without needing to.</p>
 </div>
 <div id="average-causal-effects-and-estimands" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Average causal effects and estimands<a href="potential-outcomes-and-causal-effects.html#average-causal-effects-and-estimands" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The individual causal effect <span class="math inline">\(Y^1 - Y^0\)</span> cannot be observed, but its
+<p>The individual causal effect <span class="math inline">\(Y(1) - Y(0)\)</span> cannot be observed, but its
 <em>average</em> over a population can be, once we have the right tools —
 which is why causal inference works with population-level summaries
 called <strong>estimands</strong>. The one that shows up most often in this book is
 the <strong>average treatment effect (ATE)</strong>,
-<span class="math display">\[\text{ATE} = E[Y^1] - E[Y^0],\]</span>
+<span class="math display">\[\text{ATE} = E[Y(1)] - E[Y(0)],\]</span>
 the average, over everyone in the population of interest, of what would
 happen if everyone were treated minus what would happen if no one were.
 In the simulation above, <code>mean(y1) - mean(y0)</code> computed over all 100,000
@@ -447,7 +448,7 @@ patients <em>is</em> the ATE, because we happened to have both potential
 outcomes for every one of them.</p>
 <p>A second estimand, the <strong>average treatment effect in the treated
 (ATT)</strong>,
-<span class="math display">\[\text{ATT} = E[Y^1 \mid A = 1] - E[Y^0 \mid A = 1],\]</span>
+<span class="math display">\[\text{ATT} = E[Y(1) \mid A = 1] - E[Y(0) \mid A = 1],\]</span>
 restricts that same contrast to the patients who were actually treated:
 it asks what treatment did for the people who received it, not for the
 population as a whole. In the simulation, that is
@@ -478,12 +479,12 @@ by making the effect depend on <code>severity</code>, so that the ATE and ATT
 genuinely part ways.</p>
 <p>Any of these estimands can be reported on more than one scale. With <span class="math inline">\(Y\)</span>
 binary, as PUD is, the most direct scale is the <strong>risk difference</strong>,
-<span class="math inline">\(E[Y^1] - E[Y^0]\)</span>, interpretable as “how many fewer (or more) cases per
-100 patients treated.” The <strong>risk ratio</strong>, <span class="math inline">\(E[Y^1] / E[Y^0]\)</span>, expresses
+<span class="math inline">\(E[Y(1)] - E[Y(0)]\)</span>, interpretable as “how many fewer (or more) cases per
+100 patients treated.” The <strong>risk ratio</strong>, <span class="math inline">\(E[Y(1)] / E[Y(0)]\)</span>, expresses
 the same contrast multiplicatively — a risk ratio of 0.7 means treatment
 reduces risk by 30%, regardless of baseline risk, which often makes it
 more portable across populations than a difference. The <strong>odds ratio</strong>,
-<span class="math display">\[\frac{E[Y^1]/(1-E[Y^1])}{E[Y^0]/(1-E[Y^0])},\]</span>
+<span class="math display">\[\frac{E[Y(1)]/(1-E[Y(1)])}{E[Y(0)]/(1-E[Y(0)])},\]</span>
 is the scale most familiar from logistic regression and case-control
 studies, but it approximates the risk ratio only when the outcome is
 rare, and can otherwise diverge from it substantially. None of
@@ -504,18 +505,18 @@ the NSAID cohort so that they read as claims about real patients rather
 than abstract axioms.</p>
 <p><strong>Consistency</strong> says that a patient’s observed outcome equals the
 potential outcome under the treatment she actually received: if Patient
-47 takes the Cox-2 drug, her observed <span class="math inline">\(Y\)</span> equals <span class="math inline">\(Y^1\)</span>, not some
-average or blend involving <span class="math inline">\(Y^0\)</span>. This sounds almost too obvious to
+47 takes the Cox-2 drug, her observed <span class="math inline">\(Y\)</span> equals <span class="math inline">\(Y(1)\)</span>, not some
+average or blend involving <span class="math inline">\(Y(0)\)</span>. This sounds almost too obvious to
 state, but it is doing real work — it is what licenses the line
 <code>y = if_else(a == 1, y1, y0)</code> in the simulation above, and it can fail
 in practice when “treatment” is not well defined enough to pin down a
 single potential outcome. If “Cox-2 initiation” secretly bundles several
 different doses, durations, or concurrent gastroprotective strategies,
-then <span class="math inline">\(Y^1\)</span> is not one well-defined quantity but several, and consistency
+then <span class="math inline">\(Y(1)\)</span> is not one well-defined quantity but several, and consistency
 is violated before any statistical issue even arises.</p>
 <p><strong>Exchangeability</strong> (also called ignorability) says that the treated
 and untreated groups would have had the same average outcome had they
-received the same treatment — formally, <span class="math inline">\(Y^1, Y^0 \perp A\)</span>, potential
+received the same treatment — formally, <span class="math inline">\(Y(1), Y(0) \perp A\)</span>, potential
 outcomes are statistically independent of the treatment actually
 received. This is exactly what fails in our simulation: because <code>a</code>
 depends on <code>severity</code>, and <code>severity</code> also drives <code>y0</code> and <code>y1</code>, treated
@@ -528,7 +529,7 @@ patients toward the Cox-2 drug for reasons connected to the very outcome
 we are studying.</p>
 <p>Full exchangeability is usually too much to hope for in observational
 data, which is why most of this book works with a weaker version,
-<strong>conditional exchangeability</strong>: <span class="math inline">\(Y^1, Y^0 \perp A \mid L\)</span> for some set
+<strong>conditional exchangeability</strong>: <span class="math inline">\(Y(1), Y(0) \perp A \mid L\)</span> for some set
 of measured covariates <span class="math inline">\(L\)</span>. Treatment need not be independent of
 potential outcomes overall, only <em>within levels</em> of <span class="math inline">\(L\)</span> — among
 patients who share the same measured <code>severity</code>, say, treatment
