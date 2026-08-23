@@ -306,13 +306,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="getting-started-with-r-and-the-namcs-data" class="section level1 hasAnchor" number="2">
 <h1><span class="header-section-number">Chapter 2</span> Getting started with R and the NAMCS data<a href="getting-started-with-r-and-the-namcs-data.html#getting-started-with-r-and-the-namcs-data" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Every idea in this book is attached to code, and the code is R. If you
-have never used R before, this chapter is for you: it introduces just
-enough of the tidyverse to read and write the data manipulations in the
-chapters that follow, walks through the two example cohorts you will be
-living with for the rest of the semester, and ends by building your first
-reusable function — a “Table 1” generator you will reach for in every
-observational study you ever run, in this course and after it. If you
+<p>Every idea in this book is attached to code written in R. If you
+have never used R before, this chapter introduces enough of the
+tidyverse to read and write the data manipulations used in the
+chapters that follow, describes the two example cohorts we will work
+with for the rest of the semester, and ends by building a first
+reusable function: a “Table 1” generator that will be useful in most
+observational studies you conduct, in this course and after it. If you
 already know R and the tidyverse well, skim this chapter for the two data
 sets and read the Table 1 section, since <code>table1_continuous()</code> and
 <code>table1_categorical()</code> are used again in later chapters.</p>
@@ -329,11 +329,11 @@ rectangular data set with rows and columns (a <strong>data frame</strong>, or in
 tidyverse a <strong>tibble</strong>). A <strong>function</strong> takes some input, does something
 to it, and returns an output; <code>mean(x)</code> takes a vector <code>x</code> and returns
 its average. A <strong>package</strong> is a bundle of functions someone else wrote
-and shared, loaded with <code>library()</code>. The tidyverse is one such bundle —
-really a collection of packages, including <code>dplyr</code> for manipulating data
-frames and <code>ggplot2</code> for plotting — built around a shared design that
-tries to make code read like a description of what you want done rather
-than a set of instructions for how a computer should do it.</p>
+and shared, loaded with <code>library()</code>. The tidyverse is one such bundle,
+or more precisely a collection of packages, including <code>dplyr</code> for
+manipulating data frames and <code>ggplot2</code> for plotting, built around a
+shared design intended to make code read as a description of what you
+want done rather than as instructions for how a computer should do it.</p>
 <p>The setup chunk at the top of this chapter already did the loading for
 us: <code>source("R/setup.R")</code> runs a script that attaches the tidyverse,
 attaches the <code>NAMCS</code> package that supplies our example data, and builds
@@ -394,9 +394,9 @@ fourth groups patients by which drug class they initiated and reports
 the number of patients and mean age in each group — a first, very small
 taste of the comparisons we will spend the rest of the book refining. The
 fifth cross-tabulates sex against treatment group. None of this is
-causal inference yet; it is just description, but description is where
-every analysis starts, and it is worth being fluent in it before adding
-any causal machinery on top.</p>
+causal inference yet; it is description, but description is where an
+analysis begins, and it is worth being fluent in it before adding
+any causal machinery.</p>
 </div>
 <div id="the-namcs-teaching-cohorts" class="section level2 hasAnchor" number="2.2">
 <h2><span class="header-section-number">2.2</span> The NAMCS teaching cohorts<a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-teaching-cohorts" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -547,9 +547,9 @@ loss to follow-up, or the administrative end of the study (<code>admin_end</code
 set to 10 years) happened first, and a <code>cv_event</code> indicator for whether
 that first thing was actually the cardiovascular event. We will not need
 any of that machinery until Chapter 10, on survival outcomes and
-censoring; for now it is enough to know that <code>sta</code> exists, that it is
-bigger and slower-moving than <code>ns</code>, and that it is where the book turns
-once we start worrying about follow-up time.</p>
+censoring. For now it is enough to know that <code>sta</code> is larger than <code>ns</code>,
+that its outcomes accrue over years of follow-up, and that it is the
+cohort the book turns to once follow-up time matters.</p>
 <p>Appendix B collects a full codebook for both cohorts, generated directly
 from the data rather than typed out by hand, so it will always match
 what is actually in the package. If you are ever unsure what a variable
@@ -576,11 +576,10 @@ by treatment group, answers this directly:</p>
 Figure 2.1: Age distribution by initiated drug class.
 </p>
 </div>
-<p>The two distributions are not identical, and that alone is worth
-sitting with for a moment: it means age could confound any simple
-comparison of peptic ulcer risk between the groups, since age is
-plausibly related to both which drug a physician chooses to prescribe
-and the baseline risk of peptic ulcer disease.</p>
+<p>The two distributions are not identical, so age could confound any
+simple comparison of peptic ulcer risk between the groups, since age is
+plausibly related both to which drug a physician chooses to prescribe
+and to the baseline risk of peptic ulcer disease.</p>
 <p>A second question is whether the two groups differ in their burden of
 relevant comorbidities and comedications. A bar chart of prevalence, one
 bar per condition per group, is a compact way to see several
@@ -602,29 +601,26 @@ Figure 2.2: Prevalence of selected comorbidities and comedications by initiated 
 </p>
 </div>
 <p>Arthritis, in particular, is more common among Cox-2 initiators than
-among nonselective NSAID initiators, which makes clinical sense — Cox-2
-selective drugs are often chosen specifically for patients thought to be
-at higher gastrointestinal risk — and is exactly the kind of pattern that
-will occupy us once we start asking how to adjust for confounding.</p>
+among nonselective NSAID initiators. This is clinically unsurprising,
+since Cox-2 selective drugs are often chosen for patients thought to be
+at higher gastrointestinal risk, and it is the kind of imbalance that
+will concern us once we take up adjustment for confounding.</p>
 </div>
 <div id="your-first-reusable-functions-table-1" class="section level2 hasAnchor" number="2.4">
 <h2><span class="header-section-number">2.4</span> Your first reusable functions: Table 1<a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Every observational paper you will ever read, and every one you will
-ever write, opens with a table comparing the characteristics of the
-groups being compared — universally, if a little unimaginatively, called
-“Table 1.” It is descriptive, not causal, but it is also indispensable:
-it is where a reader first sees whether the groups look similar,
-and it is often where a reader first suspects they don’t. You will make
-some version of this table for every study you ever do, so rather than
-rebuild it from scratch each time, we are going to write it once, as a
-function, and reuse it for the rest of this book.</p>
+<p>Nearly every observational paper opens with a table comparing the
+characteristics of the groups under comparison, conventionally called
+“Table 1.” It is descriptive rather than causal, but it is where a
+reader first sees whether the groups appear comparable, and often where
+a reader first suspects that they are not. Because some version of this
+table is needed for nearly every study, we will write it once, as a
+function, and reuse it for the rest of the book.</p>
 <p>A function in R is defined with <code>function(...)</code>, naming its arguments,
 followed by a body that computes something from them and returns it (by
 default, the value of the last expression evaluated). Writing your own
-functions is the single habit that will save you the most time as an R
-user, because it turns a block of code you would otherwise copy, paste,
-and slightly mis-edit into something you write once, test once, and
-trust afterward.</p>
+functions will save a great deal of time, because it turns a block of
+code that would otherwise be copied, pasted, and slightly mis-edited
+into something written and tested once.</p>
 <p>A Table 1 needs to summarize two kinds of variables differently:
 continuous variables as a mean and standard deviation, and categorical
 variables as a count and percentage, both computed separately within
@@ -650,9 +646,10 @@ own column.</p>
 <p>A couple of details are worth pointing out because they recur throughout
 this book. <code>all_of(vars)</code> tells <code>select()</code> and <code>pivot_longer()</code> that
 <code>vars</code> is a character vector of column names supplied by the caller,
-rather than a single column to look up literally — this is what lets the
-function work for any set of variables, not just the ones we happen to
-try first. <code>.data[[by]]</code> does the analogous thing for <code>group_by()</code>,
+rather than a single column to look up literally, which is what allows
+the function to work for any set of variables rather than only the ones
+we happen to try first. <code>.data[[by]]</code> does the analogous thing for
+<code>group_by()</code>,
 letting the name of the grouping column be a string passed in as an
 argument rather than hard-coded. Together these are what make the
 function <em>reusable</em>: nothing about age or treatment group is written
@@ -774,10 +771,10 @@ the results with <code>knitr::kable()</code> for a readable table:</p>
 <p>Look at the two tables side by side. Cox-2 initiators are, on average,
 older than nonselective NSAID initiators, and a substantially larger
 share of them have a history of arthritis. Neither table tells us
-whether Cox-2 selectivity affects peptic ulcer risk — that question
-needs the rest of this book — but both are exactly the kind of evidence
-an epidemiologist reaches for first, and both came from two functions
-you now understand well enough to have written yourself.</p>
+whether Cox-2 selectivity affects peptic ulcer risk, a question that
+occupies the rest of the book, but both are the kind of descriptive
+evidence an epidemiologist examines first, and both came from two
+functions short enough to read line by line.</p>
 </div>
 <div id="exercises" class="section level2 hasAnchor" number="2.5">
 <h2><span class="header-section-number">2.5</span> Exercises<a href="getting-started-with-r-and-the-namcs-data.html#exercises" class="anchor-section" aria-label="Anchor link to header"></a></h2>

@@ -312,15 +312,15 @@ higher gastrointestinal risk, which is why the crude comparison came out
 backwards. Chapter 3 gave that idea a formal home inside potential
 outcomes, as a failure of exchangeability, and named the covariates that
 would need to be equal on average across treatment groups for a
-comparison to be believable. What neither chapter offered was a way to
-<em>look</em> at a causal assumption and read off, mechanically, which
-variables belong on that list — and, just as important, which variables
-do not belong on it and would actively damage the analysis if included.
-In this chapter we build that language. A causal diagram turns a set of
-substantive beliefs about how variables relate to one another into a
-picture we can reason about with a handful of rules, check with
-software, and cross-check with colleagues who may not share our
-subject-matter expertise but can still read a graph.</p>
+comparison to be believable. Neither chapter offered a way to <em>look</em> at a
+causal assumption and read off which variables belong on that list, or,
+equally important, which variables do not belong on it and would damage
+the analysis if included. In this chapter we develop that language. A
+causal diagram translates a set of substantive beliefs about how
+variables relate to one another into a picture that can be reasoned about
+with a small number of rules, checked with software, and reviewed by
+colleagues who may not share our subject-matter expertise but can still
+read a graph.</p>
 <div id="drawing-causal-assumptions" class="section level2 hasAnchor" number="5.1">
 <h2><span class="header-section-number">5.1</span> Drawing causal assumptions<a href="causal-diagrams.html#drawing-causal-assumptions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A causal diagram, in the sense we use throughout this book, is a directed
@@ -330,13 +330,13 @@ direct causal effects. An arrow from <span class="math inline">\(A\)</span> to <
 some effect on <span class="math inline">\(B\)</span>, holding everything else in the picture fixed; the
 absence of an arrow is an equally substantive claim, that no such direct
 effect exists. “Acyclic” rules out feedback loops drawn as a single
-static picture — <span class="math inline">\(A\)</span> cannot cause <span class="math inline">\(B\)</span> which causes <span class="math inline">\(A\)</span> within the same
-diagram, though time can be represented instead by drawing <span class="math inline">\(A\)</span> at one
+static picture, so that <span class="math inline">\(A\)</span> cannot cause <span class="math inline">\(B\)</span> which causes <span class="math inline">\(A\)</span> within the
+same diagram, although time can be represented by drawing <span class="math inline">\(A\)</span> at one
 point in time and <span class="math inline">\(A\)</span> at a later point as two separate nodes. Every
-arrow in a DAG is a claim someone is willing to defend on scientific
-grounds, not a claim estimated from data; the diagram is where we write
-causal assumptions down and argue about them, before any regression
-runs.</p>
+arrow in a DAG represents a claim that someone is prepared to defend on
+scientific grounds, rather than a quantity estimated from data, and the
+diagram is where such assumptions are written down and debated before any
+model is fit.</p>
 <p>A <strong>path</strong> between two nodes is any sequence of arrows connecting them,
 regardless of direction. Some paths are <strong>causal paths</strong>: every arrow
 along the way points forward, from the exposure toward the outcome,
@@ -346,14 +346,14 @@ outcome but enter the exposure node through an arrow pointing <em>into</em>
 it, meaning they trace a route through some third variable that causes
 both, rather than an effect of the exposure itself. A crude comparison
 of exposed and unexposed patients pools every open path between them,
-causal and backdoor alike, which is exactly why Chapter 1’s comparison
+causal and backdoor alike, which is why Chapter 1’s comparison
 of Cox-2 initiators and nonselective initiators mixed whatever real
 effect Cox-2 selectivity has on ulcer risk with whatever backdoor paths
 ran through GI risk, age, and steroid use. The goal of adjustment,
 translated into this graphical language, is to close every backdoor
-path while leaving every causal path open — a criterion precise enough
-that software can check it, as we’ll see directly when we turn to the
-NSAID question in the next section. The formal name for the state we are
+path while leaving every causal path open. This criterion is precise
+enough that software can check it, as the next section demonstrates for
+the NSAID question. The formal name for the state we are
 aiming at is <strong>d-separation</strong>: two variables are d-separated, given a set
 of conditioning variables, when every path between them is blocked. It is
 the term used in the course’s DAG workshop and throughout the
@@ -362,7 +362,7 @@ ask it whether an adjustment set suffices.</p>
 </div>
 <div id="the-nsaidpud-diagram" class="section level2 hasAnchor" number="5.2">
 <h2><span class="header-section-number">5.2</span> The NSAID–PUD diagram<a href="causal-diagrams.html#the-nsaidpud-diagram" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Let’s encode, in a diagram, the causal story Chapters 1 and 3 have been
+<p>We now encode in a diagram the causal story Chapters 1 and 3 have been
 telling about Cox-2 selectivity and peptic ulcer disease: GI risk
 factors, age, and corticosteroid use each influence a physician’s choice
 between a Cox-2 selective and a nonselective NSAID, and each also
@@ -380,7 +380,7 @@ itself has.</p>
 <span id="cb30-10"><a href="causal-diagrams.html#cb30-10" tabindex="-1"></a>)</span>
 <span id="cb30-11"><a href="causal-diagrams.html#cb30-11" tabindex="-1"></a><span class="fu">ggdag</span>(dag_nsaid, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
 <p><img src="causal-inference-epi-r_files/figure-html/nsaid-dag-1.png" alt="" width="672" /></p>
-<p>The picture makes the confounding structure literal: <code>gi_risk</code>, <code>age</code>,
+<p>The diagram makes the confounding structure explicit: <code>gi_risk</code>, <code>age</code>,
 and <code>steroids</code> each sit upstream of both <code>cox2</code> and <code>pud</code>, so each one
 opens a backdoor path from <code>cox2</code> to <code>pud</code> that has nothing to do with
 the drug’s own effect — <code>cox2 &lt;- gi_risk -&gt; pud</code>, <code>cox2 &lt;- age -&gt; pud</code>,
@@ -389,30 +389,30 @@ and <code>cox2 &lt;- steroids -&gt; pud</code>, alongside the single causal path
 each backdoor path by hand, we can let <code>dagitty</code> do it directly:</p>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="causal-diagrams.html#cb31-1" tabindex="-1"></a>dagitty<span class="sc">::</span><span class="fu">adjustmentSets</span>(dag_nsaid)</span></code></pre></div>
 <pre><code>## { age, gi_risk, steroids }</code></pre>
-<p><code>adjustmentSets()</code> reports exactly one minimal set here: <code>{age, gi_risk, steroids}</code>. That result tells us two things at once. First, adjusting for
-all three variables together closes every backdoor path in the diagram,
-so a comparison of Cox-2 and nonselective initiators that conditions on
-age, GI risk factors, and steroid use — by stratification,
-standardization, or a propensity score built from them, the subjects of
-Chapters 7 through 9 — is no longer contaminated by the confounding this
-diagram encodes. Second, and just as informative, no smaller set will
-do: because each of the three variables opens its own separate backdoor
-path with no shared intermediate node, dropping any one of them leaves
-that path open, and the comparison stays confounded through whichever
-variable was left out. This is precisely the graphical version of the
-conditional exchangeability condition from Chapter 3 — <span class="math inline">\(Y(a)
-\perp A \mid L\)</span> for <span class="math inline">\(L\)</span> equal to this adjustment set — except that here
-we read the set off a picture instead of asserting it by fiat, and we
-leave the diagram open for a colleague to challenge by redrawing an
-arrow rather than by re-deriving an equation.</p>
+<p><code>adjustmentSets()</code> reports a single minimal set here: <code>{age, gi_risk, steroids}</code>. That result tells us two things. First, adjusting for all
+three variables together closes every backdoor path in the diagram, so
+that a comparison of Cox-2 and nonselective initiators that conditions on
+age, GI risk factors, and steroid use, whether by stratification,
+standardization, or a propensity score built from them (the subjects of
+Chapters 7 through 9), is no longer contaminated by the confounding this
+diagram encodes. Second, no smaller set will suffice: because each of the
+three variables opens its own separate backdoor path with no shared
+intermediate node, dropping any one of them leaves that path open, and
+the comparison remains confounded through whichever variable was left
+out. This is the graphical counterpart of the conditional exchangeability
+condition from Chapter 3, <span class="math inline">\(Y(a)
+\perp A \mid L\)</span> for <span class="math inline">\(L\)</span> equal to this adjustment set, with the difference
+that the set is here read off a picture rather than asserted, and that
+the diagram remains available for a colleague to challenge by redrawing
+an arrow.</p>
 </div>
 <div id="confounders-colliders-and-mediators" class="section level2 hasAnchor" number="5.3">
 <h2><span class="header-section-number">5.3</span> Confounders, colliders, and mediators<a href="causal-diagrams.html#confounders-colliders-and-mediators" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Real diagrams can have dozens of nodes, but nearly everything about how
-adjustment behaves comes down to three small structures repeated
-throughout. Getting the direction of each one right, and learning to
-adjust only for the first, is most of what we set out to do in this
-chapter.</p>
+<p>Real diagrams can have dozens of nodes, although nearly everything about
+how adjustment behaves follows from three small structures that recur
+throughout them. Recognizing each structure, and adjusting only for the
+first of the three, accounts for most of what this chapter is meant to
+teach.</p>
 <p>A <strong>confounder</strong> is a common cause of exposure and outcome, the pattern
 <code>gi_risk</code>, <code>age</code>, and <code>steroids</code> all instantiate above: a variable with
 arrows pointing into both the exposure and the outcome, opening a
@@ -436,19 +436,19 @@ out of it.</p>
 <span id="cb34-6"><a href="causal-diagrams.html#cb34-6" tabindex="-1"></a><span class="fu">ggdag</span>(dag_collider, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
 <p><img src="causal-inference-epi-r_files/figure-html/collider-dag-1.png" alt="" width="672" /></p>
 <p>Left alone, a collider does nothing to the association between its two
-causes — if <code>x</code> and <code>z</code> are independent, they stay independent whether
-or not anyone ever looks at <code>m</code>. The trouble starts the moment <code>m</code> is
-conditioned on, whether deliberately, by restricting a sample to
-<code>m</code>’s observed value, or invisibly, by studying only the patients who
-survived to be observed at all. Conditioning on a common effect
-manufactures an association between its causes where none existed,
-because within any fixed value of <code>m</code>, learning that one cause was
-small makes the other cause more likely to have been large enough to
-produce that value of <code>m</code> on its own. Let’s make this concrete with a
-short simulation: we draw two variables that are causally unrelated to
-each other, build a third variable as their common effect, and compare
-the association between the first two before and after restricting to
-one level of the third.</p>
+causes, so that if <code>x</code> and <code>z</code> are independent they remain independent
+whether or not anyone ever looks at <code>m</code>. Difficulties arise once <code>m</code> is
+conditioned on, whether deliberately, by restricting a sample to <code>m</code>’s
+observed value, or inadvertently, by studying only the patients who
+survived to be observed at all. Conditioning on a common effect induces
+an association between its causes where none existed, because within any
+fixed value of <code>m</code>, learning that one cause was small makes the other
+cause more likely to have been large enough to produce that value of <code>m</code>
+on its own. We can make this concrete with a short simulation, in which
+we draw two variables that are causally unrelated to each other, build a
+third variable as their common effect, and compare the association
+between the first two before and after restricting to one level of the
+third.</p>
 <div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="causal-diagrams.html#cb35-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>)</span>
 <span id="cb35-2"><a href="causal-diagrams.html#cb35-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
 <span id="cb35-3"><a href="causal-diagrams.html#cb35-3" tabindex="-1"></a>gi_risk_indep <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)    <span class="co"># cause 1, unrelated to cause 2 by construction</span></span>
@@ -471,12 +471,13 @@ same regression to the 1250 patients in the
 top quartile of the collider score — patients who were “hospitalized”
 in this simulation — we turn that null slope into
 -0.306 (p &lt; 0.001),
-a strong, highly significant, entirely artificial association between
-two variables that never had any causal connection. Nothing about the
-world changed between the two regressions; only the sample did. That is
-collider bias: adjustment applied to the wrong kind of node does not
-merely fail to help, it manufactures exactly the kind of spurious
-association we have spent this whole book trying to avoid.</p>
+a strong and highly significant association between two variables that
+have no causal connection at all. Nothing about the data-generating
+process differs between the two regressions; only the sample does. This
+is collider bias, and it illustrates that adjustment applied to the wrong
+kind of node does not merely fail to help but induces the sort of
+spurious association that the methods in this book are intended to
+avoid.</p>
 <p>The third structure is a <strong>mediator</strong>: a variable that sits on the
 causal path itself, transmitting some or all of the exposure’s effect
 on the way to the outcome rather than confounding it.</p>
@@ -488,32 +489,32 @@ on the way to the outcome rather than confounding it.</p>
 <span id="cb36-6"><a href="causal-diagrams.html#cb36-6" tabindex="-1"></a>)</span>
 <span id="cb36-7"><a href="causal-diagrams.html#cb36-7" tabindex="-1"></a><span class="fu">ggdag</span>(dag_mediator, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
 <p><img src="causal-inference-epi-r_files/figure-html/mediator-dag-1.png" alt="" width="672" /></p>
-<p>Adjusting for a mediator is not the same mistake as adjusting for a
-collider — a mediator really is caused by the exposure, and really does
-cause the outcome — but it is still the wrong move for the question we
-ask throughout this book, the <em>total</em> effect of exposure on outcome.
-Conditioning on <code>m</code> blocks the very causal path <code>x -&gt; m -&gt; y</code> that
-carries the effect we are trying to estimate, so a regression of <code>y</code> on
-<code>x</code> that also includes <code>m</code> answers a narrower question (how much of the
-effect survives independent of that pathway) while looking,
-superficially, like the same kind of adjusted analysis that closes a
-backdoor path. We put confounders in the adjustment set; colliders and
-mediators, in their different ways, we leave out of it.</p>
+<p>Adjusting for a mediator is a different error from adjusting for a
+collider, since a mediator is genuinely caused by the exposure and
+genuinely causes the outcome, although it remains inappropriate for the
+question we ask throughout this book, which concerns the <em>total</em> effect
+of exposure on outcome. Conditioning on <code>m</code> blocks the causal path
+<code>x -&gt; m -&gt; y</code> that carries the effect we are trying to estimate, so a
+regression of <code>y</code> on <code>x</code> that also includes <code>m</code> answers a narrower
+question, namely how much of the effect operates independently of that
+pathway, while resembling the same kind of adjusted analysis that closes
+a backdoor path. Confounders therefore belong in the adjustment set,
+whereas colliders and mediators, for their different reasons, do not.</p>
 </div>
 <div id="selection-bias-as-collider-stratification" class="section level2 hasAnchor" number="5.4">
 <h2><span class="header-section-number">5.4</span> Selection bias as collider stratification<a href="causal-diagrams.html#selection-bias-as-collider-stratification" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The collider simulation above used “hospitalized” as a placeholder, but
-the same mechanism drives a problem we know by a more familiar name:
-selection bias. Reading selection bias structurally — as conditioning
-on a collider, rather than as a catalog of study-design mishaps — is
-the account Hernán, Hernández-Díaz, and Robins (2004) gave, and it is
-the one the rest of this section follows. Suppose Cox-2 selectivity has
-some effect on the chance a patient tolerates therapy long enough to
-stay in a study, and, independently,
-that some unmeasured element of a patient’s underlying prognosis also
-affects whether they remain in follow-up long enough to have their
-outcome observed. “Remained in the study” is then a collider: an
-arrow into it from treatment, and an arrow into it from unmeasured
+<p>The collider simulation above used “hospitalized” as a placeholder,
+although the same mechanism underlies a problem known by a more familiar
+name, selection bias. The structural reading of selection bias, in which
+it is understood as conditioning on a collider rather than as a catalog
+of study-design mishaps, is the account given by Hernán,
+Hernández-Díaz, and Robins (2004), and it is the one the rest of this
+section follows. Suppose Cox-2 selectivity has some effect on the chance
+a patient tolerates therapy long enough to stay in a study, and,
+independently, that some unmeasured element of a patient’s underlying
+prognosis also affects whether they remain in follow-up long enough to
+have their outcome observed. “Remained in the study” is then a collider,
+with an arrow into it from treatment and an arrow into it from unmeasured
 prognosis.</p>
 <div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="causal-diagrams.html#cb37-1" tabindex="-1"></a>dag_selection <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
 <span id="cb37-2"><a href="causal-diagrams.html#cb37-2" tabindex="-1"></a>  pud <span class="sc">~</span> u,</span>
@@ -524,24 +525,22 @@ prognosis.</p>
 <span id="cb37-7"><a href="causal-diagrams.html#cb37-7" tabindex="-1"></a>)</span>
 <span id="cb37-8"><a href="causal-diagrams.html#cb37-8" tabindex="-1"></a><span class="fu">ggdag</span>(dag_selection, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
 <p><img src="causal-inference-epi-r_files/figure-html/selection-dag-1.png" alt="" width="672" /></p>
-<p>Any analysis that only ever sees patients who remained in the study —
-which is every analysis we run on complete cases, unless we do
-something deliberate about it — is conditioning on <code>s</code> whether or not
-we ever typed a <code>filter()</code> call to do it, simply because patients who
-were lost to follow-up never show up in the rows being summed. By the
-same logic as the simulation above, that conditioning can open an
-association between <code>cox2</code> and <code>pud</code> running through <code>u</code>, even in a
-world where the diagram already grants that GI risk, age, and steroid
-use have been fully adjusted for and the drug has no true effect on
-ulcer risk whatsoever. The bias is not fixed by measuring more baseline
-covariates, because it is not a confounding problem — it is created by
-which patients are present to be analyzed in the first place, after
-treatment has already had a chance to influence who stays and who
-leaves. Chapter 11 takes up exactly this failure mode under its
-clinical name, informative censoring, and there we build inverse
-probability of censoring weights as the fix: reweighting the patients
-who remain so that they stand in, on average, for everyone who should
-have been followed, treated and untreated alike.</p>
+<p>Any analysis that sees only patients who remained in the study, which
+describes every complete-case analysis unless something deliberate is
+done about it, is conditioning on <code>s</code> whether or not a <code>filter()</code> call
+was ever written, because patients who were lost to follow-up do not
+appear in the rows being summed. By the same logic as the simulation
+above, that conditioning can open an association between <code>cox2</code> and <code>pud</code>
+running through <code>u</code>, even in a world where the diagram already grants
+that GI risk, age, and steroid use have been fully adjusted for and the
+drug has no effect on ulcer risk. Measuring additional baseline
+covariates does not remove this bias, since it does not arise from
+confounding but from which patients are present to be analyzed at all,
+after treatment has had a chance to influence who stays and who leaves.
+Chapter 11 takes up this problem under its clinical name, informative
+censoring, and develops inverse probability of censoring weights, which
+reweight the patients who remain so that they stand in, on average, for
+everyone who should have been followed.</p>
 </div>
 <div id="exercises-3" class="section level2 hasAnchor" number="5.5">
 <h2><span class="header-section-number">5.5</span> Exercises<a href="causal-diagrams.html#exercises-3" class="anchor-section" aria-label="Anchor link to header"></a></h2>

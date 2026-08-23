@@ -309,18 +309,19 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Part I built the vocabulary: potential outcomes and estimands in
 Chapter 3, the target trial in Chapter 4, a diagram and an adjustment
 set in Chapter 5, and a design that earns the right to compare two arms
-in Chapter 6. What Part I never did was produce a number. Part II does.
+in Chapter 6. What Part I did not do was produce an estimate, and that
+is the work of Part II.
 Over the next three chapters we answer the question we have been
 circling since Chapter 1 — does initiating a Cox-2 selective inhibitor,
 rather than a nonselective NSAID, change the risk of peptic ulcer
 disease? — three separate times, with three estimators that make the
 same identification assumptions and reach the same estimand by
 different routes: standardization here, propensity scores in Chapter 8,
-and inverse probability of treatment weighting in Chapter 9. They are
-not rival philosophies but three ways of using the covariates in
-<code>ns_covs</code> to repair the imbalance Chapter 6’s Table 1 laid out, and part
-of the point of running all three is to see how little the answer moves
-when the machinery changes. We also start building the toolkit promised
+and inverse probability of treatment weighting in Chapter 9. The three
+are not competing philosophies. Each uses the covariates in <code>ns_covs</code> to
+address the imbalance documented in Chapter 6’s Table 1, and one reason
+to run all three is to see how little the answer moves when the
+estimator changes. We also start building the toolkit promised
 in the preface, with the book’s first estimator function,
 <code>standardize()</code>.</p>
 <div id="adjusting-with-regression" class="section level2 hasAnchor" number="7.1">
@@ -330,9 +331,8 @@ model for the outcome. Chapter 6’s Table 1 told us that Cox-2
 initiators are older, sicker, and more likely to be on corticosteroids
 than nonselective initiators, so the crude comparison of PUD risk
 between arms is confounded — and confounded in a direction we can
-anticipate, since the patients steered toward the Cox-2 drug were
-steered there partly <em>because</em> their physicians judged them to be at
-higher GI risk.</p>
+anticipate, since patients were directed toward the Cox-2 drug partly
+<em>because</em> their physicians judged them to be at higher GI risk.</p>
 <div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="outcome-regression-and-standardization.html#cb43-1" tabindex="-1"></a>ns <span class="sc">|&gt;</span></span>
 <span id="cb43-2"><a href="outcome-regression-and-standardization.html#cb43-2" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_init) <span class="sc">|&gt;</span></span>
 <span id="cb43-3"><a href="outcome-regression-and-standardization.html#cb43-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">cases =</span> <span class="fu">sum</span>(pud), <span class="at">risk =</span> <span class="fu">mean</span>(pud), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
@@ -365,11 +365,12 @@ higher GI risk.</p>
 against 9.8% among nonselective
 initiators — a crude risk difference of
 +2.7 percentage points and a crude risk
-ratio of 1.28. Taken at face value that says the
-Cox-2 drug <em>raises</em> ulcer risk, against its entire clinical rationale —
-the signature of confounding by indication, and the number adjustment
-has to work on.</p>
-<p>The standard first move is a logistic model for <code>pud</code> that includes the
+ratio of 1.28. Taken at face value, this
+suggests that the Cox-2 drug <em>raises</em> ulcer risk, which runs against its
+clinical rationale. It is a familiar pattern of confounding by
+indication, and it is the crude association that adjustment has to work
+on.</p>
+<p>The standard first step is a logistic model for <code>pud</code> that includes the
 treatment indicator alongside every covariate in the adjustment set.
 Rather than typing nineteen covariate names, we let <code>reformulate()</code>
 assemble the formula from <code>ns_covs</code>, which keeps <code>R/setup.R</code> as the
@@ -445,38 +446,40 @@ single source of truth for what “adjusted” means in this book.</p>
 </tr>
 </tbody>
 </table>
-<p>Adjustment does what we hoped. The coefficient on <code>cox2_init</code>,
+<p>Adjustment moves the estimate as expected. The coefficient on
+<code>cox2_init</code>,
 exponentiated, is an odds ratio of 0.93 (95% CI
 0.59 to 1.42) —
 moved from the crude odds ratio of 1.32 to just
 below the null, though with an interval far too wide to rule out either
 a modest benefit or a modest harm. Age carries an odds ratio of
-1.07 per year, which is where much of the
-confounding lived.</p>
-<p>Now the awkward part. That 0.93 is a
+1.07 per year, and accounts for much of the
+confounding.</p>
+<p>There is a complication, however. That 0.93 is a
 <strong>conditional</strong> odds ratio: the odds ratio comparing two patients who
 are identical on all nineteen covariates and differ only in which NSAID
 they started. It is not the marginal contrast we defined in Chapter 3.
 The ATE was written <span class="math inline">\(E[Y(1)] - E[Y(0)]\)</span>, an average over the whole
-population of what would happen under each treatment — a single number
-attached to a population, not to a stratum. Nothing in a regression
-coefficient delivers that, and the gap is not merely a matter of
-rescaling from odds to risks.</p>
+population of what would happen under each treatment, and therefore a
+quantity attached to a population rather than to a stratum. No
+coefficient in the regression provides it, and the discrepancy is not
+merely a matter of rescaling from odds to risks.</p>
 <p>The reason is <strong>noncollapsibility</strong>. If treatment truly has no effect,
 the conditional and marginal odds ratios agree at 1. Otherwise, even
 with no confounding at all, the odds ratio averaged over strata is
 pulled toward the null relative to the odds ratio within any stratum,
 simply because the odds scale is nonlinear and the strata have different
 baseline risks. The conditional odds ratio and the marginal odds ratio
-are answering different questions, and the difference between them is
-not bias in either — it is a property of the scale. Greenland, Robins,
-and Pearl (1999) are the standard reference for keeping this distinction
-straight, and for the point that noncollapsibility and confounding are
-different phenomena that the same numerical gap can express. Risk
-differences and risk ratios do not behave this way; they collapse. So the fix is not to
-choose a better model, it is to stop reading the estimand off a
-coefficient. We want a marginal contrast, and standardization is how we
-get one from the very same fitted model.</p>
+are answering different questions, and the difference between them does
+not indicate bias in either; it is a property of the scale. Greenland,
+Robins, and Pearl (1999) are the standard reference for keeping this
+distinction straight, and for the point that noncollapsibility and
+confounding are different phenomena that the same numerical gap can
+express. Risk differences and risk ratios do not behave this way; they
+collapse. Since the difficulty lies in reading the estimand off a
+coefficient rather than in the model itself, we can keep the fitted
+model and extract the marginal contrast from it directly, which is what
+standardization does.</p>
 </div>
 <div id="standardization-predict-then-average" class="section level2 hasAnchor" number="7.2">
 <h2><span class="header-section-number">7.2</span> Standardization: predict, then average<a href="outcome-regression-and-standardization.html#standardization-predict-then-average" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -492,7 +495,7 @@ each individual’s risk would have been under each treatment, and the
 averaging — over the observed covariate distribution of the whole
 cohort — is what turns those individual predictions into a marginal,
 population-level contrast.</p>
-<p>It takes five lines.</p>
+<p>In code it takes five lines.</p>
 <div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="outcome-regression-and-standardization.html#cb45-1" tabindex="-1"></a>ns1 <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cox2_init =</span> <span class="dv">1</span>)</span>
 <span id="cb45-2"><a href="outcome-regression-and-standardization.html#cb45-2" tabindex="-1"></a>ns0 <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cox2_init =</span> <span class="dv">0</span>)</span>
 <span id="cb45-3"><a href="outcome-regression-and-standardization.html#cb45-3" tabindex="-1"></a>risk1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> ns1, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
@@ -504,22 +507,23 @@ population-level contrast.</p>
 it would look if every one of these 2882 patients had started a
 Cox-2 inhibitor, with every covariate left exactly as observed; <code>ns0</code> is
 the same cohort under the nonselective strategy. Because both averages
-are taken over the <em>same</em> covariate distribution — everybody, once each,
-in both worlds — the difference between them cannot be attributed to a
-difference in case mix. That is the whole trick, and it is the same
-trick as classical direct standardization to a reference population,
-with the fitted model standing in for the stratum-specific rates.</p>
-<p>Every step of that reasoning leans on Chapter 3’s identification
+are taken over the <em>same</em> covariate distribution — every patient, once,
+in each world — the difference between them cannot be attributed to a
+difference in case mix. This is the same logic as classical direct
+standardization to a reference population, with the fitted model
+standing in for the stratum-specific rates.</p>
+<p>Every step of that reasoning rests on Chapter 3’s identification
 conditions. Consistency lets us read a predicted risk under
 <code>cox2_init = 1</code> as a potential outcome; conditional exchangeability,
 which Chapter 5’s diagram is our argument for, is what makes a model fit
-partly to treated patients usable for predicting untreated ones. And
-positivity is what keeps the prediction honest: with only 240
-Cox-2 initiators among 2882 patients, the model extrapolates
-fairly hard when it imagines a Cox-2 world for covariate patterns where
-almost no Cox-2 initiator was observed. Standardization will produce a
-number anyway, without complaining — a reason to keep Chapter 6’s Table
-1 in view rather than trusting the estimator blindly.</p>
+partly to treated patients usable for predicting untreated ones.
+Positivity bears on whether the resulting predictions can be trusted:
+with only 240 Cox-2 initiators among 2882 patients, the
+model extrapolates substantially when it predicts a Cox-2 world for
+covariate patterns in which almost no Cox-2 initiator was observed.
+Standardization will return an estimate regardless, which is a reason to
+keep Chapter 6’s Table 1 in view rather than relying on the estimator
+alone.</p>
 <p>We are going to want this in Chapters 8 and 9, so let us package it.
 The function takes the data, a model formula, and the name of the
 treatment column, and returns one row per estimand. Two details are
@@ -602,7 +606,7 @@ rather than retype it.</p>
 </tr>
 </tbody>
 </table>
-<p>Here is the answer, on the scale Chapter 3 asked for. Had every patient
+<p>Here is the estimate, on the scale Chapter 3 called for. Had every patient
 in <code>ns</code> started a nonselective NSAID, the model puts PUD risk at
 10.1%; had every one of them started a
 Cox-2 inhibitor, 9.5%. The standardized
@@ -615,30 +619,30 @@ risk ratio 0.95
 crude risk ratio of 1.28 to
 0.95 — from apparent harm to a point estimate
 slightly on the protective side of the null — but the interval
-comfortably includes 1, so what the data support is “no large effect
-either way,” not “a benefit.” With 288 ulcer cases and
-240 Cox-2 initiators, that is about as much precision as this
-cohort has to offer.</p>
+comfortably includes 1, so these data support no more than the absence of
+a large effect in either direction, and certainly not a benefit. With
+288 ulcer cases and 240 Cox-2 initiators, this is
+close to the precision the cohort can provide.</p>
 <p>Note also what noncollapsibility looks like in the arithmetic. The
 standardized risks imply a <em>marginal</em> odds ratio of
 0.939, while the regression coefficient gave a
-conditional odds ratio of 0.929 — the conditional
-one sitting slightly further from the null, exactly as predicted. The
+conditional odds ratio of 0.929, the conditional
+one sitting slightly further from the null, as expected. The
 gap is small here only because PUD is uncommon; with a common outcome it
 can be substantial.</p>
 </div>
 <div id="the-bootstrap" class="section level2 hasAnchor" number="7.3">
 <h2><span class="header-section-number">7.3</span> The bootstrap<a href="outcome-regression-and-standardization.html#the-bootstrap" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The point estimates came out of a <code>glm()</code> fit, so it is tempting to
-reach for that model’s standard errors. They do not apply. The
+reach for that model’s standard errors, but they do not apply here. The
 standardized risk difference is not a parameter of the logistic model at
 all — it is a nonlinear function of <em>every</em> coefficient in the model,
 combined with the empirical covariate distribution of the cohort. There
 is no line in the <code>summary()</code> output whose standard error describes it,
 and the delta-method calculation that would produce one by hand is
 tedious and specification-specific.</p>
-<p>Resampling sidesteps the algebra. The logic is this: the sampling
-variability of our estimate comes from the fact that <code>ns</code> is one draw of
+<p>Resampling avoids the algebra. The sampling variability of our estimate
+arises because <code>ns</code> is one draw of
 2882 patients from some larger population, so we mimic that draw
 by sampling 2882 patients from <code>ns</code> <em>with replacement</em>, and
 recompute the whole estimator — refit the model, re-predict both worlds,
@@ -646,10 +650,10 @@ re-average, re-contrast — on each resample. The spread of those
 recomputed estimates approximates the spread we would see across
 repeated samples from the population, and the 2.5th and 97.5th
 percentiles of that spread give a 95% percentile confidence interval.
-The critical discipline is that everything downstream of sampling must
-be redone inside each replicate, model fitting included; bootstrapping
+It is important that everything downstream of sampling be redone within
+each replicate, model fitting included; bootstrapping
 only the averaging step, with the coefficients held fixed, would ignore
-the largest source of uncertainty in the whole procedure.</p>
+the largest source of uncertainty in the procedure.</p>
 <p><code>n_boot</code> trades precision for time. Each replicate is a full <code>glm()</code> fit
 on 2882 rows, and our default of 200 is enough to place an
 interval roughly while keeping a book that re-renders often tolerable to
@@ -723,11 +727,11 @@ covariate — an interaction term.</p>
 0.87 with a p-value of
 0.89 — no evidence of modification, which is
 unsurprising given that only 92 of the 2882 patients use
-aspirin and only 9 of those started a Cox-2 inhibitor. But
-the coefficient is not what we want anyway, for the same reason as
-before: it is a conditional, noncollapsible quantity on the odds scale.
-The subgroup effects we actually care about are two standardized risk
-differences, one per aspirin stratum.</p>
+aspirin and only 9 of those started a Cox-2 inhibitor. The
+coefficient is in any case not the quantity of interest, for the reason
+given above: it is a conditional, noncollapsible quantity on the odds
+scale. The subgroup effects of interest are two standardized risk
+differences, one within each aspirin stratum.</p>
 <p>Standardizing within a subgroup means changing the population we average
 over: instead of predicting both worlds for the whole cohort, we predict
 both worlds for the aspirin users only, then repeat for the non-users.
@@ -822,7 +826,7 @@ two are comparable.</p>
 <p>Aspirin users start from a much higher baseline: a standardized
 nonselective-NSAID risk of 19.6%
 against 9.8% among non-users,
-which is the pathway acting as advertised. The standardized risk
+which is consistent with the pathway described above. The standardized risk
 differences, though, are
 -0.3 points among aspirin users
 and -0.7 points among non-users,
@@ -833,27 +837,28 @@ points — wide enough to contain nearly any clinically meaningful effect
 in either direction. The risk ratio row is worse still, with a lower
 bound at essentially zero: in some resamples the handful of
 aspirin-using Cox-2 initiators produced a predicted risk near zero, and
-the bootstrap reports that instability faithfully. It is a signal about
-the data, not a discovery about the drug. We suppressed R’s separation
-warnings in that chunk to keep the output readable, but they tell the
-same story.</p>
+the bootstrap reports that instability faithfully. The wide interval
+reflects the sparsity of the data rather than anything about the drug. We
+suppressed R’s separation warnings in that chunk to keep the output
+readable, although they convey the same information.</p>
 <p>It is worth being precise about how effect modification differs from
 confounding, because both get described loosely as “a covariate that
 matters.” Confounding is a problem of identification: a common cause of
 treatment and outcome makes the observed contrast fail to equal the
 causal one, and we adjust for it to recover a valid estimate. Effect
-modification is not a problem at all — it is a feature of the causal
-effect itself. A confounder must be handled or the answer is wrong; an
-effect modifier is something we choose to report on, and the estimand
-changes when we do, from one ATE for the cohort to a set of
-subgroup-specific ATEs. A variable can be one, the other, or both:
+modification, in contrast, is not a threat to validity; it is a feature
+of the causal effect itself. A confounder must be addressed or the
+estimate will be biased, whereas an effect modifier is something we
+choose to report, and the estimand changes when we do, from one ATE for
+the cohort to a set of subgroup-specific ATEs. A variable can be one,
+the other, or both:
 aspirin use here is a candidate for either role. Note also that the
 overall standardized risk difference of
 -0.6 points is a weighted average of the
 subgroup effects, weighted by how common each subgroup is — which is why
 a cohort-level ATE can be small while an effect in a small subgroup is
-large, and why the population you standardize to is part of the
-estimand, not an implementation detail.</p>
+large, and why the population one standardizes to is part of the
+estimand rather than an implementation choice.</p>
 </div>
 <div id="exercises-5" class="section level2 hasAnchor" number="7.5">
 <h2><span class="header-section-number">7.5</span> Exercises<a href="outcome-regression-and-standardization.html#exercises-5" class="anchor-section" aria-label="Anchor link to header"></a></h2>

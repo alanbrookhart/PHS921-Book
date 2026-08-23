@@ -306,22 +306,22 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="study-design-for-causal-questions" class="section level1 hasAnchor" number="6">
 <h1><span class="header-section-number">Chapter 6</span> Study design for causal questions<a href="study-design-for-causal-questions.html#study-design-for-causal-questions" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Chapter 3 gave us estimands, Chapter 4 gave us the target trial as the
-protocol every observational analysis is implicitly compared against,
-and Chapter 5 gave us a way to read a confounding structure off a
-diagram. All three chapters, though, took for granted that the rows of
+<p>Chapter 3 introduced estimands, Chapter 4 developed the target trial as
+the protocol against which any observational analysis is implicitly
+compared, and Chapter 5 showed how a confounding structure can be read
+off a diagram. Each of those chapters, however, assumed that the rows of
 the target trial table — who is eligible, what counts as each treatment
 strategy, when follow-up starts — had already been settled before any
-adjustment method entered the picture. This chapter is about settling
-them. We look at three design choices that determine what a causal
-comparison is even capable of estimating, independent of which model
+adjustment method entered the picture. In this chapter we take up those
+decisions. We consider three design choices that determine what a causal
+comparison is capable of estimating, independent of which model
 eventually gets fit to the data: choosing new users over prevalent
 users, choosing an active comparator over no treatment at all, and
 aligning the moment a patient becomes eligible with the moment their
-follow-up clock starts. Get any of the three wrong and no amount of
-standardization, propensity-score weighting, or careful modeling in the
-chapters ahead can put it right, because the bias is baked into which
-rows and which person-time entered the analysis in the first place.</p>
+follow-up clock starts. If any of the three is specified badly, no
+amount of standardization, propensity-score weighting, or careful
+modeling in the chapters ahead will repair it, because the bias has
+entered through which rows and which person-time were analyzed.</p>
 <div id="design-before-analysis" class="section level2 hasAnchor" number="6.1">
 <h2><span class="header-section-number">6.1</span> Design before analysis<a href="study-design-for-causal-questions.html#design-before-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>An estimand, in the language of Chapter 3, is a contrast between
@@ -329,60 +329,58 @@ potential outcomes in some population — the ATE if we mean everyone,
 the ATT if we mean the patients who were actually treated. Which
 contrast we can identify from a data set is decided well before any
 regression is fit, by choices that belong entirely to design: who is
-eligible to enter the cohort, what exactly distinguishes the treatment
-groups, when each patient’s clock starts, and what serves as the
-yardstick the treated group is measured against. The target trial
-protocol from Chapter 4 is really a checklist of exactly these
-decisions, written out in the same seven rows a trial’s own protocol
-would use, and it is deliberately silent on adjustment: eligibility,
-treatment strategies, and follow-up can all be specified in full before
-we have said a single word about standardization or weighting.</p>
+eligible to enter the cohort, what distinguishes the treatment groups,
+when each patient’s clock starts, and which group the treated patients
+are measured against. The target trial protocol of Chapter 4 is
+essentially a checklist of these decisions, written out in the same
+seven rows a trial’s own protocol would use, and it is deliberately
+silent on adjustment: eligibility, treatment strategies, and follow-up
+can all be specified in full before standardization or weighting is
+mentioned.</p>
 <p>That ordering matters because no statistical method can repair a
 design that answers the wrong question. If eligibility quietly mixes
 patients who have been on a drug for years with patients just starting
-it, the sample no longer corresponds to any one estimand — not the
-effect of starting the drug, not the effect of continuing it — no
+it, the sample no longer corresponds to any one estimand — neither the
+effect of starting the drug nor the effect of continuing it — no
 matter how well the eventual model fits. Standardization, propensity
 scores, and inverse probability weighting, the subjects of Part II, are
 strategies for closing a <em>measured</em> gap in exchangeability once the
-design has already fixed who is compared to whom, at what moment, on
-what scale; they have nothing to offer a design that never posed an
-answerable question in the first place. This chapter works through
-three of the design decisions most responsible for that failure in
-pharmacoepidemiology, and shows how each is already built into the two
-cohorts we have used since Chapter 1.</p>
+design has fixed which patients are being compared and at what moment;
+they cannot rescue a design that never posed an answerable question.
+This chapter works through three of the design decisions most
+responsible for that failure in pharmacoepidemiology, and shows how each
+is already built into the two cohorts we have used since Chapter 1.</p>
 </div>
 <div id="new-user-designs" class="section level2 hasAnchor" number="6.2">
 <h2><span class="header-section-number">6.2</span> New-user designs<a href="study-design-for-causal-questions.html#new-user-designs" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Chapter 1 named prevalent-user bias in passing; here we work out why it
-distorts a comparison and how the new-user design fixes it. A
+<p>Chapter 1 mentioned prevalent-user bias in passing. Here we consider why
+it distorts a comparison and how a new-user design addresses it. A
 <strong>prevalent-user</strong> comparison enrolls patients who are already on a
 drug, of whatever duration, and compares them to patients who are not.
-Two problems follow from that choice, and they are different problems
-even though they often travel together. The first is <strong>depletion of
-susceptibles</strong>: patients who could not tolerate a drug, or for whom it
-plainly was not working, tend to stop taking it early and so drop out
-of the pool of “current users” long before anyone samples that pool.
-The current users left behind are enriched for exactly the people who
-tolerated the drug well, which biases any comparison toward the drug
-looking safer and more effective than it is for the population that
-ever started it. The second problem is that covariates measured at the
-same moment as prevalent exposure may already have been changed by the
-treatment itself. A blood pressure reading taken after several years on
-a drug reflects, in part, whatever the drug did to blood pressure; using
-it to “adjust for confounding” adjusts away part of the treatment
-effect, or worse, opens exactly the kind of collider path Chapter 5
-warned against, if some other unmeasured factor also drives both that
-downstream covariate and the outcome.</p>
+Two distinct problems follow from that choice, although they usually
+occur together. The first is <strong>depletion of susceptibles</strong>: patients who
+could not tolerate a drug, or for whom it plainly was not working, tend
+to stop taking it early and so drop out of the pool of “current users”
+long before anyone samples that pool. The current users who remain are
+enriched with patients who tolerated the drug well, which biases any
+comparison toward the drug appearing safer and more effective than it is
+for the population that ever started it. The second problem is that
+covariates measured at the same moment as prevalent exposure may already
+have been changed by the treatment itself. A blood pressure reading
+taken after several years on a drug reflects, in part, whatever the drug
+did to blood pressure; using it to “adjust for confounding” adjusts away
+part of the treatment effect, or, if some other unmeasured factor drives
+both that downstream covariate and the outcome, opens the kind of
+collider path Chapter 5 warned against.</p>
 <p>The <strong>new-user design</strong> avoids both problems by anchoring the cohort to
 the moment of treatment initiation rather than to some arbitrary later
 moment of observation. A patient enters the cohort only when we observe
 them starting the drug, with no recorded use of that drug or its class
 immediately beforehand, and every covariate used for adjustment is
 measured at or before that same moment — before treatment has had any
-chance to change it. This is exactly how <code>ns</code> was built. Reviewing NAMCS
-office visits from 2005 through 2009, a patient enters <code>ns</code> at the visit
-where they are observed initiating an NSAID, with no current NSAID use
+chance to change it. This is how <code>ns</code> was built. Among NAMCS office
+visits from 2005 through 2009, a patient enters <code>ns</code> at the visit at
+which they are observed initiating an NSAID, with no current NSAID use
 recorded at that visit, and their initiating prescription — Cox-2
 selective or nonselective — fixes which arm, <code>cox2_initiation</code>, they
 belong to for the rest of the cohort. Of the 2882 patients in
@@ -390,53 +388,57 @@ belong to for the rest of the cohort. Of the 2882 patients in
 Cox-2 initiators and the rest as nonselective initiators; nobody in
 either group had already been taking an NSAID before the qualifying
 visit, and nobody’s baseline covariates were measured after the drug
-had a chance to act on them. <code>ns</code> is, in other words, already a
-new-user cohort by construction — we have simply not yet named the
-design principle it follows.</p>
+had a chance to act on them. <code>ns</code> is therefore already a new-user cohort
+by construction, although we had not previously named the design
+principle it follows.</p>
 <p>The idea generalizes beyond initiation. Starting a drug is one clinical
 decision, but stopping one, switching, and intensifying a dose are
-decisions too, and each can anchor a comparison the same way: enroll
+decisions too, and each can anchor a comparison in the same way: enroll
 patients at the moment the decision is made, classify them by what was
 decided, and follow them forward. This framing — the <strong>treatment
 decision design</strong> (Brookhart 2015) — is the general form of the
-new-user design, and it is what makes the target trials of Chapter 4
-emulable at decision points other than a first prescription; Chapter
-12’s treatment strategies lean on exactly this view.</p>
+new-user design, and it is what allows the target trials of Chapter 4 to
+be emulated at decision points other than a first prescription; Chapter
+12’s treatment strategies rest on this view.</p>
 <p>Pharmacoepidemiology has accumulated names for the specific ways these
 comparisons go wrong, and the names are worth knowing because they are how
 reviewers will describe your study. Each is a special case of confounding
-or of misaligned time, and each is answered by some part of the new-user,
+or of misaligned time, and each is addressed by some part of the new-user,
 active-comparator design.</p>
 <blockquote>
-<p><strong>Healthy user effect.</strong> People who start and continue preventive
-therapy also exercise, screen, and adhere to other advice, so the drug
-inherits credit for the behavior (Chapter 1). An active comparator helps
-because both arms have consulted a physician and accepted a
-prescription.</p>
-<p><strong>Healthy adherer effect.</strong> The same phenomenon inside a trial or cohort
-arm: adherence itself marks health, so comparing adherent to nonadherent
-patients confounds the drug with the disposition. Chapter 12’s protocol
-weights, not the design, are the answer here.</p>
-<p><strong>Sick stopper effect.</strong> Patients who become ill discontinue treatment,
-so the untreated person-time is enriched for people about to have
-outcomes. New-user follow-up from a fixed time zero keeps the
-discontinuation downstream of the exposure assignment rather than
-allowed to redefine it.</p>
+<p><strong>Healthy user effect.</strong> Patients who start and continue a preventive
+therapy also tend to exercise, undergo screening, and follow other
+medical advice, so an apparent benefit of the drug may instead reflect
+the behavior of the patients taking it (Chapter 1). An active comparator
+mitigates this, since patients in both arms have consulted a physician
+and accepted a prescription.</p>
+<p><strong>Healthy adherer effect.</strong> The same phenomenon operating within a trial
+or a cohort arm: because adherence is itself a marker of health, a
+comparison of adherent with nonadherent patients confounds the effect of
+the drug with the disposition of the patients who take it. Design alone
+does not address this; the protocol weights of Chapter 12 do.</p>
+<p><strong>Sick stopper effect.</strong> Patients who become ill tend to discontinue
+treatment, so untreated person-time becomes enriched with patients who
+are about to experience outcomes. Following new users from a fixed time
+zero keeps discontinuation downstream of the exposure assignment rather
+than letting it redefine that assignment.</p>
 <p><strong>Protopathic bias.</strong> A drug prescribed for the earliest symptoms of an
-undiagnosed disease appears to cause the disease it was reaching for.
-Anchoring time zero at initiation and, where needed, lagging the outcome
-window prevents the drug from taking credit for what prompted it.</p>
-<p><strong>Depletion of susceptibles.</strong> Described above: prevalent users are the
-survivors of the early attrition, so the pool is enriched for
-tolerators. Enrolling at initiation samples everyone who ever started.</p>
+as-yet-undiagnosed disease will appear to cause the disease it was
+intended to treat. Anchoring time zero at initiation, and where
+necessary lagging the outcome window, keeps the drug from being blamed
+for the condition that prompted the prescription.</p>
+<p><strong>Depletion of susceptibles.</strong> Described above: prevalent users are
+those who survived the early attrition, so the pool is enriched with
+patients who tolerate the drug. Enrolling patients at initiation instead
+samples everyone who ever started.</p>
 </blockquote>
 </div>
 <div id="active-comparator-designs" class="section level2 hasAnchor" number="6.3">
 <h2><span class="header-section-number">6.3</span> Active-comparator designs<a href="study-design-for-causal-questions.html#active-comparator-designs" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A new-user design still leaves open a further choice: new users of the
 drug of interest, compared to <em>what</em>? The most obvious comparator is
-patients who did not start any NSAID at all. It is also, for this
-question, a poor one. Whether a physician prescribes an NSAID in the
+patients who did not start any NSAID at all, although for this question
+that is a poor choice. Whether a physician prescribes an NSAID in the
 first place is itself a treatment decision, driven by whether a patient
 has arthritis, joint pain, or another condition that calls for one — and
 that same decision is entangled with everything connected to needing an
@@ -445,24 +447,23 @@ Comparing Cox-2 initiators to non-initiators folds confounding by
 indication for <em>needing an NSAID</em> together with whatever separately
 drives the choice <em>between</em> the two drug classes, and the resulting
 mixture is much harder to reason about than either piece alone.</p>
-<p>An <strong>active-comparator design</strong> sidesteps the first piece entirely by
-choosing the comparison group from among patients who also started an
-NSAID, just the other class. Every patient in <code>ns</code>, regardless of arm,
-already needed and received NSAID therapy, so whatever led a physician
-to prescribe an NSAID in the first place is held fixed across both
-arms — it cannot be a source of imbalance between them, because it is
-shared by construction. What remains to differ between Cox-2 initiators
-and nonselective initiators is the narrower, more nameable set of
-factors that push a physician toward one NSAID rather than the other
-once the decision to prescribe some NSAID has already been made: age,
-GI risk history, concurrent steroid use — precisely the adjustment set
-<code>{age, gi_risk, steroids}</code> that Chapter 5’s DAG identified. An active
-comparator does not eliminate confounding; it shrinks the dimension we
-have to worry about from “everything connected to needing pain
-treatment” down to “whatever distinguishes one NSAID from the other,”
-which is both more plausible to measure in full and more amenable to
-the adjustment methods in Part II.</p>
-<p>We can see exactly how much confounding remains, and along which
+<p>An <strong>active-comparator design</strong> removes the first of these by drawing
+the comparison group from patients who also started an NSAID, of the
+other class. Every patient in <code>ns</code>, regardless of arm, already needed
+and received NSAID therapy, so whatever led a physician to prescribe an
+NSAID in the first place is held approximately fixed across both arms
+and cannot by itself produce imbalance between them. What can still
+differ between Cox-2 initiators and nonselective initiators is the
+narrower set of factors that lead a physician to prefer one NSAID over
+the other once the decision to prescribe an NSAID has been made: age,
+history of GI risk, and concurrent steroid use, which is the adjustment
+set <code>{age, gi_risk, steroids}</code> identified by Chapter 5’s DAG. An active
+comparator does not eliminate confounding. It narrows the set of
+variables we have to worry about from everything connected to needing
+pain treatment down to whatever distinguishes one NSAID from the other,
+a set that is more plausibly measured in full and more amenable to the
+adjustment methods of Part II.</p>
+<p>We can see how much confounding remains, and along which
 covariates, by rebuilding Chapter 2’s Table 1 for every covariate in
 <code>ns_covs</code> rather than the handful used there for illustration.
 <code>ns_covs</code> mixes two kinds of variables — <code>age</code> and <code>year</code> are numeric,
@@ -745,12 +746,12 @@ arrives from NAMCS as a factor.</p>
 </tbody>
 </table>
 <p>Even with the comparator restricted to a shared class of drugs, several
-covariates still separate the two arms by a wide margin. The starkest
+covariates still separate the two arms by a wide margin. The largest
 gap is arthritis: 30.0% of nonselective
 initiators carry an arthritis diagnosis against
-46.7% of Cox-2 initiators, a
-17-percentage-point gap that
-dwarfs anything else in either table. Age moves the same way — Cox-2
+46.7% of Cox-2 initiators, a gap of
+17 percentage points, larger
+than any other in either table. Age moves the same way — Cox-2
 initiators average 53.4 years against
 47.3 among nonselective initiators, a gap of
 roughly 6 years — and
@@ -762,52 +763,53 @@ and PPI use all run a few points higher among Cox-2 initiators as well
 8.1% vs 12.9%,
 2.3% vs 5.4%,
 and 3.0% vs 4.6%).</p>
-<p>None of this is a coincidence. Arthritis and the comorbidities that
-travel with it — hypertension, diabetes, osteoporosis, PPI use — are
-the substance behind the diagram’s <code>gi_risk</code> node; age lines up with
-the DAG’s own <code>age</code> node; corticosteroid use lines up with its
-<code>steroids</code> node. Three separate confounders, three separate arrows into
-both <code>cox2</code> and <code>pud</code> in Chapter 5’s diagram, and each still shows up
-here as a real imbalance. Sex (58.7% female
+<p>These imbalances are not arbitrary. Arthritis and the comorbidities that
+accompany it — hypertension, diabetes, osteoporosis, PPI use — are what
+stands behind the <code>gi_risk</code> node in the diagram, while age and
+corticosteroid use correspond to the diagram’s <code>age</code> and <code>steroids</code>
+nodes. Each of these three confounders has an arrow into both <code>cox2</code> and
+<code>pud</code> in Chapter 5’s diagram, and each appears here as a substantial
+imbalance. Sex (58.7% female
 vs 58.3%) and calendar year
 (2007.1 vs 2006.8)
 sit close to balanced, which fits the diagram: neither has an arrow
 into <code>cox2</code>. Region fits neither pattern:
 37.0% of nonselective initiators are from
 the South against 43.8% of Cox-2
-initiators, a 7-point
-gap on par with hypertension’s — real, but with no node in Chapter 5’s
-diagram and no obvious clinical mechanism tying geography to drug
-choice. A Table 1 gap and a DAG arrow are not the same claim; this one
-more likely reflects regional prescribing habits than confounding by GI
-risk, and it deserves its own scrutiny rather than being waved away as
-either explained or safely ignorable. The gaps that do map onto the
-diagram — arthritis and its fellow travelers, age, and corticosteroid
-use — are what Part II’s adjustment methods exist to close.</p>
+initiators, a gap of 7
+points comparable to that for hypertension, although region has no node
+in Chapter 5’s diagram and no obvious clinical mechanism ties geography
+to drug choice. An imbalance in Table 1 is not by itself evidence of a
+confounding path; this one probably reflects regional prescribing habits
+rather than confounding by GI risk, although it warrants scrutiny rather
+than being dismissed as either explained or safely ignorable. The gaps
+that do map onto the diagram — arthritis and the conditions that
+accompany it, age, and corticosteroid use — are the ones that Part II’s
+adjustment methods are meant to close.</p>
 </div>
 <div id="immortal-time-and-other-time-zero-problems" class="section level2 hasAnchor" number="6.4">
 <h2><span class="header-section-number">6.4</span> Immortal time and other time-zero problems<a href="study-design-for-causal-questions.html#immortal-time-and-other-time-zero-problems" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>A design can get eligibility and the comparator right and still fail on
-a third dimension: when, exactly, each patient’s follow-up clock starts.
+<p>A design can specify eligibility and the comparator correctly and still
+fail on a third dimension: when each patient’s follow-up clock starts.
 <strong>Aligned time zero</strong> means that three things happen on the same date
 for every patient: the date they are confirmed eligible, the date they
 are classified into a treatment strategy, and the date their
 person-time starts counting toward the outcome. <code>ns</code> satisfies this
 automatically, because eligibility, drug class, and the start of
-follow-up are all pinned to the same qualifying visit. Aligned time zero
-is easy to state and surprisingly easy to violate the moment a study
-defines “exposed” using any information that could only be known after
-follow-up has already begun.</p>
-<p>Here is a worked hypothetical that shows exactly how the violation
-bites, built around a definition of treatment that shows up constantly
-in pharmacoepidemiology: calling someone a “user” only once they have
-filled a second prescription, some grace period after the first.
+follow-up are all pinned to the same qualifying visit. The requirement
+is easy to state, but it is violated whenever a study defines “exposed”
+using information that could only be known after follow-up had already
+begun.</p>
+<p>A worked hypothetical shows how the violation operates. It is built
+around a definition of treatment that is common in
+pharmacoepidemiology: a patient is called a “user” only once a second
+prescription has been filled, some grace period after the first.
 Suppose we simulate 20,000 hypothetical patients, each with a true time
 to death that is, by construction, unrelated to anything about their
 future drug-taking behavior, and suppose “persistent user” status
 requires two things: surviving past a 90-day grace period, and an
 independent adherence habit that is fixed for each patient and has no
-effect on survival whatsoever.</p>
+effect on survival.</p>
 <div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="study-design-for-causal-questions.html#cb40-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">6</span>)</span>
 <span id="cb40-2"><a href="study-design-for-causal-questions.html#cb40-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">20000</span></span>
 <span id="cb40-3"><a href="study-design-for-causal-questions.html#cb40-3" tabindex="-1"></a>grace <span class="ot">&lt;-</span> <span class="dv">90</span></span>
@@ -823,8 +825,8 @@ effect on survival whatsoever.</p>
 <span id="cb40-13"><a href="study-design-for-causal-questions.html#cb40-13" tabindex="-1"></a>    <span class="at">persistent  =</span> <span class="fu">as.integer</span>(alive_grace <span class="sc">&amp;</span> adherent <span class="sc">==</span> <span class="dv">1</span>),</span>
 <span id="cb40-14"><a href="study-design-for-causal-questions.html#cb40-14" tabindex="-1"></a>    <span class="at">died_by_end =</span> <span class="fu">as.integer</span>(death_time <span class="sc">&lt;=</span> follow_up)</span>
 <span id="cb40-15"><a href="study-design-for-causal-questions.html#cb40-15" tabindex="-1"></a>  )</span></code></pre></div>
-<p>A naive analysis, of the kind a misaligned time-zero produces, starts
-every patient’s clock on day zero and simply compares mortality risk
+<p>A naive analysis, of the kind a misaligned time zero produces, starts
+every patient’s clock on day zero and compares mortality risk
 between “persistent users” and everyone else over the full
 730-day window:</p>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="study-design-for-causal-questions.html#cb41-1" tabindex="-1"></a>naive_tab <span class="ot">&lt;-</span> hyp <span class="sc">|&gt;</span></span>
@@ -852,23 +854,22 @@ between “persistent users” and everyone else over the full
 </tr>
 </tbody>
 </table>
-<p>Persistent users appear dramatically protected —
-7.3 percentage points lower mortality
-risk than everyone else — even though nothing in the simulation gave
-adherence any causal effect on survival at all. The reason is
-mechanical rather than clinical: to be labeled “persistent,” a patient
-had to survive at least 90 days, so the persistent group starts
-its 730-day clock with 90 guaranteed event-free days
-already banked, days that could never have contained a death no matter
-who was in that group. That banked, guaranteed-survival stretch is
-<strong>immortal time</strong>, and it is entirely an artifact of letting the
-exposure definition depend on information — surviving the grace
-period — that was not yet available at the true time zero, the date
-treatment actually started.</p>
-<p>The fix is to give every patient the same time zero regardless of
-group: restrict the comparison to patients who survived to the end of
-the grace period, and start everyone’s clock there, at day
-90, rather than at day zero.</p>
+<p>Persistent users appear strongly protected, with mortality risk
+7.3 percentage points lower than
+everyone else, even though adherence was given no causal effect on
+survival in the simulation. The explanation is mechanical rather than
+clinical. To be labeled “persistent,” a patient had to survive at least
+90 days, so the persistent group begins its
+730-day follow-up with 90 days during which a death
+could not have occurred, whatever the composition of that group. This
+guaranteed event-free interval is <strong>immortal time</strong>, and it arises
+entirely because the exposure definition depends on information —
+survival through the grace period — that was not available at the true
+time zero, the date treatment actually started.</p>
+<p>The remedy is to give every patient the same time zero regardless of
+group, restricting the comparison to patients who survived to the end of
+the grace period and starting follow-up at day
+90 rather than at day zero.</p>
 <div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="study-design-for-causal-questions.html#cb42-1" tabindex="-1"></a>landmark_tab <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
@@ -898,15 +899,15 @@ identical mortality risk over the remaining follow-up
 versus 0.275,
 a difference of 0.001) — indistinguishable
 from the null effect we built into the simulation. Nothing about any
-patient changed between the two analyses; only the point at which each
-patient’s clock was allowed to start changed, and that alone was enough
-to manufacture, and then erase, a seven-point “protective” effect.</p>
-<p>Chapter 4 flagged this exact hazard for the <code>sta</code> cohort, where any
-comparison built around staying on a statin for some minimum duration
-is vulnerable to precisely this mechanism, and left the question of
-which row of the target trial table it violates for this chapter to
-settle. The answer is the <strong>Follow-up</strong> row: the row that specifies
-when person-time starts accruing toward the outcome. Immortal time
+patient differed between the two analyses. Only the point at which
+follow-up was allowed to begin changed, and that change alone was
+enough to produce, and then remove, a seven-point “protective” effect.</p>
+<p>Chapter 4 flagged this hazard for the <code>sta</code> cohort, where any
+comparison built around remaining on a statin for some minimum duration
+is vulnerable to the same mechanism, and left for this chapter the
+question of which row of the target trial table is violated. It is the
+<strong>Follow-up</strong> row, which specifies when person-time starts accruing
+toward the outcome. Immortal time
 bias arises whenever the Assignment row — how a patient gets classified
 into a treatment strategy — is allowed to depend on something observed
 after the Follow-up row’s start date, rather than at it. A short
@@ -938,18 +939,18 @@ checklist captures the requirement for any design in this book,
 </tr>
 </tbody>
 </table>
-<p>Whenever those three dates coincide, as they do in <code>ns</code> by
-construction, immortal time cannot arise, because there is no gap
-between becoming eligible and starting the clock in which future
-information could leak backward into a treatment label. Whenever they
-are allowed to drift apart, as in the persistent-user hypothetical
-above, the resulting comparison can manufacture an effect, hide a real
-one, or both, entirely independent of anything an adjustment method in
-Part II could repair. The argument that this is what specifying a
-target trial buys you — that making eligibility, assignment, and the
-start of follow-up coincide forecloses immortal time bias rather than
-leaving it to be corrected afterward — is Hernán and colleagues’ (2016,
-<em>Journal of Clinical Epidemiology</em>).</p>
+<p>When those three dates coincide, as they do in <code>ns</code> by construction,
+immortal time cannot arise, because no interval separates the point at
+which a patient becomes eligible from the start of follow-up in which
+later information could influence the treatment label. If they are
+allowed to drift apart, as in the persistent-user hypothetical above,
+the resulting comparison can produce a spurious association or conceal a
+real one, and no adjustment method in Part II will correct it. This is
+much of what specifying a target trial buys: making eligibility,
+assignment, and the start of follow-up coincide forecloses immortal time
+bias rather than leaving it to be corrected after the fact, an argument
+developed by Hernán and colleagues (2016, <em>Journal of Clinical
+Epidemiology</em>).</p>
 </div>
 <div id="exercises-4" class="section level2 hasAnchor" number="6.5">
 <h2><span class="header-section-number">6.5</span> Exercises<a href="study-design-for-causal-questions.html#exercises-4" class="anchor-section" aria-label="Anchor link to header"></a></h2>

@@ -308,14 +308,15 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 3</span> Potential outcomes and causal effects<a href="potential-outcomes-and-causal-effects.html#potential-outcomes-and-causal-effects" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Chapter 1 asked whether Cox-2 selective NSAIDs cause less peptic ulcer
 disease than nonselective NSAIDs, and then showed that the obvious way of
-answering the question — comparing crude risks between the two groups —
+answering the question, comparing crude risks between the two groups,
 does not actually answer it, because Cox-2 initiators and nonselective
 initiators differ in ways connected to ulcer risk before either drug is
-ever taken. This chapter builds the vocabulary that makes precise what
-went wrong, and what a right answer would even mean. The framework is
-called <strong>potential outcomes</strong>, and once you have it, “causal effect” stops
-being a vague intuition and becomes something you can write down,
-simulate, and eventually estimate.</p>
+ever taken. In this chapter we build the vocabulary needed to say
+precisely what went wrong in that comparison, and what an answer to the
+question would have to look like. The framework is called <strong>potential
+outcomes</strong>, and it allows a causal effect to be defined as a specific
+quantity that we can write down, simulate in code, and, under conditions
+we will state carefully, estimate from data.</p>
 <div id="two-futures-for-every-patient" class="section level2 hasAnchor" number="3.1">
 <h2><span class="header-section-number">3.1</span> Two futures for every patient<a href="potential-outcomes-and-causal-effects.html#two-futures-for-every-patient" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Picture a single patient in the <code>ns</code> cohort — call her Patient 47 — who
@@ -323,74 +324,71 @@ shows up at her physician’s office with joint pain that warrants an
 NSAID. Her physician has a choice: prescribe a nonselective NSAID, or
 prescribe a Cox-2 selective inhibitor. Whichever one is chosen, Patient
 47 either does or does not go on to develop peptic ulcer disease over
-the following year. But the question “would she have developed PUD if
-she had been treated differently” has a sensible answer even though it
-did not happen. If she was in fact given the Cox-2 drug and stayed
-ulcer-free, we can still ask, coherently, what would have happened to
-her, with everything else about her held fixed, if she had instead
-received the nonselective drug.</p>
-<p>Potential outcomes give that question a name and a symbol. Let <span class="math inline">\(A\)</span>
+the following year. Although only one prescription is written, the
+question of what would have happened under the other still has a
+sensible answer. If she was in fact given the Cox-2 drug and stayed
+ulcer-free, we can ask coherently what would have happened to her, with
+everything else about her held fixed, had she instead received the
+nonselective drug.</p>
+<p>Potential outcomes provide notation for that question. Let <span class="math inline">\(A\)</span>
 denote the treatment Patient 47 receives, coded <span class="math inline">\(A = 1\)</span> for the Cox-2
 selective drug and <span class="math inline">\(A = 0\)</span> for the nonselective drug, and let <span class="math inline">\(Y\)</span> denote
 whether she develops incident PUD. Then <span class="math inline">\(Y(1)\)</span> is the outcome she would
 have if she were treated with <span class="math inline">\(A = 1\)</span>, and <span class="math inline">\(Y(0)\)</span> is the outcome she
 would have if she were treated with <span class="math inline">\(A = 0\)</span>. These are <strong>potential</strong>
-outcomes — one for each treatment value she could in principle receive —
-and both exist, in the sense of being well-defined quantities, before we
-know which treatment she actually gets. Once treatment is assigned, one
-of them becomes the <strong>observed</strong> outcome and the other becomes
-counterfactual: contrary to the fact of what happened. If Patient 47
-actually receives the Cox-2 drug, we observe <span class="math inline">\(Y(1)\)</span>; <span class="math inline">\(Y(0)\)</span> is what
-her chart would show in the world where her physician wrote the other
-prescription.</p>
-<p>A word on notation, because it varies more than the idea does. We write
-these potential outcomes as <span class="math inline">\(Y(1)\)</span> and <span class="math inline">\(Y(0)\)</span>, matching the PHS 921
-lectures and exams, but many books — <em>Causal Inference: What If</em> among
-them — write superscripts, <span class="math inline">\(Y^1\)</span> and <span class="math inline">\(Y^0\)</span> or <span class="math inline">\(Y^a\)</span>, and others write
+outcomes, one for each treatment value she could in principle receive,
+and both are well-defined quantities before we know which treatment she
+actually gets. Once treatment is assigned, one of them becomes the
+<strong>observed</strong> outcome and the other becomes counterfactual: contrary to
+the fact of what happened. If Patient 47 actually receives the Cox-2
+drug, we observe <span class="math inline">\(Y(1)\)</span>, and <span class="math inline">\(Y(0)\)</span> is what her chart would show in the
+world where her physician wrote the other prescription.</p>
+<p>A note on notation is in order, since conventions differ across sources.
+We write these potential outcomes as <span class="math inline">\(Y(1)\)</span> and <span class="math inline">\(Y(0)\)</span>, matching the PHS
+921 lectures and exams, whereas many books, including <em>Causal Inference:
+What If</em>, use superscripts, <span class="math inline">\(Y^1\)</span> and <span class="math inline">\(Y^0\)</span> or <span class="math inline">\(Y^a\)</span>, and others write
 <span class="math inline">\(Y_a\)</span> for the outcome under a generic treatment value <span class="math inline">\(a\)</span>. All three
-notations denote the same objects, so it is worth learning to move
-between them freely rather than attaching the concept to any one of
+notations denote the same objects, and it is worth becoming comfortable
+moving between them rather than attaching the concept to any one of
 them.</p>
 <p>With both potential outcomes in hand for a single patient, her
-<strong>individual causal effect</strong> of Cox-2 selectivity on PUD is simply the
-contrast between them, <span class="math inline">\(Y(1) - Y(0)\)</span>. If <span class="math inline">\(Y(1) = 0\)</span> and <span class="math inline">\(Y(0) = 1\)</span>, the
-Cox-2 drug prevented her ulcer; if both are 0, or both are 1, the choice
-of drug made no difference to her outcome, even though the drugs may
-differ enormously for other patients. This is a clean, well-defined
-quantity — and it is also, for any real patient, unobservable. We only
-ever see one of Patient 47’s two potential outcomes, because she can
-only actually take one drug. This is what Holland (1986) called the
-<strong>fundamental problem of causal inference</strong>: for any individual, at
-most one potential outcome is ever realized, and the individual causal
-effect can never be computed from data on that individual alone, no
-matter how much we know about her or how long we follow her. Every method in this book is,
-at bottom, a strategy for getting around this problem — not by
-recovering the missing potential outcome for any one patient, but by
-using groups of patients to estimate causal effects that are well
-defined on average, even though they are unknowable one person at a
-time.</p>
+<strong>individual causal effect</strong> of Cox-2 selectivity on PUD is the contrast
+between them, <span class="math inline">\(Y(1) - Y(0)\)</span>. If <span class="math inline">\(Y(1) = 0\)</span> and <span class="math inline">\(Y(0) = 1\)</span>, the Cox-2
+drug prevented her ulcer; if both are 0, or both are 1, the choice of
+drug made no difference to her outcome, even though the drugs may differ
+substantially for other patients. Although this quantity is well
+defined, for any real patient it is unobservable. We only ever see one of
+Patient 47’s two potential outcomes, because she can only actually take
+one drug. This is what Holland (1986) called the <strong>fundamental problem of
+causal inference</strong>: for any individual, at most one potential outcome is
+ever realized, and the individual causal effect can never be computed
+from data on that individual alone, no matter how much we know about her
+or how long we follow her. Every method in this book is therefore a
+strategy for working around this problem. None of them recovers the
+missing potential outcome for any one patient; instead, they use groups
+of patients to estimate causal effects that are well defined on average,
+although they remain unknowable one person at a time.</p>
 </div>
 <div id="a-gods-eye-view-simulation" class="section level2 hasAnchor" number="3.2">
 <h2><span class="header-section-number">3.2</span> A god’s-eye view: simulation<a href="potential-outcomes-and-causal-effects.html#a-gods-eye-view-simulation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The fundamental problem of causal inference is a genuine, permanent
-limitation of real data: no data set on real patients ever contains
-both of anyone’s potential outcomes. But nothing stops us from
-simulating a toy population in which we, as the people writing the
-code, get to decide both potential outcomes for every patient, and then
-watch what happens when only one becomes observed. This is a god’s-eye
-view of exactly the causal question Chapter 1 raised, and it lets us
-see confounding happen mechanically, in code, rather than only argue
-about it in prose.</p>
+<p>The fundamental problem of causal inference is a permanent limitation of
+real data: no data set on real patients ever contains both of anyone’s
+potential outcomes. In a simulated population, however, we are the ones
+writing the code, and so we decide both potential outcomes for every
+patient and can then observe what happens when only one of them is
+recorded. Such a simulation reproduces the causal question Chapter 1
+raised, and it lets us watch confounding arise mechanically rather than
+merely describe it in words.</p>
 <p>Imagine 100,000 patients with a severity indicator, <code>severity</code>, that
-plays the role of an unmeasured driver of both treatment and outcome —
+plays the role of an unmeasured driver of both treatment and outcome,
 capturing whatever led some patients toward the Cox-2 drug and also
 independently raised their ulcer risk. For each patient we generate
 <em>both</em> potential outcomes, <code>y0</code> (the outcome under nonselective NSAID)
 and <code>y1</code> (the outcome under Cox-2 selective drug), with the Cox-2
-potential outcome built to carry a lower baseline risk — the drug is
-genuinely protective in this toy world. We then assign actual treatment
-<code>a</code> so that more severe patients are more likely to receive the Cox-2
-drug, exactly the channeling Chapter 1 described, and finally construct
+potential outcome built to carry a lower baseline risk, so that the drug
+is genuinely protective in this simulated world. We then assign actual
+treatment <code>a</code> so that more severe patients are more likely to receive the
+Cox-2 drug, which is the channeling Chapter 1 described, and construct
 the single outcome <code>y</code> actually recorded: the potential outcome
 matching the treatment each patient actually got.</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="potential-outcomes-and-causal-effects.html#cb23-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">921</span>)</span>
@@ -414,31 +412,32 @@ matching the treatment each patient actually got.</p>
 average causal effect directly from columns no real data set would ever
 have both of at once: <code>mean(y1) - mean(y0)</code> is
 -0.020, a negative number, confirming that
-treatment is, on average, beneficial in this toy population — it lowers
+treatment is on average beneficial in this simulated population, lowering
 the risk of the outcome by about
-2.0 percentage points. But the
-last line of the summary, <code>naive</code>, is the only contrast we could ever
-compute from a real observational data set — the mean of the <em>observed</em>
-outcome <code>y</code> among the treated minus the mean of <code>y</code> among the untreated
-— and it comes out to 0.048, positive
-and on the wrong side of zero. The naive comparison says Cox-2
-selectivity looks harmful; the truth we built into the simulation is
-that it is helpful. The gap between 0.048
+2.0 percentage points. The last
+line of the summary, <code>naive</code>, is the only contrast we could ever compute
+from a real observational data set, being the mean of the <em>observed</em>
+outcome <code>y</code> among the treated minus the mean of <code>y</code> among the untreated,
+and it comes out to 0.048, positive and
+on the wrong side of zero. The naive comparison therefore suggests that
+Cox-2 selectivity is harmful, although we built the simulation so that it
+is beneficial. The gap between 0.048
 and -0.020 is confounding by <code>severity</code>,
-laid completely bare because in this one artificial world we happen to
-know the whole truth: severe patients were both more likely to be
-treated <em>and</em> more likely to have a bad outcome regardless of treatment,
-so the treated group looks worse than it would have if severity had
-been balanced across the two groups. Real data never hands you <code>y0</code> and
-<code>y1</code> side by side like this — but the machinery in the rest of the
-chapter exists precisely to close that gap without needing to.</p>
+visible here only because in this artificial world we know how the data
+were generated: severe patients were both more likely to be treated
+<em>and</em> more likely to have a bad outcome regardless of treatment, so the
+treated group looks worse than it would have if severity had been
+balanced across the two groups. Real data never provide <code>y0</code> and <code>y1</code>
+side by side, and the remainder of the chapter takes up the conditions
+under which the gap can nonetheless be closed.</p>
 </div>
 <div id="average-causal-effects-and-estimands" class="section level2 hasAnchor" number="3.3">
 <h2><span class="header-section-number">3.3</span> Average causal effects and estimands<a href="potential-outcomes-and-causal-effects.html#average-causal-effects-and-estimands" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The individual causal effect <span class="math inline">\(Y(1) - Y(0)\)</span> cannot be observed, but its
-<em>average</em> over a population can be, once we have the right tools —
-which is why causal inference works with population-level summaries
-called <strong>estimands</strong>. The one that shows up most often in this book is
+<p>The individual causal effect <span class="math inline">\(Y(1) - Y(0)\)</span> cannot be observed, although
+its <em>average</em> over a population can be estimated once we have the right
+tools, which is why causal inference is framed in terms of
+population-level summaries called <strong>estimands</strong>. The one that shows up
+most often in this book is
 the <strong>average treatment effect (ATE)</strong>,
 <span class="math display">\[\text{ATE} = E[Y(1)] - E[Y(0)],\]</span>
 the average, over everyone in the population of interest, of what would
@@ -462,37 +461,37 @@ from a single finite sample of 100,000 patients rather than computed on
 the population itself. Rerunning with a different seed would shift the
 gap around, and often shrink it, without ever making it disappear
 completely.</p>
-<p>The reason the two estimands can genuinely diverge, rather than merely
-look different by chance, is when the <em>effect itself</em> varies with
-whatever determines who gets treated. Which estimand you want then
-depends on the question. If a health system is deciding whether to
-switch every future NSAID prescription for arthritis patients to the
-Cox-2 selective drug, the ATE is the relevant quantity — it answers
-“what would happen if we treated everyone.” If a clinician is instead
-trying to understand the effect of the prescriptions she has already
-written, on the patients who actually received them, the ATT is closer
-to what she wants — it answers “was this decision, for the patients who
-got it, a good one.” The two estimands coincide only when treatment
-effects do not vary with whatever determines who gets treated, exactly
-the case built into this simulation; Exercise 3 asks you to break that
-by making the effect depend on <code>severity</code>, so that the ATE and ATT
-genuinely part ways.</p>
+<p>The two estimands diverge genuinely, rather than merely by chance, when
+the <em>effect itself</em> varies with whatever determines who gets treated.
+Which estimand is wanted then depends on the question being asked. If a
+health system is deciding whether to switch every future NSAID
+prescription for arthritis patients to the Cox-2 selective drug, the ATE
+is the relevant quantity, since it describes what would happen if
+everyone were treated. If a clinician is instead trying to understand the
+effect of the prescriptions she has already written, on the patients who
+actually received them, the ATT is closer to what she wants, since it
+describes whether that decision benefited the patients who received it.
+The two estimands coincide only when treatment
+effects do not vary with whatever determines who gets treated, which is
+the case built into this simulation; Exercise 3 asks you to relax that
+condition by making the effect depend on <code>severity</code>, so that the ATE and
+ATT genuinely differ.</p>
 <p>Any of these estimands can be reported on more than one scale. With <span class="math inline">\(Y\)</span>
 binary, as PUD is, the most direct scale is the <strong>risk difference</strong>,
 <span class="math inline">\(E[Y(1)] - E[Y(0)]\)</span>, interpretable as “how many fewer (or more) cases per
 100 patients treated.” The <strong>risk ratio</strong>, <span class="math inline">\(E[Y(1)] / E[Y(0)]\)</span>, expresses
-the same contrast multiplicatively — a risk ratio of 0.7 means treatment
-reduces risk by 30%, regardless of baseline risk, which often makes it
-more portable across populations than a difference. The <strong>odds ratio</strong>,
+the same contrast multiplicatively, so that a risk ratio of 0.7 means
+treatment reduces risk by 30% regardless of baseline risk, which often
+makes it more portable across populations than a difference. The <strong>odds
+ratio</strong>,
 <span class="math display">\[\frac{E[Y(1)]/(1-E[Y(1)])}{E[Y(0)]/(1-E[Y(0)])},\]</span>
 is the scale most familiar from logistic regression and case-control
 studies, but it approximates the risk ratio only when the outcome is
-rare, and can otherwise diverge from it substantially. None of
-consistency, exchangeability, or positivity — the identification
-conditions we turn to next — depend on which scale you eventually
-report; the choice of scale is a separate decision, made after
-identification, about how to communicate a causal contrast you have
-already secured.</p>
+rare, and can otherwise diverge from it substantially. None of the
+identification conditions we turn to next, consistency, exchangeability,
+and positivity, depends on which scale is eventually reported. The choice
+of scale is a separate decision, made after identification, about how
+best to communicate a causal contrast.</p>
 </div>
 <div id="the-identification-conditions" class="section level2 hasAnchor" number="3.4">
 <h2><span class="header-section-number">3.4</span> The identification conditions<a href="potential-outcomes-and-causal-effects.html#the-identification-conditions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -500,49 +499,48 @@ already secured.</p>
 never fully observe. <strong>Identification</strong> is the step of showing that,
 under stated assumptions, an estimand written in potential outcomes is
 equal to some quantity we actually could compute from observed data.
-Three conditions do this work, and it is worth attaching each one to
-the NSAID cohort so that they read as claims about real patients rather
-than abstract axioms.</p>
+Three conditions do this work, and we state each one in terms of the
+NSAID cohort so that they read as claims about real patients.</p>
 <p><strong>Consistency</strong> says that a patient’s observed outcome equals the
 potential outcome under the treatment she actually received: if Patient
 47 takes the Cox-2 drug, her observed <span class="math inline">\(Y\)</span> equals <span class="math inline">\(Y(1)\)</span>, not some
-average or blend involving <span class="math inline">\(Y(0)\)</span>. This sounds almost too obvious to
-state, but it is doing real work — it is what licenses the line
-<code>y = if_else(a == 1, y1, y0)</code> in the simulation above, and it can fail
-in practice when “treatment” is not well defined enough to pin down a
-single potential outcome. If “Cox-2 initiation” secretly bundles several
+average or blend involving <span class="math inline">\(Y(0)\)</span>. Although this sounds almost too
+obvious to state, it is doing real work, since it is what licenses the
+line <code>y = if_else(a == 1, y1, y0)</code> in the simulation above, and it can
+fail in practice when “treatment” is not well defined enough to pin down
+a single potential outcome. If “Cox-2 initiation” in fact bundles several
 different doses, durations, or concurrent gastroprotective strategies,
-then <span class="math inline">\(Y(1)\)</span> is not one well-defined quantity but several, and consistency
-is violated before any statistical issue even arises.</p>
+then <span class="math inline">\(Y(1)\)</span> refers to several distinct quantities rather than one, and
+consistency fails for reasons that have nothing to do with statistical
+estimation.</p>
 <p><strong>Exchangeability</strong> (also called ignorability) says that the treated
 and untreated groups would have had the same average outcome had they
 received the same treatment — formally, <span class="math inline">\(Y(1), Y(0) \perp A\)</span>, potential
 outcomes are statistically independent of the treatment actually
-received. This is exactly what fails in our simulation: because <code>a</code>
+received. This is the condition that fails in our simulation: because <code>a</code>
 depends on <code>severity</code>, and <code>severity</code> also drives <code>y0</code> and <code>y1</code>, treated
-and untreated patients are not exchangeable, and that is the entire
-reason the naive contrast diverged from the ATE. Exchangeability is what
-a randomized trial buys you by construction — Chapter 4 makes that
-precise — and it is what confounding by indication takes away in
-observational data like <code>ns</code>, where physicians route sicker-looking
-patients toward the Cox-2 drug for reasons connected to the very outcome
-we are studying.</p>
+and untreated patients are not exchangeable, which is why the naive
+contrast diverged from the ATE. A randomized trial delivers
+exchangeability by construction, as Chapter 4 makes precise, whereas
+confounding by indication removes it in observational data like <code>ns</code>,
+where physicians route sicker-looking patients toward the Cox-2 drug for
+reasons connected to the very outcome we are studying.</p>
 <p>Full exchangeability is usually too much to hope for in observational
 data, which is why most of this book works with a weaker version,
 <strong>conditional exchangeability</strong>: <span class="math inline">\(Y(1), Y(0) \perp A \mid L\)</span> for some set
 of measured covariates <span class="math inline">\(L\)</span>. Treatment need not be independent of
-potential outcomes overall, only <em>within levels</em> of <span class="math inline">\(L\)</span> — among
+potential outcomes overall, only <em>within levels</em> of <span class="math inline">\(L\)</span>, so that among
 patients who share the same measured <code>severity</code>, say, treatment
-assignment is as good as random. This is a much more plausible
+assignment is as good as random. This is a considerably more plausible
 assumption whenever we can measure the variables driving treatment
-choice, and it is exactly what standardization, propensity scores, and
-IPTW in later chapters are built to exploit.</p>
-<p>We can see conditional exchangeability rescue our toy example directly,
-because we happen to have measured the one variable, <code>severity</code>, that
-was confounding the naive comparison. If we compute the same treated-
-minus-untreated contrast <em>separately within each level of severity</em>,
-using <code>group_by(severity)</code>, we are conditioning on the confounder
-exactly the way conditional exchangeability requires:</p>
+choice, and it is the assumption that standardization, propensity scores,
+and IPTW in later chapters are built to exploit.</p>
+<p>Conditional exchangeability can be seen to work in our simulated example,
+since we have measured the one variable, <code>severity</code>, that was confounding
+the naive comparison. If we compute the same treated-minus-untreated
+contrast <em>separately within each level of severity</em>, using
+<code>group_by(severity)</code>, we are conditioning on the confounder in the way
+conditional exchangeability requires:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="potential-outcomes-and-causal-effects.html#cb25-1" tabindex="-1"></a>by_severity <span class="ot">&lt;-</span> truth <span class="sc">|&gt;</span></span>
 <span id="cb25-2"><a href="potential-outcomes-and-causal-effects.html#cb25-2" tabindex="-1"></a>  <span class="fu">group_by</span>(severity) <span class="sc">|&gt;</span></span>
 <span id="cb25-3"><a href="potential-outcomes-and-causal-effects.html#cb25-3" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
@@ -556,40 +554,39 @@ exactly the way conditional exchangeability requires:</p>
 ## 1        0      -0.0184
 ## 2        1      -0.0220</code></pre>
 <p>Within each level of <code>severity</code>, the treated-versus-untreated contrast
-comes out close to -0.020 — the true ATE —
+comes out close to -0.020, the true ATE,
 rather than the badly biased 0.048 we
-got by ignoring severity altogether. Averaging these two
+obtained by ignoring severity altogether. Averaging these two
 severity-specific contrasts back together, weighted by how many
 patients fall in each severity stratum, recovers
--0.019, essentially the ATE. Nothing about the
-data changed; we only stopped comparing all treated patients to all
-untreated patients, and started comparing treated to untreated patients
-<em>within</em> the variable that was confounding the comparison. This
-hand-computed stratification is the seed of standardization, which
-Chapter 7 develops into a general tool for covariate sets far too large
-to stratify by hand.</p>
+-0.019, essentially the ATE. The data
+themselves are unchanged; the only difference is that treated and
+untreated patients are now being compared <em>within</em> levels of the variable
+that was confounding the comparison. This hand-computed stratification is
+a simple case of standardization, which Chapter 7 develops into a general
+tool for covariate sets far too large to stratify by hand.</p>
 <p><strong>Positivity</strong> (or overlap) says that every combination of covariates
 that occurs in the population has a nonzero probability of receiving
 either treatment level: <span class="math inline">\(0 &lt; P(A = 1 \mid L = l) &lt; 1\)</span> for every value
-<span class="math inline">\(l\)</span> of <span class="math inline">\(L\)</span> with positive probability. This is a logical precondition,
-not a statistical nicety — if every patient with <code>severity == 1</code> in our
-simulation had probability zero of getting the nonselective drug, there
-would be no untreated severe patients to compare to, and no amount of
-adjustment could recover what their outcome under nonselective
-treatment would have been. Positivity can fail structurally, when a
-covariate combination makes one treatment clinically unthinkable, or
-only practically, when the combination is simply rare in a finite
-sample; the second, less absolute failure is common enough in real
-cohorts like <code>ns</code> that later chapters return to it when diagnosing
+<span class="math inline">\(l\)</span> of <span class="math inline">\(L\)</span> with positive probability. Positivity is a logical
+precondition rather than a technical convenience. If every patient with
+<code>severity == 1</code> in our simulation had probability zero of receiving the
+nonselective drug, there would be no untreated severe patients available
+for comparison, and no amount of adjustment could recover what their
+outcome under nonselective treatment would have been. Positivity can fail
+structurally, when a covariate combination makes one treatment clinically
+unthinkable, or only practically, when the combination is merely rare in
+a finite sample. The second, less absolute failure is common enough in
+real cohorts like <code>ns</code> that later chapters return to it when diagnosing
 propensity score overlap.</p>
 <p>Together, consistency, exchangeability (or its conditional version),
 and positivity are what let us write an equals sign between a causal
 estimand defined on unobservable potential outcomes and a statistical
-quantity computable from an observed data set like <code>ns</code>. Every
-adjustment method in the rest of this book — standardization, propensity
-scores, weighting — is a different computational strategy for the same
-identified quantity; none of them can substitute for these three
-conditions actually holding.</p>
+quantity computable from an observed data set like <code>ns</code>. The adjustment
+methods in the rest of this book, including standardization, propensity
+scores, and weighting, are different computational strategies for the
+same identified quantity, and none of them can substitute for these three
+conditions holding.</p>
 </div>
 <div id="exercises-1" class="section level2 hasAnchor" number="3.5">
 <h2><span class="header-section-number">3.5</span> Exercises<a href="potential-outcomes-and-causal-effects.html#exercises-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>

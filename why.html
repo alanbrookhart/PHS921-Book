@@ -309,18 +309,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <div id="questions-epidemiology-cannot-answer-with-association-alone" class="section level2 hasAnchor" number="1.1">
 <h2><span class="header-section-number">1.1</span> Questions epidemiology cannot answer with association alone<a href="why.html#questions-epidemiology-cannot-answer-with-association-alone" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>This book keeps returning to two clinical questions, in different guises,
-from Chapter 2 all the way to the end. Do Cox-2 selective NSAIDs cause
+from Chapter 2 onward. Do Cox-2 selective NSAIDs cause
 less peptic ulcer disease than nonselective NSAIDs? Do statins reduce the
 risk of a cardiovascular event when they are used the way clinicians
 actually use them, in routine care rather than in a trial? Both are
-causal questions — they ask what would happen to a group of patients if
-a particular treatment decision changed — and both are the kind of
-question epidemiologists are asked to answer using data no one designed
-for the purpose: medical records, claims, surveys, registries.</p>
-<p>The trouble is that the most natural thing to do with such data — compare
-patients who took a treatment to patients who did not — answers a
-different, easier question: whether patients who took the treatment did
-better or worse. That is an association. “Patients who took statins had
+causal questions, in that they ask what would happen to a group of
+patients if a particular treatment decision changed, and both are the
+kind of question epidemiologists are asked to answer using data
+collected for other purposes: medical records, claims, surveys,
+registries.</p>
+<p>The trouble is that the most natural thing to do with such data, namely
+compare patients who took a treatment to patients who did not, answers a
+different and easier question: whether patients who took the treatment
+did better or worse. Such a comparison yields an association. “Patients
+who took statins had
 fewer cardiovascular events” is a statement about a difference in
 outcomes between two groups of patients as they actually existed.
 “Statin initiation causes fewer cardiovascular events” is a statement
@@ -336,54 +338,54 @@ reliably take a preventive medication as prescribed also tend to
 exercise more, smoke less, keep other appointments, and generally do the
 many small things that predict good health, so a drug looks protective
 partly because the kind of person who takes it was already going to do
-well. Statins are a textbook case — some of the early apparent benefit of
-statin therapy in observational data reflected the fact that adherent,
+well. Statins are a familiar example: some of the early apparent benefit
+of statin therapy in observational data reflected the fact that adherent,
 health-conscious patients are also less likely to have a heart attack for
-reasons that have nothing to do with cholesterol. The second is
+reasons unrelated to cholesterol. The second is
 <strong>confounding by indication</strong>, sometimes called channeling: physicians
-do not assign treatments at random, they assign them based on their
-judgment of which patient needs them, so the treated group is
-systematically different in exactly the dimension the treatment is meant
+assign treatments according to their judgment of which patient needs
+them, so the treated group differs
+systematically in exactly the dimension the treatment is meant
 to address. A Cox-2 selective NSAID is often chosen, deliberately, for a
-patient a physician already suspects is at higher gastrointestinal risk
-— which means Cox-2 initiators can look worse for peptic ulcer disease
-not because the drug fails to protect them, but because they were a
-higher-risk group to start with. Get the direction of that confounding
-wrong and you can even reverse the apparent effect of a genuinely
-protective drug. A third pattern worth naming here because it will recur
-throughout the book is prevalent-user bias: comparing people already on
-a treatment to people never treated mixes in everyone who started the
-drug, tolerated it, and stayed on it long enough to be captured in the
-data, quietly dropping the patients who stopped early because of side
-effects or because the drug was not working. The comparisons in this
+patient a physician already suspects is at higher gastrointestinal risk,
+so that Cox-2 initiators can appear to fare worse with respect to peptic
+ulcer disease not because the drug fails to protect them but because
+they were a higher-risk group at baseline. If the direction of that
+confounding is misjudged, the apparent effect of a genuinely protective
+drug can be reversed. A third pattern worth naming here because it will
+recur throughout the book is prevalent-user bias: comparing people
+already on a treatment to people never treated mixes in everyone who
+started the drug, tolerated it, and stayed on it long enough to be
+captured in the data, while excluding the patients who stopped early
+because of side effects or lack of benefit. The comparisons in this
 book are built around new users — patients captured at the moment they
 start a drug, as <code>ns</code> and <code>sta</code> are — specifically to avoid folding that
-kind of survivorship into the treatment groups before the analysis even
+kind of survivorship into the treatment groups before the analysis
 begins.</p>
-<p>These are not hypothetical worries. Observational studies of
-postmenopausal hormone therapy in the 1990s found consistent,
-substantial reductions in coronary heart disease among users; when the
-Women’s Health Initiative randomized women to hormone therapy or
-placebo, the trial found increased risk, not decreased risk. The gap
-was not sloppy analysis — it was healthier, more health-conscious, more
-closely monitored women being more likely to use hormone therapy in the
-first place, a difference no amount of simple adjustment fully closed.
-If a body of careful observational research can get the sign of an
-effect wrong, no amount of enthusiasm for a data set substitutes for a
-framework that tells you when association does and does not equal
-causation, and what to do about the gap. That framework is what the
-rest of this book builds.</p>
+<p>These concerns are not hypothetical. Observational studies of
+postmenopausal hormone therapy in the 1990s reported that use was
+associated with substantially lower risk of coronary heart disease;
+when the Women’s Health Initiative randomized women to hormone therapy
+or placebo, the trial found an increased risk. The discrepancy did not
+arise from careless analysis. Rather, women who used hormone therapy
+were healthier, more health-conscious, and more closely monitored than
+women who did not, a difference that simple adjustment did not fully
+remove. If a body of careful nonexperimental research can get the sign
+of an effect wrong, then a large or richly detailed data set is not by
+itself sufficient; what is needed is a framework that says when an
+association can be given a causal interpretation, and what to do when
+it cannot. The rest of the book develops such a framework.</p>
 </div>
 <div id="a-first-look-at-the-data" class="section level2 hasAnchor" number="1.2">
 <h2><span class="header-section-number">1.2</span> A first look at the data<a href="why.html#a-first-look-at-the-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>We will spend the whole book with the two cohorts introduced properly in
-the next chapter, but it is worth looking at the simplest possible
-comparison in one of them right now, before any of the machinery, just to
-see what an unadjusted answer to a causal question actually looks like.
+the next chapter, although it is worth looking at the simplest possible
+comparison in one of them now, before any adjustment, to see what an
+unadjusted answer to a causal question looks like.
 In <code>ns</code>, the cohort of new NSAID users, patients either initiated a
 nonselective NSAID or a Cox-2 selective inhibitor, and the outcome of
 interest is incident peptic ulcer disease (PUD). The crude risk of PUD in
-each group is one <code>group_by()</code> and one <code>summarise()</code> away:</p>
+each group follows from a single <code>group_by()</code> and <code>summarise()</code>:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="why.html#cb2-1" tabindex="-1"></a>risk_tab <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span></span>
 <span id="cb2-2"><a href="why.html#cb2-2" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_initiation) <span class="sc">|&gt;</span></span>
 <span id="cb2-3"><a href="why.html#cb2-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">risk =</span> <span class="fu">mean</span>(pud))</span>
@@ -422,77 +424,76 @@ went on to develop incident PUD; among the
 Cox-2 selective drug, the figure was
 12.5%.</p>
 <p>Is that comparison an estimate of the causal effect of Cox-2 selectivity
-on peptic ulcer risk? Not yet, and probably not even close. Nothing in
-the code above knows anything about why a given patient started one drug
+on peptic ulcer risk? It is not, and there is reason to think it is far
+from one. Nothing in the code above accounts for why a given patient
+started one drug
 rather than the other. Cox-2 selective inhibitors were developed, and
 are often chosen, specifically to reduce gastrointestinal risk in
-patients thought to need that protection — a patient with a history of
-arthritis, prior GI bleeding, or concurrent corticosteroid or aspirin use
-is more likely to be steered toward the Cox-2 selective option in the
-first place. If Cox-2 initiators are systematically older or sicker in
+patients thought to need that protection. For example, a patient with a
+history of arthritis, prior GI bleeding, or concurrent corticosteroid or
+aspirin use is more likely to be steered toward the Cox-2 selective
+option. If Cox-2 initiators are systematically older or sicker in
 ways connected to ulcer risk, as we will confirm with a proper Table 1 in
 the next chapter, then the two rows of this table are not comparing like
-with like, and the crude risk difference above is a mix of whatever
-causal effect the drug has and however different the two groups already
-were. Untangling that mix — figuring out what the comparison would look
-like if the two groups had been alike to begin with — is the problem this
-book exists to solve.</p>
+with like, and the crude risk difference above combines whatever
+causal effect the drug has with the baseline differences between the
+groups. Separating those two components, that is, asking what the
+comparison would look like if the two groups had been alike at baseline,
+is the problem the rest of the book addresses.</p>
 </div>
 <div id="what-this-book-covers" class="section level2 hasAnchor" number="1.3">
 <h2><span class="header-section-number">1.3</span> What this book covers<a href="why.html#what-this-book-covers" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The book is organized in four parts. Part I, Foundations, which this
-chapter opens, builds the conceptual vocabulary — potential outcomes, the
-randomized trial as the benchmark a causal analysis is implicitly
-compared against, causal diagrams for reasoning about which variables
-need adjustment, and the elements of study design that turn a causal
-question into an analyzable data set — before any adjustment method is
-introduced. Part II, Core Methods, covers the two families of tools most
+chapter opens, builds the conceptual vocabulary before any adjustment
+method is introduced: potential outcomes, the randomized trial as the
+benchmark against which a causal analysis is implicitly compared, causal
+diagrams for reasoning about which variables require adjustment, and the
+elements of study design that turn a causal question into an analyzable
+data set. Part II, Core Methods, covers the two families of tools most
 observational analyses reach for first: outcome regression and
 standardization, and propensity scores, culminating in inverse
 probability of treatment weighting. Part III, Time, Censoring, and
 Survival, brings in what happens when the outcome does not occur at a
 single fixed moment but can happen, or fail to happen, at any point over
-follow-up — survival analysis, censoring, inverse probability of
+follow-up: survival analysis, censoring, inverse probability of
 censoring weights, and the clone-censor-weight approach to comparing
 dynamic treatment strategies, all worked out on the statin cohort,
-<code>sta</code>. Part IV, Beyond Exchangeability, deals with the harder case where
-no amount of adjustment for measured covariates will do, because an
-unmeasured confounder is at work, and introduces instrumental variables
+<code>sta</code>. Part IV, Beyond Exchangeability, deals with the harder case in
+which adjustment for measured covariates is insufficient because of
+unmeasured confounding, and introduces instrumental variables
 and sensitivity analysis as ways of asking what an unmeasured confounder
 would have to look like to explain away a finding.</p>
-<p>Threaded through all four parts is a toolkit you will build yourself, one
-function at a time, rather than read about in the abstract. By the end
-of the book you will have written, tested, and reused <code>standardize()</code>
+<p>Threaded through all four parts is a toolkit that you will build
+yourself, one function at a time. By the end of the book you will have
+written, tested, and reused <code>standardize()</code>
 for outcome-model-based standardization, <code>iptw_estimator()</code> for
 propensity-score weighting, <code>ipcw_estimator()</code> for censoring weights,
 <code>ccw_estimator()</code> for the clone-censor-weight design, and <code>iv_estimator()</code>
 for instrumental variable analysis. Each is introduced once, in the
-chapter where its logic is developed, and then reused — on the other
-cohort, with a different set of covariates, or with a different
-specification — in a later exercise. Writing the functions yourself,
-rather than only calling a package’s version, is meant to make the
-assumptions each method depends on concrete rather than hidden inside
-someone else’s code.</p>
+chapter where its logic is developed, and then reused in a later
+exercise on the other cohort, with a different set of covariates, or
+with a different specification. Writing the functions yourself,
+rather than only calling a package’s implementation, is meant to make
+the assumptions each method depends on explicit.</p>
 </div>
 <div id="how-to-read-this-book" class="section level2 hasAnchor" number="1.4">
 <h2><span class="header-section-number">1.4</span> How to read this book<a href="why.html#how-to-read-this-book" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>There is no substitute for running the code. Every chapter is a
-self-contained R Markdown file that sources <code>R/setup.R</code> and rebuilds
-everything it needs from there, so you can open any chapter, run it chunk
-by chunk, and see for yourself that the numbers in the text are the
-numbers the code produces — including the two risks in the table above,
-which are not typed in but computed live from <code>ns</code> every time this
-chapter is rendered. When a new function is introduced, read the code
+<p>The chapters are meant to be read with R running alongside them. Every
+chapter is a self-contained R Markdown file that sources <code>R/setup.R</code> and
+rebuilds what it needs from there, so you can open any chapter, run it
+chunk by chunk, and confirm that the numbers in the text are the
+numbers the code produces. The two risks in the table above, for
+example, are computed from <code>ns</code> each time this chapter is rendered
+rather than typed in. When a new function is introduced, read the code
 closely enough to know what each argument does, then use it on data
 slightly different from the example in the text before moving to the
 exercises at the end of each chapter. The exercises themselves mostly do
 not ask you to write new methods; they ask you to point a function you
 already wrote at a different variable, a different cohort, or a
 different specification, and to think about whether the answer it gives
-still makes sense. That habit — reusing a tool you understand on a new
-problem, rather than reaching for an unfamiliar one — is closer to what
-causal inference looks like in practice than anything else this book can
-teach you.</p>
+still makes sense. That habit of applying a tool you understand to an
+unfamiliar problem is closer to what causal inference looks like in
+practice than anything else the book can offer.</p>
 
 </div>
 </div>
