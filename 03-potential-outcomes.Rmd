@@ -71,7 +71,7 @@ missing potential outcome for any one patient; instead, they use groups
 of patients to estimate causal effects that are well defined on average,
 although they remain unknowable one person at a time.
 
-## A god's-eye view: simulation
+## Simulating both potential outcomes
 
 The fundamental problem of causal inference is a permanent limitation of
 real data: no data set on real patients ever contains both of anyone's
