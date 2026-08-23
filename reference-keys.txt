@@ -23,7 +23,7 @@ your-first-reusable-functions-table-1
 exercises
 potential-outcomes-and-causal-effects
 two-futures-for-every-patient
-a-gods-eye-view-simulation
+simulating-both-potential-outcomes
 average-causal-effects-and-estimands
 the-identification-conditions
 exercises-1
