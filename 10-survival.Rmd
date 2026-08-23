@@ -501,3 +501,18 @@ them for exactly the curves we have just drawn.
    the low- and high-potency groups to be interpretable as a causal
    effect of potency, and which row of this chapter's target trial table
    is doing the most work in that argument?
+4. `r sum(sta$cv_event == 0 & sta$event_time < 5)` patients are censored
+   before five years, meaning `cv_event == 0` and `event_time < 5`; count
+   them by arm with `sum()` before you start. Bound the five-year risk in
+   each arm under two extreme assumptions about
+   them. For the upper bound, assume every censored patient
+   had the event immediately after censoring, so the five-year risk is the
+   observed events plus all of them, over everyone who started. For the
+   lower bound, assume none of them ever has the event, so the numerator
+   is the observed events alone. Report both bounds and the resulting risk
+   difference in each direction, and set them beside the Kaplan–Meier
+   estimates reported above. How wide is the interval between the two
+   bounds, what does its width say about how much work the
+   non-informative-censoring assumption is doing here, and which of the
+   two extremes strikes you as the less plausible for the patients lost to
+   follow-up in `sta`?

@@ -298,6 +298,24 @@ treatment strategies studied in `sta`, although the structure of the
 argument is the same in each case: specify the trial first, then argue,
 row by row, for how well the observational data emulate it.
 
+One application of this logic has become common enough in regulatory
+submissions to deserve a name here. In an **external control arm**
+design, a single-arm trial — typically in a rare disease, or in an
+oncology setting where randomizing patients to the standard of care is
+hard to justify — is compared against a comparator group assembled from
+observational data: a disease registry, an electronic health record
+extract, or the control arm of an earlier trial. The target trial is the
+two-arm randomized trial that was not run, and the emulation problem is
+the one Part II of this book spends its chapters on, since the trial
+patients and the external controls were selected by different criteria,
+treated in different calendar periods, and followed by different means.
+Every row of the protocol table therefore has to be argued for rather
+than assumed, and the Assignment row carries the same weight it carries
+above, which is why the confounding machinery of the next several
+chapters applies here without alteration. The course's session on
+external control arms works through examples of submissions that were
+accepted and of submissions that were not.
+
 ## Exercises
 
 1. Draft a target trial protocol table, in the same seven-row format

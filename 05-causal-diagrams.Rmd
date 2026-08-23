@@ -297,3 +297,17 @@ everyone who should have been followed.
    conditioning on either tail of a common effect induces an
    association, while conditioning on nothing (the full sample) does
    not.
+4. Consider a study of SSRI use and lung cancer. Write down a DAG with
+   `dagify()` in which SSRI use is caused by depression, lung cancer is
+   caused by smoking, smoking is caused by depression, and coronary artery
+   disease is caused by smoking, taking SSRI use as the exposure and lung
+   cancer as the outcome. Coronary artery disease is the variable of the
+   four most reliably recorded in claims data, so an analyst who could
+   adjust for only one thing would be tempted by it. Using the backdoor
+   rules of this chapter, say what adjusting for coronary artery disease
+   alone does to the exposure–outcome association, and what changes when
+   depression is added alongside it. Then run `adjustmentSets()` on your
+   diagram and report the minimal sufficient set. Which of the three
+   strategies — coronary artery disease alone, coronary artery disease
+   with depression, or the set `dagitty` returns — would you defend, and
+   on what grounds?

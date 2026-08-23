@@ -468,6 +468,22 @@ visible. Furthermore, "stay on it" is a crude version of a sustained
 strategy, since real protocols specify doses, gaps, and restarts, and
 each such refinement changes both the estimand and the deviation model.
 
+The strategy we estimated here is the simplest member of a larger family.
+A **dynamic treatment regimen** is a strategy whose treatment at each
+time depends on the patient's state at that time: titrate the dose when a
+laboratory value crosses a threshold, stop on toxicity, restart when a
+symptom returns. The protocol is then a rule rather than a fixed
+assignment, and "stay on it" is the degenerate case in which the rule
+ignores the state. The clone-censor-weight machinery extends to these
+without modification in principle, since each regimen defines its own
+notion of compatibility, and a patient is censored from a regimen's clone
+at the first time her observed data depart from what that rule would have
+prescribed. What changes in practice is that several regimens are usually
+compared at once, each needing its own weights, which raises questions of
+positivity within regimen and of how to compare regimens that few
+patients happened to follow. The course's session on dynamic treatment
+regimens takes those up; they are beyond the scope of this book.
+
 ## Exercises
 
 1. Refit the deviation model with only `age`, `sex`, and a spline in

@@ -525,3 +525,21 @@ Chapter 7's exercises, are the ones worth varying.
    `n_boot = 200` and a fixed seed). Report each with an interval. State
    which estimand each one targets and rank them by precision, then say
    which you would report as the primary analysis and why.
+4. Suppose you are building a propensity-score model for the effect of a
+   new osteoporosis treatment on fracture risk in a claims database
+   covering ten years. Available at baseline are age, sex, prior fracture,
+   bone density testing in the previous year, glucocorticoid use, falls
+   recorded in the previous year, body mass index, calendar year of
+   initiation, the prescribing physician's volume of osteoporosis
+   prescriptions, and a diagnosis of dementia recorded after the
+   initiation date. For each variable, say whether it belongs in the
+   treatment model, giving the role you are assigning it — confounder,
+   pure predictor of the outcome, pure predictor of treatment, collider,
+   or post-treatment variable. Then answer two questions in more detail.
+   Prescribing patterns for this drug class changed substantially over the
+   ten years: what does including calendar year buy, and what would
+   omitting it cost? And physician prescribing volume predicts treatment
+   strongly while having no plausible direct effect on fracture: what does
+   including such a variable risk, in the terms of the bias-amplification
+   discussion above, and under what conditions would you nonetheless
+   include it?

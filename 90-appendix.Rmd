@@ -191,6 +191,202 @@ tribble(
   )
 ```
 
+# Generalized linear models for causal contrasts
+
+Chapters 7 through 9 fit a regression and then read either a single
+coefficient or a pair of predicted means as a causal contrast. Which
+contrast the coefficient carries is settled by the link function of the
+model, and those chapters chose links without stopping to explain the
+family of models they come from. This appendix is that explanation.
+
+A **generalized linear model** writes the conditional mean of the outcome
+as a transformation of a linear predictor,
+
+$$g\bigl(E[Y \mid X]\bigr) = \beta_0 + \beta_1 X_1 + \cdots + \beta_p X_p,$$
+
+where $g$ is the **link function** and the **family** names the assumed
+relationship between the mean and the variance. McCullagh and Nelder
+assembled the class in this form. What matters for us is that the same
+fitting machinery returns a different causal contrast for each link, with
+the data and the covariates held fixed.
+
+Three combinations do nearly all of the work in this book. The identity
+link with the gaussian family regresses $Y$ on treatment directly, so its
+coefficient is a difference of means, which for a binary outcome is a
+**risk difference**. The log link with the Poisson family gives a
+coefficient that exponentiates to a ratio of means, a **risk ratio** when
+$Y$ is binary; the likelihood is then deliberately wrong, since a 0/1
+outcome is not a count, although the mean model is correct and the
+coefficient still estimates a log risk ratio. That is the **modified
+Poisson** device Chapter 9 uses. The logit link with the binomial family
+is ordinary logistic regression, and its coefficient exponentiates to an
+**odds ratio**. All three fit with the same call to `glm()`, changed only
+in `family =`.
+
+```{r app-glm-links}
+links <- list(
+  "identity / gaussian" = gaussian(link = "identity"),
+  "log / Poisson"       = poisson(link = "log"),
+  "logit / binomial"    = binomial(link = "logit")
+)
+
+glm_tab <- imap_dfr(links, function(fam, label) {
+  fit <- glm(pud ~ cox2_init, family = fam, data = ns)
+  b   <- broom::tidy(fit) |> filter(term == "cox2_init")
+  tibble(
+    link        = label,
+    contrast    = c("risk difference", "risk ratio", "odds ratio")[
+                    match(label, names(links))],
+    coefficient = b$estimate,
+    value       = if (fam$link == "identity") b$estimate else exp(b$estimate)
+  )
+})
+
+glm_tab |>
+  knitr::kable(digits = 3,
+               caption = "Three links, three crude contrasts, one cohort.")
+```
+
+```{r app-glm-values, include=FALSE}
+gv <- function(lab, col) glm_tab[[col]][glm_tab$link == lab]
+crude_rd <- gv("identity / gaussian", "value")
+crude_rr <- gv("log / Poisson", "value")
+crude_or <- gv("logit / binomial", "value")
+```
+
+Reading down the value column, Cox-2 initiation is associated with a
+crude risk difference of `r sprintf("%+.1f", 100 * crude_rd)` percentage
+points, a crude risk ratio of `r sprintf("%.2f", crude_rr)`, and a crude
+odds ratio of `r sprintf("%.2f", crude_or)`. These are crude
+associations: nothing has been adjusted, the two arms differ at baseline
+in the ways Chapter 2 tabulated, and the outcome in `ns` is simulated.
+Adjustment is the business of the body chapters, and each of them reaches
+one of these three contrasts by a route that gives it a causal reading.
+The odds ratio sits further from the null than the risk ratio, which is
+the arithmetic of an uncommon outcome rather than a finding, and the
+non-collapsibility Chapter 7 discusses is a further reason to prefer the
+first two rows when the question is about risk.
+
+Two of the three fits report a standard error we do not want. For the
+gaussian fit on a binary outcome the variance depends on the mean rather
+than being constant, and for the Poisson fit the assumed variance exceeds
+the Bernoulli variance, so in both cases the model-based standard error
+comes from a variance model we know to be false. A **robust**, or
+sandwich, standard error estimates the variance of the estimating
+equation from the data instead, which repairs the interval and leaves the
+point estimate alone. Chapters 9 and 11 obtain it from
+`geepack::geeglm()`, which also takes the weights those chapters need.
+
+```{r app-glm-robust}
+imap_dfr(links[1:2], function(fam, label) {
+  m <- glm(pud ~ cox2_init, family = fam, data = ns)
+  g <- geepack::geeglm(pud ~ cox2_init, id = seq_len(nrow(ns)),
+                       family = fam, data = ns)
+  tibble(link = label,
+         se_model  = broom::tidy(m)$std.error[2],
+         se_robust = broom::tidy(g)$std.error[2])
+}) |>
+  knitr::kable(digits = 4,
+               caption = "Model-based and robust standard errors for the same coefficient.")
+```
+
+The two disagreements run in opposite directions, the robust error being
+the larger one for the identity link and the smaller one for the log
+link. Neither direction is guaranteed in general, which is the reason to
+compute the robust error rather than to reason about which way a
+misspecified variance will err.
+
+In the course, session 8 takes up generalized linear models before the
+propensity-score sessions that follow, and every body chapter from
+Chapter 7 onward assumes that material. This appendix is where a reader
+who wants it written down once can find it.
+
+# A bridge to Cox regression
+
+This book reports risks at named horizons and treats a hazard ratio,
+where one appears at all, as a modeling device on the way to a risk
+curve. Much of the literature a student will read reports the hazard
+ratio itself, from a Cox model, as the result. Being able to read those
+papers is a separate skill from being able to defend an estimand, and
+this appendix supplies it.
+
+The **Cox proportional hazards model** writes the hazard at time $t$ for
+a patient with covariates $X$ as
+
+$$h(t \mid X) = h_0(t)\exp(\beta_1 X_1 + \cdots + \beta_p X_p),$$
+
+leaving the baseline hazard $h_0(t)$ entirely unspecified and estimating
+$\beta$ from a partial likelihood that compares, at each observed event
+time, the patient who had the event against the risk set she was drawn
+from. Because $h_0(t)$ cancels out of that comparison, the model needs no
+assumption about the shape of the hazard over time, which is most of its
+appeal. What it does assume is that the ratio $\exp(\beta)$ — the
+**hazard ratio** — is the same at every follow-up time. Fitting one on
+`sta` takes a single call.
+
+```{r app-cox-crude}
+library(survival)
+
+cox_crude <- coxph(Surv(event_time, cv_event) ~ statin, data = sta)
+broom::tidy(cox_crude, exponentiate = TRUE, conf.int = TRUE) |>
+  knitr::kable(digits = 3)
+```
+
+That contrast is crude. To adjust it we reuse the machinery of Chapters 8
+and 9 without change: fit the treatment model, build stabilized weights
+from the propensity score, and pass them to `coxph()` through its
+`weights` argument, with `robust = TRUE` so the variance accounts for the
+weighted rows no longer being independent draws.
+
+```{r app-cox-iptw}
+source("R/propensity.R")
+
+sta_w <- est_ps(sta, reformulate(sta_covs, response = "statin")) |>
+  mutate(p_treat = mean(statin),
+         wt = if_else(statin == 1, p_treat / ps, (1 - p_treat) / (1 - ps)))
+
+cox_ipw <- coxph(Surv(event_time, cv_event) ~ statin, data = sta_w,
+                 weights = wt, robust = TRUE)
+broom::tidy(cox_ipw, exponentiate = TRUE, conf.int = TRUE) |>
+  knitr::kable(digits = 3)
+```
+
+```{r app-cox-values, include=FALSE}
+cx <- function(fit) broom::tidy(fit, exponentiate = TRUE, conf.int = TRUE)
+hr_crude <- cx(cox_crude)$estimate[1]
+hr_w     <- cx(cox_ipw)$estimate[1]
+hr_w_lo  <- cx(cox_ipw)$conf.low[1]
+hr_w_hi  <- cx(cox_ipw)$conf.high[1]
+```
+
+The crude hazard ratio is `r sprintf("%.2f", hr_crude)`; weighted, it
+becomes `r sprintf("%.2f", hr_w)` (`r sprintf("%.2f", hr_w_lo)` to
+`r sprintf("%.2f", hr_w_hi)`). Adjustment moves the estimate further from
+the null, which is a reminder that the arms in `sta` differ at baseline in
+ways that bear on prognosis. The outcomes here are simulated, so neither
+number is evidence about statins.
+
+Two cautions carry over from the body of the book. The first is Chapter
+10's argument, following Hernán (2010), that a hazard ratio beyond the
+first instant of follow-up is conditional on having survived, and so
+carries a built-in selection bias that no baseline adjustment removes;
+we do not restate it here beyond noting that it is the reason this book
+reports risks at five and `r admin_end` years instead. The second is that
+proportional hazards is a substantive claim about the cohort rather than a
+technical detail. Chapter 10 fit the same model in two periods and got
+two different answers, and when the assumption fails, the single reported
+ratio is a weighted average over periods that disagree, with weights
+determined by when the events happened to fall.
+
+Cox regression appears in the course in a second role as well. Lecture 15
+uses it, as much of the literature does, to model censoring as well as the
+outcome, estimating each patient's hazard of dropping out and converting
+it into a survival probability. Chapter 11 does the same work in discrete
+time: the pooled logistic model it fits on person-period data approximates
+a proportional hazards model when the interval hazards are small, and it
+has the practical advantage that the weights and the outcome model are
+fit by the same machinery.
+
 # Course map: PHS 921
 
 This book accompanies PHS 921, and the two are organized on their own
@@ -210,17 +406,17 @@ session is built around it.
 | 5 | Counterfactuals | Chapter 3 |
 | 6 | Study design and immortal time bias | Chapter 6 |
 | 7 | Real-world data sources | Chapter 2 (the two cohorts), Appendix B |
-| 8 | Generalized linear models | used throughout Chapters 7–9 |
+| 8 | Generalized linear models | Appendix D; used throughout Chapters 7–9 |
 | 9–11 | Propensity scores and IPTW | Chapters 8–9 |
 | 12 | G-computation | Chapter 7 |
 | 13–14 | Variable selection and DAGs (+ workshop) | Chapter 5; Chapter 8 (choosing the propensity-score model) |
 | 15 | Censored data and Kaplan–Meier | Chapter 10 |
-| 17 | Cox regression, IPCW, competing risks | Chapter 11; Chapter 10 (death as a competing risk) |
+| 17 | Cox regression, IPCW, competing risks | Chapter 11; Chapter 10 (death as a competing risk); Appendix E (Cox regression) |
 | 18 | IPCW workshop | Chapter 11 |
 | 19–20 | Artificial censoring; clone-censor-weight | Chapter 12 |
 | 22 | Natural experiments and instrumental variables | Chapter 13 |
 | 23 | Negative control outcomes | Chapter 14 (negative control outcomes) |
-| 24 | External control arms | Chapter 4 (target trials, for context) |
+| 24 | External control arms | Chapter 4 (target trials, and the external control arm paragraph that closes that section) |
 | 25–26 | Protocol presentations | Chapter 4's protocol table with Chapter 14's reporting checklist |
 
 Two places in the table run backwards relative to the page order. The
@@ -229,6 +425,14 @@ book introduces causal diagrams (Chapter 5) before study design
 (Chapters 8–9), because each earlier chapter supplies vocabulary the
 later one uses. The course takes both pairs in the other order. Where
 the two disagree, follow the map rather than the page numbers.
+
+Two sessions have no counterpart here. Session 16 is the midterm, and
+session 21 takes up missing data, which this book does not treat: the two
+cohorts are complete on the variables we use, and the assumptions and
+imputation machinery that incomplete data require are a subject of their
+own rather than a section of a causal-inference chapter. Students should
+take that session from the lecture notes and the reading assigned with
+them.
 
 # Further reading
 
@@ -333,6 +537,13 @@ in the papers that established it.
 - Cole and Hernán (2008, AJE) — constructing inverse probability weights
   for marginal structural models, which is the practical companion to
   Chapter 9's stabilization and truncation.
+- Kurth et al. (2006, AJE) — results of multivariable logistic regression,
+  propensity matching, propensity adjustment, and propensity-based
+  weighting under conditions of nonuniform effect, in which IPTW and SMR
+  weighting of the same t-PA cohort gave sharply different answers. The
+  source for Chapter 9's fourth exercise, and the clearest published
+  illustration of why the choice between the ATE and the ATT matters when
+  the effect is heterogeneous.
 
 **On what to report.** All three argue for a particular quantity rather
 than a particular estimator.
