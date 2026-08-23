@@ -95,6 +95,16 @@ had a chance to act on them. `ns` is, in other words, already a
 new-user cohort by construction — we have simply not yet named the
 design principle it follows.
 
+The idea generalizes beyond initiation. Starting a drug is one clinical
+decision, but stopping one, switching, and intensifying a dose are
+decisions too, and each can anchor a comparison the same way: enroll
+patients at the moment the decision is made, classify them by what was
+decided, and follow them forward. This framing — the **treatment
+decision design** (Brookhart 2015) — is the general form of the
+new-user design, and it is what makes the target trials of Chapter 4
+emulable at decision points other than a first prescription; Chapter
+12's treatment strategies lean on exactly this view.
+
 Pharmacoepidemiology has accumulated names for the specific ways these
 comparisons go wrong, and the names are worth knowing because they are how
 reviewers will describe your study. Each is a special case of confounding

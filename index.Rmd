@@ -10,6 +10,29 @@ description: >
   applications in R.
 ---
 
+# Causal Inference in Epidemiology Using R {- .unlisted #cover}
+
+<div class="cover-page">
+<p class="cover-kicker">PHS 921</p>
+<p class="cover-author">M. Alan Brookhart</p>
+<svg width="150" height="173" viewBox="0 0 200 231" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Hex badge: an adjustment-triangle DAG in Duke blues">
+<defs>
+<marker id="cov-cream" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#f3efe4"></path></marker>
+<marker id="cov-sky" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#7fb2e5"></path></marker>
+</defs>
+<polygon points="100,0.5 199.5,58 199.5,173 100,230.5 0.5,173 0.5,58" fill="#012169"></polygon>
+<polygon points="100,6.9 194,61.2 194,169.7 100,224 6,169.7 6,61.2" fill="none" stroke="#f3efe4" stroke-width="2.5"></polygon>
+<line x1="92.1" y1="87.1" x2="65.9" y2="136.9" stroke="#f3efe4" stroke-width="3" marker-end="url(#cov-cream)"></line>
+<line x1="107.9" y1="87.1" x2="134.1" y2="136.9" stroke="#f3efe4" stroke-width="3" marker-end="url(#cov-cream)"></line>
+<line x1="75" y1="152" x2="125" y2="152" stroke="#7fb2e5" stroke-width="3.6" marker-end="url(#cov-sky)"></line>
+<circle cx="100" cy="72" r="15" fill="#012169" stroke="#f3efe4" stroke-width="3"></circle>
+<circle cx="58" cy="152" r="15" fill="#012169" stroke="#7fb2e5" stroke-width="3"></circle>
+<circle cx="142" cy="152" r="15" fill="#012169" stroke="#7fb2e5" stroke-width="3"></circle>
+</svg>
+<p class="cover-affil">Department of Population Health Sciences<br>Duke University School of Medicine</p>
+<p class="cover-date">`r format(Sys.Date(), "%B %Y")`</p>
+</div>
+
 # Preface {-}
 
 ## Who this book is for
