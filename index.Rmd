@@ -7,16 +7,14 @@ documentclass: book
 link-citations: yes
 description: >
   An introduction to causal inference with epidemiologic
-  applications in R, using data from the National Ambulatory
-  Medical Care Survey (NAMCS).
+  applications in R.
 ---
 
 # Preface {-}
 
 ## Who this book is for
 
-I wrote this book for epidemiology students working toward an MPH or PhD
-who want to move from associational thinking to causal thinking. I assume
+I wrote this book for students in epidemiology or population health sciences working toward a PhD who want to move from associational thinking to causal thinking. I assume
 you have had an introductory course in epidemiology and one in
 biostatistics — you should be comfortable with concepts like confounding,
 odds ratios, and hazard ratios, and with fitting a regression model. I do
