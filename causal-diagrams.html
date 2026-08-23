@@ -141,11 +141,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Causal Inference in Epidemiology Using R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a>
 <ul>
-<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
-<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
-<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+<li class="chapter" data-level="0.1" data-path="preface.html"><a href="preface.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="preface.html"><a href="preface.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="preface.html"><a href="preface.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
 </ul></li>
 <li class="part"><span><b>I Foundations</b></span></li>
 <li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
@@ -368,19 +368,18 @@ factors, age, and corticosteroid use each influence a physician’s choice
 between a Cox-2 selective and a nonselective NSAID, and each also
 influences ulcer risk directly, alongside whatever effect the drug
 itself has.</p>
-<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="causal-diagrams.html#cb30-1" tabindex="-1"></a><span class="fu">library</span>(ggdag)</span></code></pre></div>
-<pre><code>## Warning: package &#39;ggdag&#39; was built under R version 4.3.3</code></pre>
-<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="causal-diagrams.html#cb32-1" tabindex="-1"></a>dag_nsaid <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
-<span id="cb32-2"><a href="causal-diagrams.html#cb32-2" tabindex="-1"></a>  pud <span class="sc">~</span> cox2 <span class="sc">+</span> gi_risk <span class="sc">+</span> age <span class="sc">+</span> steroids,</span>
-<span id="cb32-3"><a href="causal-diagrams.html#cb32-3" tabindex="-1"></a>  cox2 <span class="sc">~</span> gi_risk <span class="sc">+</span> age <span class="sc">+</span> steroids,</span>
-<span id="cb32-4"><a href="causal-diagrams.html#cb32-4" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;cox2&quot;</span>,</span>
-<span id="cb32-5"><a href="causal-diagrams.html#cb32-5" tabindex="-1"></a>  <span class="at">outcome =</span> <span class="st">&quot;pud&quot;</span>,</span>
-<span id="cb32-6"><a href="causal-diagrams.html#cb32-6" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">cox2 =</span> <span class="st">&quot;Cox-2 selective&quot;</span>, <span class="at">pud =</span> <span class="st">&quot;Peptic ulcer&quot;</span>,</span>
-<span id="cb32-7"><a href="causal-diagrams.html#cb32-7" tabindex="-1"></a>             <span class="at">gi_risk =</span> <span class="st">&quot;GI risk factors&quot;</span>, <span class="at">age =</span> <span class="st">&quot;Age&quot;</span>,</span>
-<span id="cb32-8"><a href="causal-diagrams.html#cb32-8" tabindex="-1"></a>             <span class="at">steroids =</span> <span class="st">&quot;Corticosteroids&quot;</span>)</span>
-<span id="cb32-9"><a href="causal-diagrams.html#cb32-9" tabindex="-1"></a>)</span>
-<span id="cb32-10"><a href="causal-diagrams.html#cb32-10" tabindex="-1"></a><span class="fu">ggdag</span>(dag_nsaid, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
-<p><img src="causal-inference-epi-r_files/figure-html/nsaid-dag-1.png" width="672" /></p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="causal-diagrams.html#cb30-1" tabindex="-1"></a><span class="fu">library</span>(ggdag)</span>
+<span id="cb30-2"><a href="causal-diagrams.html#cb30-2" tabindex="-1"></a>dag_nsaid <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb30-3"><a href="causal-diagrams.html#cb30-3" tabindex="-1"></a>  pud <span class="sc">~</span> cox2 <span class="sc">+</span> gi_risk <span class="sc">+</span> age <span class="sc">+</span> steroids,</span>
+<span id="cb30-4"><a href="causal-diagrams.html#cb30-4" tabindex="-1"></a>  cox2 <span class="sc">~</span> gi_risk <span class="sc">+</span> age <span class="sc">+</span> steroids,</span>
+<span id="cb30-5"><a href="causal-diagrams.html#cb30-5" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;cox2&quot;</span>,</span>
+<span id="cb30-6"><a href="causal-diagrams.html#cb30-6" tabindex="-1"></a>  <span class="at">outcome =</span> <span class="st">&quot;pud&quot;</span>,</span>
+<span id="cb30-7"><a href="causal-diagrams.html#cb30-7" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">cox2 =</span> <span class="st">&quot;Cox-2 selective&quot;</span>, <span class="at">pud =</span> <span class="st">&quot;Peptic ulcer&quot;</span>,</span>
+<span id="cb30-8"><a href="causal-diagrams.html#cb30-8" tabindex="-1"></a>             <span class="at">gi_risk =</span> <span class="st">&quot;GI risk factors&quot;</span>, <span class="at">age =</span> <span class="st">&quot;Age&quot;</span>,</span>
+<span id="cb30-9"><a href="causal-diagrams.html#cb30-9" tabindex="-1"></a>             <span class="at">steroids =</span> <span class="st">&quot;Corticosteroids&quot;</span>)</span>
+<span id="cb30-10"><a href="causal-diagrams.html#cb30-10" tabindex="-1"></a>)</span>
+<span id="cb30-11"><a href="causal-diagrams.html#cb30-11" tabindex="-1"></a><span class="fu">ggdag</span>(dag_nsaid, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/nsaid-dag-1.png" alt="" width="672" /></p>
 <p>The picture makes the confounding structure literal: <code>gi_risk</code>, <code>age</code>,
 and <code>steroids</code> each sit upstream of both <code>cox2</code> and <code>pud</code>, so each one
 opens a backdoor path from <code>cox2</code> to <code>pud</code> that has nothing to do with
@@ -388,7 +387,7 @@ the drug’s own effect — <code>cox2 &lt;- gi_risk -&gt; pud</code>, <code>cox
 and <code>cox2 &lt;- steroids -&gt; pud</code>, alongside the single causal path
 <code>cox2 -&gt; pud</code> that is the object of interest. Rather than reason through
 each backdoor path by hand, we can let <code>dagitty</code> do it directly:</p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="causal-diagrams.html#cb33-1" tabindex="-1"></a>dagitty<span class="sc">::</span><span class="fu">adjustmentSets</span>(dag_nsaid)</span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="causal-diagrams.html#cb31-1" tabindex="-1"></a>dagitty<span class="sc">::</span><span class="fu">adjustmentSets</span>(dag_nsaid)</span></code></pre></div>
 <pre><code>## { age, gi_risk, steroids }</code></pre>
 <p><code>adjustmentSets()</code> reports exactly one minimal set here: <code>{age, gi_risk, steroids}</code>. That result tells us two things at once. First, adjusting for
 all three variables together closes every backdoor path in the diagram,
@@ -418,24 +417,24 @@ chapter.</p>
 <code>gi_risk</code>, <code>age</code>, and <code>steroids</code> all instantiate above: a variable with
 arrows pointing into both the exposure and the outcome, opening a
 backdoor path that adjustment is meant to close.</p>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="causal-diagrams.html#cb35-1" tabindex="-1"></a>dag_confounder <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
-<span id="cb35-2"><a href="causal-diagrams.html#cb35-2" tabindex="-1"></a>  y <span class="sc">~</span> x <span class="sc">+</span> c,</span>
-<span id="cb35-3"><a href="causal-diagrams.html#cb35-3" tabindex="-1"></a>  x <span class="sc">~</span> c,</span>
-<span id="cb35-4"><a href="causal-diagrams.html#cb35-4" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;x&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;y&quot;</span>,</span>
-<span id="cb35-5"><a href="causal-diagrams.html#cb35-5" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">x =</span> <span class="st">&quot;Exposure&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Outcome&quot;</span>, <span class="at">c =</span> <span class="st">&quot;Confounder&quot;</span>)</span>
-<span id="cb35-6"><a href="causal-diagrams.html#cb35-6" tabindex="-1"></a>)</span>
-<span id="cb35-7"><a href="causal-diagrams.html#cb35-7" tabindex="-1"></a><span class="fu">ggdag</span>(dag_confounder, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
-<p><img src="causal-inference-epi-r_files/figure-html/confounder-dag-1.png" width="672" /></p>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="causal-diagrams.html#cb33-1" tabindex="-1"></a>dag_confounder <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb33-2"><a href="causal-diagrams.html#cb33-2" tabindex="-1"></a>  y <span class="sc">~</span> x <span class="sc">+</span> c,</span>
+<span id="cb33-3"><a href="causal-diagrams.html#cb33-3" tabindex="-1"></a>  x <span class="sc">~</span> c,</span>
+<span id="cb33-4"><a href="causal-diagrams.html#cb33-4" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;x&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;y&quot;</span>,</span>
+<span id="cb33-5"><a href="causal-diagrams.html#cb33-5" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">x =</span> <span class="st">&quot;Exposure&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Outcome&quot;</span>, <span class="at">c =</span> <span class="st">&quot;Confounder&quot;</span>)</span>
+<span id="cb33-6"><a href="causal-diagrams.html#cb33-6" tabindex="-1"></a>)</span>
+<span id="cb33-7"><a href="causal-diagrams.html#cb33-7" tabindex="-1"></a><span class="fu">ggdag</span>(dag_confounder, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/confounder-dag-1.png" alt="" width="672" /></p>
 <p>A <strong>collider</strong> is the mirror image: a common <em>effect</em> of two other
 variables, with arrows pointing <em>into</em> it from both sides rather than
 out of it.</p>
-<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="causal-diagrams.html#cb36-1" tabindex="-1"></a>dag_collider <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
-<span id="cb36-2"><a href="causal-diagrams.html#cb36-2" tabindex="-1"></a>  m <span class="sc">~</span> x <span class="sc">+</span> z,</span>
-<span id="cb36-3"><a href="causal-diagrams.html#cb36-3" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;x&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;z&quot;</span>,</span>
-<span id="cb36-4"><a href="causal-diagrams.html#cb36-4" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">x =</span> <span class="st">&quot;Cause 1&quot;</span>, <span class="at">z =</span> <span class="st">&quot;Cause 2&quot;</span>, <span class="at">m =</span> <span class="st">&quot;Collider&quot;</span>)</span>
-<span id="cb36-5"><a href="causal-diagrams.html#cb36-5" tabindex="-1"></a>)</span>
-<span id="cb36-6"><a href="causal-diagrams.html#cb36-6" tabindex="-1"></a><span class="fu">ggdag</span>(dag_collider, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
-<p><img src="causal-inference-epi-r_files/figure-html/collider-dag-1.png" width="672" /></p>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="causal-diagrams.html#cb34-1" tabindex="-1"></a>dag_collider <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb34-2"><a href="causal-diagrams.html#cb34-2" tabindex="-1"></a>  m <span class="sc">~</span> x <span class="sc">+</span> z,</span>
+<span id="cb34-3"><a href="causal-diagrams.html#cb34-3" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;x&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;z&quot;</span>,</span>
+<span id="cb34-4"><a href="causal-diagrams.html#cb34-4" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">x =</span> <span class="st">&quot;Cause 1&quot;</span>, <span class="at">z =</span> <span class="st">&quot;Cause 2&quot;</span>, <span class="at">m =</span> <span class="st">&quot;Collider&quot;</span>)</span>
+<span id="cb34-5"><a href="causal-diagrams.html#cb34-5" tabindex="-1"></a>)</span>
+<span id="cb34-6"><a href="causal-diagrams.html#cb34-6" tabindex="-1"></a><span class="fu">ggdag</span>(dag_collider, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/collider-dag-1.png" alt="" width="672" /></p>
 <p>Left alone, a collider does nothing to the association between its two
 causes — if <code>x</code> and <code>z</code> are independent, they stay independent whether
 or not anyone ever looks at <code>m</code>. The trouble starts the moment <code>m</code> is
@@ -450,19 +449,19 @@ short simulation: we draw two variables that are causally unrelated to
 each other, build a third variable as their common effect, and compare
 the association between the first two before and after restricting to
 one level of the third.</p>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="causal-diagrams.html#cb37-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>)</span>
-<span id="cb37-2"><a href="causal-diagrams.html#cb37-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
-<span id="cb37-3"><a href="causal-diagrams.html#cb37-3" tabindex="-1"></a>gi_risk_indep <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)    <span class="co"># cause 1, unrelated to cause 2 by construction</span></span>
-<span id="cb37-4"><a href="causal-diagrams.html#cb37-4" tabindex="-1"></a>frailty       <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)    <span class="co"># cause 2, unrelated to cause 1 by construction</span></span>
-<span id="cb37-5"><a href="causal-diagrams.html#cb37-5" tabindex="-1"></a></span>
-<span id="cb37-6"><a href="causal-diagrams.html#cb37-6" tabindex="-1"></a><span class="co"># collider: a variable such as &quot;hospitalized&quot; driven by both causes plus noise</span></span>
-<span id="cb37-7"><a href="causal-diagrams.html#cb37-7" tabindex="-1"></a>hosp_score   <span class="ot">&lt;-</span> gi_risk_indep <span class="sc">+</span> frailty <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
-<span id="cb37-8"><a href="causal-diagrams.html#cb37-8" tabindex="-1"></a>hospitalized <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(hosp_score <span class="sc">&gt;</span> <span class="fu">quantile</span>(hosp_score, <span class="fl">0.75</span>))</span>
-<span id="cb37-9"><a href="causal-diagrams.html#cb37-9" tabindex="-1"></a></span>
-<span id="cb37-10"><a href="causal-diagrams.html#cb37-10" tabindex="-1"></a>collider_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(gi_risk_indep, frailty, hospitalized)</span>
-<span id="cb37-11"><a href="causal-diagrams.html#cb37-11" tabindex="-1"></a></span>
-<span id="cb37-12"><a href="causal-diagrams.html#cb37-12" tabindex="-1"></a>fit_full <span class="ot">&lt;-</span> <span class="fu">lm</span>(frailty <span class="sc">~</span> gi_risk_indep, <span class="at">data =</span> collider_df)</span>
-<span id="cb37-13"><a href="causal-diagrams.html#cb37-13" tabindex="-1"></a>fit_cond <span class="ot">&lt;-</span> <span class="fu">lm</span>(frailty <span class="sc">~</span> gi_risk_indep, <span class="at">data =</span> collider_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(hospitalized <span class="sc">==</span> <span class="dv">1</span>))</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="causal-diagrams.html#cb35-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">5</span>)</span>
+<span id="cb35-2"><a href="causal-diagrams.html#cb35-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">5000</span></span>
+<span id="cb35-3"><a href="causal-diagrams.html#cb35-3" tabindex="-1"></a>gi_risk_indep <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)    <span class="co"># cause 1, unrelated to cause 2 by construction</span></span>
+<span id="cb35-4"><a href="causal-diagrams.html#cb35-4" tabindex="-1"></a>frailty       <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(n)    <span class="co"># cause 2, unrelated to cause 1 by construction</span></span>
+<span id="cb35-5"><a href="causal-diagrams.html#cb35-5" tabindex="-1"></a></span>
+<span id="cb35-6"><a href="causal-diagrams.html#cb35-6" tabindex="-1"></a><span class="co"># collider: a variable such as &quot;hospitalized&quot; driven by both causes plus noise</span></span>
+<span id="cb35-7"><a href="causal-diagrams.html#cb35-7" tabindex="-1"></a>hosp_score   <span class="ot">&lt;-</span> gi_risk_indep <span class="sc">+</span> frailty <span class="sc">+</span> <span class="fu">rnorm</span>(n)</span>
+<span id="cb35-8"><a href="causal-diagrams.html#cb35-8" tabindex="-1"></a>hospitalized <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(hosp_score <span class="sc">&gt;</span> <span class="fu">quantile</span>(hosp_score, <span class="fl">0.75</span>))</span>
+<span id="cb35-9"><a href="causal-diagrams.html#cb35-9" tabindex="-1"></a></span>
+<span id="cb35-10"><a href="causal-diagrams.html#cb35-10" tabindex="-1"></a>collider_df <span class="ot">&lt;-</span> <span class="fu">tibble</span>(gi_risk_indep, frailty, hospitalized)</span>
+<span id="cb35-11"><a href="causal-diagrams.html#cb35-11" tabindex="-1"></a></span>
+<span id="cb35-12"><a href="causal-diagrams.html#cb35-12" tabindex="-1"></a>fit_full <span class="ot">&lt;-</span> <span class="fu">lm</span>(frailty <span class="sc">~</span> gi_risk_indep, <span class="at">data =</span> collider_df)</span>
+<span id="cb35-13"><a href="causal-diagrams.html#cb35-13" tabindex="-1"></a>fit_cond <span class="ot">&lt;-</span> <span class="fu">lm</span>(frailty <span class="sc">~</span> gi_risk_indep, <span class="at">data =</span> collider_df <span class="sc">|&gt;</span> <span class="fu">filter</span>(hospitalized <span class="sc">==</span> <span class="dv">1</span>))</span></code></pre></div>
 <p>We simulated <code>gi_risk_indep</code> and <code>frailty</code> as independent draws, so the
 true association between them is zero by construction, and the
 regression run on the full sample confirms it: the slope is
@@ -481,14 +480,14 @@ association we have spent this whole book trying to avoid.</p>
 <p>The third structure is a <strong>mediator</strong>: a variable that sits on the
 causal path itself, transmitting some or all of the exposure’s effect
 on the way to the outcome rather than confounding it.</p>
-<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="causal-diagrams.html#cb38-1" tabindex="-1"></a>dag_mediator <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
-<span id="cb38-2"><a href="causal-diagrams.html#cb38-2" tabindex="-1"></a>  y <span class="sc">~</span> m,</span>
-<span id="cb38-3"><a href="causal-diagrams.html#cb38-3" tabindex="-1"></a>  m <span class="sc">~</span> x,</span>
-<span id="cb38-4"><a href="causal-diagrams.html#cb38-4" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;x&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;y&quot;</span>,</span>
-<span id="cb38-5"><a href="causal-diagrams.html#cb38-5" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">x =</span> <span class="st">&quot;Exposure&quot;</span>, <span class="at">m =</span> <span class="st">&quot;Mediator&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Outcome&quot;</span>)</span>
-<span id="cb38-6"><a href="causal-diagrams.html#cb38-6" tabindex="-1"></a>)</span>
-<span id="cb38-7"><a href="causal-diagrams.html#cb38-7" tabindex="-1"></a><span class="fu">ggdag</span>(dag_mediator, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
-<p><img src="causal-inference-epi-r_files/figure-html/mediator-dag-1.png" width="672" /></p>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="causal-diagrams.html#cb36-1" tabindex="-1"></a>dag_mediator <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb36-2"><a href="causal-diagrams.html#cb36-2" tabindex="-1"></a>  y <span class="sc">~</span> m,</span>
+<span id="cb36-3"><a href="causal-diagrams.html#cb36-3" tabindex="-1"></a>  m <span class="sc">~</span> x,</span>
+<span id="cb36-4"><a href="causal-diagrams.html#cb36-4" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;x&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;y&quot;</span>,</span>
+<span id="cb36-5"><a href="causal-diagrams.html#cb36-5" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">x =</span> <span class="st">&quot;Exposure&quot;</span>, <span class="at">m =</span> <span class="st">&quot;Mediator&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Outcome&quot;</span>)</span>
+<span id="cb36-6"><a href="causal-diagrams.html#cb36-6" tabindex="-1"></a>)</span>
+<span id="cb36-7"><a href="causal-diagrams.html#cb36-7" tabindex="-1"></a><span class="fu">ggdag</span>(dag_mediator, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/mediator-dag-1.png" alt="" width="672" /></p>
 <p>Adjusting for a mediator is not the same mistake as adjusting for a
 collider — a mediator really is caused by the exposure, and really does
 cause the outcome — but it is still the wrong move for the question we
@@ -516,15 +515,15 @@ affects whether they remain in follow-up long enough to have their
 outcome observed. “Remained in the study” is then a collider: an
 arrow into it from treatment, and an arrow into it from unmeasured
 prognosis.</p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="causal-diagrams.html#cb39-1" tabindex="-1"></a>dag_selection <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
-<span id="cb39-2"><a href="causal-diagrams.html#cb39-2" tabindex="-1"></a>  pud <span class="sc">~</span> u,</span>
-<span id="cb39-3"><a href="causal-diagrams.html#cb39-3" tabindex="-1"></a>  s <span class="sc">~</span> cox2 <span class="sc">+</span> u,</span>
-<span id="cb39-4"><a href="causal-diagrams.html#cb39-4" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;cox2&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;pud&quot;</span>,</span>
-<span id="cb39-5"><a href="causal-diagrams.html#cb39-5" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">cox2 =</span> <span class="st">&quot;Cox-2 selective&quot;</span>, <span class="at">pud =</span> <span class="st">&quot;Peptic ulcer&quot;</span>,</span>
-<span id="cb39-6"><a href="causal-diagrams.html#cb39-6" tabindex="-1"></a>             <span class="at">u =</span> <span class="st">&quot;Unmeasured prognosis&quot;</span>, <span class="at">s =</span> <span class="st">&quot;Remained in study&quot;</span>)</span>
-<span id="cb39-7"><a href="causal-diagrams.html#cb39-7" tabindex="-1"></a>)</span>
-<span id="cb39-8"><a href="causal-diagrams.html#cb39-8" tabindex="-1"></a><span class="fu">ggdag</span>(dag_selection, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
-<p><img src="causal-inference-epi-r_files/figure-html/selection-dag-1.png" width="672" /></p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="causal-diagrams.html#cb37-1" tabindex="-1"></a>dag_selection <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb37-2"><a href="causal-diagrams.html#cb37-2" tabindex="-1"></a>  pud <span class="sc">~</span> u,</span>
+<span id="cb37-3"><a href="causal-diagrams.html#cb37-3" tabindex="-1"></a>  s <span class="sc">~</span> cox2 <span class="sc">+</span> u,</span>
+<span id="cb37-4"><a href="causal-diagrams.html#cb37-4" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;cox2&quot;</span>, <span class="at">outcome =</span> <span class="st">&quot;pud&quot;</span>,</span>
+<span id="cb37-5"><a href="causal-diagrams.html#cb37-5" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">cox2 =</span> <span class="st">&quot;Cox-2 selective&quot;</span>, <span class="at">pud =</span> <span class="st">&quot;Peptic ulcer&quot;</span>,</span>
+<span id="cb37-6"><a href="causal-diagrams.html#cb37-6" tabindex="-1"></a>             <span class="at">u =</span> <span class="st">&quot;Unmeasured prognosis&quot;</span>, <span class="at">s =</span> <span class="st">&quot;Remained in study&quot;</span>)</span>
+<span id="cb37-7"><a href="causal-diagrams.html#cb37-7" tabindex="-1"></a>)</span>
+<span id="cb37-8"><a href="causal-diagrams.html#cb37-8" tabindex="-1"></a><span class="fu">ggdag</span>(dag_selection, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/selection-dag-1.png" alt="" width="672" /></p>
 <p>Any analysis that only ever sees patients who remained in the study —
 which is every analysis we run on complete cases, unless we do
 something deliberate about it — is conditioning on <code>s</code> whether or not

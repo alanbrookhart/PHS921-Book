@@ -141,11 +141,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Causal Inference in Epidemiology Using R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a>
 <ul>
-<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
-<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
-<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+<li class="chapter" data-level="0.1" data-path="preface.html"><a href="preface.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="preface.html"><a href="preface.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="preface.html"><a href="preface.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
 </ul></li>
 <li class="part"><span><b>I Foundations</b></span></li>
 <li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
@@ -360,18 +360,18 @@ direction to everyone else’s by the instrument — it identifies the
 average effect among those patients whose treatment the instrument
 actually moved. That second quantity is the <strong>local average treatment
 effect</strong>, and it is the one we will end up with.</p>
-<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="instrumental-variables.html#cb123-1" tabindex="-1"></a><span class="fu">library</span>(ggdag)</span>
-<span id="cb123-2"><a href="instrumental-variables.html#cb123-2" tabindex="-1"></a>dag_iv <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
-<span id="cb123-3"><a href="instrumental-variables.html#cb123-3" tabindex="-1"></a>  pud  <span class="sc">~</span> cox2 <span class="sc">+</span> u,</span>
-<span id="cb123-4"><a href="instrumental-variables.html#cb123-4" tabindex="-1"></a>  cox2 <span class="sc">~</span> pref <span class="sc">+</span> u,</span>
-<span id="cb123-5"><a href="instrumental-variables.html#cb123-5" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;cox2&quot;</span>,</span>
-<span id="cb123-6"><a href="instrumental-variables.html#cb123-6" tabindex="-1"></a>  <span class="at">outcome  =</span> <span class="st">&quot;pud&quot;</span>,</span>
-<span id="cb123-7"><a href="instrumental-variables.html#cb123-7" tabindex="-1"></a>  <span class="at">latent   =</span> <span class="st">&quot;u&quot;</span>,</span>
-<span id="cb123-8"><a href="instrumental-variables.html#cb123-8" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">pref =</span> <span class="st">&quot;Physician preference&quot;</span>, <span class="at">cox2 =</span> <span class="st">&quot;Cox-2 selective&quot;</span>,</span>
-<span id="cb123-9"><a href="instrumental-variables.html#cb123-9" tabindex="-1"></a>             <span class="at">pud =</span> <span class="st">&quot;Peptic ulcer&quot;</span>, <span class="at">u =</span> <span class="st">&quot;Unmeasured confounders&quot;</span>)</span>
-<span id="cb123-10"><a href="instrumental-variables.html#cb123-10" tabindex="-1"></a>)</span>
-<span id="cb123-11"><a href="instrumental-variables.html#cb123-11" tabindex="-1"></a><span class="fu">ggdag</span>(dag_iv, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
-<p><img src="causal-inference-epi-r_files/figure-html/ch13-iv-dag-1.png" width="672" /></p>
+<div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="instrumental-variables.html#cb117-1" tabindex="-1"></a><span class="fu">library</span>(ggdag)</span>
+<span id="cb117-2"><a href="instrumental-variables.html#cb117-2" tabindex="-1"></a>dag_iv <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
+<span id="cb117-3"><a href="instrumental-variables.html#cb117-3" tabindex="-1"></a>  pud  <span class="sc">~</span> cox2 <span class="sc">+</span> u,</span>
+<span id="cb117-4"><a href="instrumental-variables.html#cb117-4" tabindex="-1"></a>  cox2 <span class="sc">~</span> pref <span class="sc">+</span> u,</span>
+<span id="cb117-5"><a href="instrumental-variables.html#cb117-5" tabindex="-1"></a>  <span class="at">exposure =</span> <span class="st">&quot;cox2&quot;</span>,</span>
+<span id="cb117-6"><a href="instrumental-variables.html#cb117-6" tabindex="-1"></a>  <span class="at">outcome  =</span> <span class="st">&quot;pud&quot;</span>,</span>
+<span id="cb117-7"><a href="instrumental-variables.html#cb117-7" tabindex="-1"></a>  <span class="at">latent   =</span> <span class="st">&quot;u&quot;</span>,</span>
+<span id="cb117-8"><a href="instrumental-variables.html#cb117-8" tabindex="-1"></a>  <span class="at">labels =</span> <span class="fu">c</span>(<span class="at">pref =</span> <span class="st">&quot;Physician preference&quot;</span>, <span class="at">cox2 =</span> <span class="st">&quot;Cox-2 selective&quot;</span>,</span>
+<span id="cb117-9"><a href="instrumental-variables.html#cb117-9" tabindex="-1"></a>             <span class="at">pud =</span> <span class="st">&quot;Peptic ulcer&quot;</span>, <span class="at">u =</span> <span class="st">&quot;Unmeasured confounders&quot;</span>)</span>
+<span id="cb117-10"><a href="instrumental-variables.html#cb117-10" tabindex="-1"></a>)</span>
+<span id="cb117-11"><a href="instrumental-variables.html#cb117-11" tabindex="-1"></a><span class="fu">ggdag</span>(dag_iv, <span class="at">text =</span> <span class="cn">FALSE</span>, <span class="at">use_labels =</span> <span class="st">&quot;label&quot;</span>) <span class="sc">+</span> <span class="fu">theme_dag</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/ch13-iv-dag-1.png" alt="" width="672" /></p>
 <p>The diagram is the whole method in four nodes. The unmeasured <span class="math inline">\(U\)</span> points
 at both <code>cox2</code> and <code>pud</code>, so the backdoor path that ruined the crude
 comparison is still open and no adjustment set closes it. But <code>pref</code> has
@@ -407,12 +407,12 @@ mean we use here is the same instrument in spirit — both are proxies for
 a prescribing preference the patient did not choose — but it draws on all
 of the physician’s other patients rather than one, and so uses more of
 the information each physician’s panel contains.</p>
-<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="instrumental-variables.html#cb124-1" tabindex="-1"></a>ns_iv <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span></span>
-<span id="cb124-2"><a href="instrumental-variables.html#cb124-2" tabindex="-1"></a>  <span class="fu">group_by</span>(phycode) <span class="sc">|&gt;</span></span>
-<span id="cb124-3"><a href="instrumental-variables.html#cb124-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n_visits =</span> <span class="fu">n</span>(),</span>
-<span id="cb124-4"><a href="instrumental-variables.html#cb124-4" tabindex="-1"></a>         <span class="at">pref =</span> (<span class="fu">sum</span>(cox2_init) <span class="sc">-</span> cox2_init) <span class="sc">/</span> (n_visits <span class="sc">-</span> <span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb124-5"><a href="instrumental-variables.html#cb124-5" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb124-6"><a href="instrumental-variables.html#cb124-6" tabindex="-1"></a>  <span class="fu">filter</span>(n_visits <span class="sc">&gt;=</span> <span class="dv">2</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb118"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb118-1"><a href="instrumental-variables.html#cb118-1" tabindex="-1"></a>ns_iv <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span></span>
+<span id="cb118-2"><a href="instrumental-variables.html#cb118-2" tabindex="-1"></a>  <span class="fu">group_by</span>(phycode) <span class="sc">|&gt;</span></span>
+<span id="cb118-3"><a href="instrumental-variables.html#cb118-3" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n_visits =</span> <span class="fu">n</span>(),</span>
+<span id="cb118-4"><a href="instrumental-variables.html#cb118-4" tabindex="-1"></a>         <span class="at">pref =</span> (<span class="fu">sum</span>(cox2_init) <span class="sc">-</span> cox2_init) <span class="sc">/</span> (n_visits <span class="sc">-</span> <span class="dv">1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb118-5"><a href="instrumental-variables.html#cb118-5" tabindex="-1"></a>  <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb118-6"><a href="instrumental-variables.html#cb118-6" tabindex="-1"></a>  <span class="fu">filter</span>(n_visits <span class="sc">&gt;=</span> <span class="dv">2</span>)</span></code></pre></div>
 <p>The filter is not a formality. Of 1518 physicians, only
 690 contribute two or more visits; the rest have no other
 patient from whom a preference could be computed, since <code>n_visits - 1</code> is
@@ -427,8 +427,8 @@ exactly zero for 1766 of the 2054
 visits; only 288 patients saw a physician who prescribed a
 Cox-2 drug to anyone else we observe.</p>
 <p>Relevance we can check directly.</p>
-<div class="sourceCode" id="cb125"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb125-1"><a href="instrumental-variables.html#cb125-1" tabindex="-1"></a>first_stage <span class="ot">&lt;-</span> <span class="fu">lm</span>(cox2_init <span class="sc">~</span> pref, <span class="at">data =</span> ns_iv)</span>
-<span id="cb125-2"><a href="instrumental-variables.html#cb125-2" tabindex="-1"></a><span class="fu">summary</span>(first_stage)</span></code></pre></div>
+<div class="sourceCode" id="cb119"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb119-1"><a href="instrumental-variables.html#cb119-1" tabindex="-1"></a>first_stage <span class="ot">&lt;-</span> <span class="fu">lm</span>(cox2_init <span class="sc">~</span> pref, <span class="at">data =</span> ns_iv)</span>
+<span id="cb119-2"><a href="instrumental-variables.html#cb119-2" tabindex="-1"></a><span class="fu">summary</span>(first_stage)</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = cox2_init ~ pref, data = ns_iv)
@@ -461,19 +461,19 @@ which is the least we should demand.</p>
 implications can be inspected. If the instrument is assigned for reasons
 unrelated to the patient, patient characteristics should be <em>more</em>
 balanced across levels of the instrument than across levels of treatment.</p>
-<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="instrumental-variables.html#cb127-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/table1.R&quot;</span>)</span>
-<span id="cb127-2"><a href="instrumental-variables.html#cb127-2" tabindex="-1"></a>ns_iv <span class="ot">&lt;-</span> ns_iv <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">pref_any =</span> <span class="fu">as.integer</span>(pref <span class="sc">&gt;</span> <span class="dv">0</span>))</span>
-<span id="cb127-3"><a href="instrumental-variables.html#cb127-3" tabindex="-1"></a></span>
-<span id="cb127-4"><a href="instrumental-variables.html#cb127-4" tabindex="-1"></a>by_both <span class="ot">&lt;-</span> <span class="cf">function</span>(f, vars) {</span>
-<span id="cb127-5"><a href="instrumental-variables.html#cb127-5" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
-<span id="cb127-6"><a href="instrumental-variables.html#cb127-6" tabindex="-1"></a>    <span class="st">`</span><span class="at">Treatment: nonselective / Cox-2</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">f</span>(ns_iv, vars, <span class="st">&quot;cox2_init&quot;</span>),</span>
-<span id="cb127-7"><a href="instrumental-variables.html#cb127-7" tabindex="-1"></a>    <span class="st">`</span><span class="at">Instrument: pref = 0 / pref &gt; 0</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">f</span>(ns_iv, vars, <span class="st">&quot;pref_any&quot;</span>),</span>
-<span id="cb127-8"><a href="instrumental-variables.html#cb127-8" tabindex="-1"></a>    <span class="at">.id =</span> <span class="st">&quot;contrast&quot;</span></span>
-<span id="cb127-9"><a href="instrumental-variables.html#cb127-9" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb127-10"><a href="instrumental-variables.html#cb127-10" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">group_0 =</span> <span class="st">`</span><span class="at">0</span><span class="st">`</span>, <span class="at">group_1 =</span> <span class="st">`</span><span class="at">1</span><span class="st">`</span>)</span>
-<span id="cb127-11"><a href="instrumental-variables.html#cb127-11" tabindex="-1"></a>}</span>
-<span id="cb127-12"><a href="instrumental-variables.html#cb127-12" tabindex="-1"></a></span>
-<span id="cb127-13"><a href="instrumental-variables.html#cb127-13" tabindex="-1"></a><span class="fu">by_both</span>(table1_continuous, <span class="st">&quot;age&quot;</span>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb121"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb121-1"><a href="instrumental-variables.html#cb121-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/table1.R&quot;</span>)</span>
+<span id="cb121-2"><a href="instrumental-variables.html#cb121-2" tabindex="-1"></a>ns_iv <span class="ot">&lt;-</span> ns_iv <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">pref_any =</span> <span class="fu">as.integer</span>(pref <span class="sc">&gt;</span> <span class="dv">0</span>))</span>
+<span id="cb121-3"><a href="instrumental-variables.html#cb121-3" tabindex="-1"></a></span>
+<span id="cb121-4"><a href="instrumental-variables.html#cb121-4" tabindex="-1"></a>by_both <span class="ot">&lt;-</span> <span class="cf">function</span>(f, vars) {</span>
+<span id="cb121-5"><a href="instrumental-variables.html#cb121-5" tabindex="-1"></a>  <span class="fu">bind_rows</span>(</span>
+<span id="cb121-6"><a href="instrumental-variables.html#cb121-6" tabindex="-1"></a>    <span class="st">`</span><span class="at">Treatment: nonselective / Cox-2</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">f</span>(ns_iv, vars, <span class="st">&quot;cox2_init&quot;</span>),</span>
+<span id="cb121-7"><a href="instrumental-variables.html#cb121-7" tabindex="-1"></a>    <span class="st">`</span><span class="at">Instrument: pref = 0 / pref &gt; 0</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">f</span>(ns_iv, vars, <span class="st">&quot;pref_any&quot;</span>),</span>
+<span id="cb121-8"><a href="instrumental-variables.html#cb121-8" tabindex="-1"></a>    <span class="at">.id =</span> <span class="st">&quot;contrast&quot;</span></span>
+<span id="cb121-9"><a href="instrumental-variables.html#cb121-9" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb121-10"><a href="instrumental-variables.html#cb121-10" tabindex="-1"></a>    <span class="fu">rename</span>(<span class="at">group_0 =</span> <span class="st">`</span><span class="at">0</span><span class="st">`</span>, <span class="at">group_1 =</span> <span class="st">`</span><span class="at">1</span><span class="st">`</span>)</span>
+<span id="cb121-11"><a href="instrumental-variables.html#cb121-11" tabindex="-1"></a>}</span>
+<span id="cb121-12"><a href="instrumental-variables.html#cb121-12" tabindex="-1"></a></span>
+<span id="cb121-13"><a href="instrumental-variables.html#cb121-13" tabindex="-1"></a><span class="fu">by_both</span>(table1_continuous, <span class="st">&quot;age&quot;</span>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -498,7 +498,7 @@ balanced across levels of the instrument than across levels of treatment.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="instrumental-variables.html#cb128-1" tabindex="-1"></a><span class="fu">by_both</span>(table1_categorical, <span class="fu">c</span>(<span class="st">&quot;arthritis&quot;</span>, <span class="st">&quot;year&quot;</span>)) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb122"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb122-1"><a href="instrumental-variables.html#cb122-1" tabindex="-1"></a><span class="fu">by_both</span>(table1_categorical, <span class="fu">c</span>(<span class="st">&quot;arthritis&quot;</span>, <span class="st">&quot;year&quot;</span>)) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
 <table>
 <colgroup>
 <col width="43%" />
@@ -658,11 +658,11 @@ dichotomize the instrument at the only cut point the data offer. Because
 with <code>ntile(pref, 2)</code> would divide the tied-at-zero mass arbitrarily and
 produce two groups that barely differ in treatment; <code>pref &gt; 0</code> is the
 substantive contrast.</p>
-<div class="sourceCode" id="cb129"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb129-1"><a href="instrumental-variables.html#cb129-1" tabindex="-1"></a>wald_tab <span class="ot">&lt;-</span> ns_iv <span class="sc">|&gt;</span></span>
-<span id="cb129-2"><a href="instrumental-variables.html#cb129-2" tabindex="-1"></a>  <span class="fu">group_by</span>(pref_any) <span class="sc">|&gt;</span></span>
-<span id="cb129-3"><a href="instrumental-variables.html#cb129-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">treated =</span> <span class="fu">mean</span>(cox2_init), <span class="at">risk =</span> <span class="fu">mean</span>(pud),</span>
-<span id="cb129-4"><a href="instrumental-variables.html#cb129-4" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span>
-<span id="cb129-5"><a href="instrumental-variables.html#cb129-5" tabindex="-1"></a>wald_tab <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb123"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb123-1"><a href="instrumental-variables.html#cb123-1" tabindex="-1"></a>wald_tab <span class="ot">&lt;-</span> ns_iv <span class="sc">|&gt;</span></span>
+<span id="cb123-2"><a href="instrumental-variables.html#cb123-2" tabindex="-1"></a>  <span class="fu">group_by</span>(pref_any) <span class="sc">|&gt;</span></span>
+<span id="cb123-3"><a href="instrumental-variables.html#cb123-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">treated =</span> <span class="fu">mean</span>(cox2_init), <span class="at">risk =</span> <span class="fu">mean</span>(pud),</span>
+<span id="cb123-4"><a href="instrumental-variables.html#cb123-4" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span>
+<span id="cb123-5"><a href="instrumental-variables.html#cb123-5" tabindex="-1"></a>wald_tab <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -687,8 +687,8 @@ substantive contrast.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb130"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb130-1"><a href="instrumental-variables.html#cb130-1" tabindex="-1"></a>wald <span class="ot">&lt;-</span> <span class="fu">with</span>(wald_tab, <span class="fu">diff</span>(risk) <span class="sc">/</span> <span class="fu">diff</span>(treated))</span>
-<span id="cb130-2"><a href="instrumental-variables.html#cb130-2" tabindex="-1"></a>wald</span></code></pre></div>
+<div class="sourceCode" id="cb124"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb124-1"><a href="instrumental-variables.html#cb124-1" tabindex="-1"></a>wald <span class="ot">&lt;-</span> <span class="fu">with</span>(wald_tab, <span class="fu">diff</span>(risk) <span class="sc">/</span> <span class="fu">diff</span>(treated))</span>
+<span id="cb124-2"><a href="instrumental-variables.html#cb124-2" tabindex="-1"></a>wald</span></code></pre></div>
 <pre><code>## [1] 0.1465595</code></pre>
 <p>The instrument moves treatment by
 11.0 percentage points and the outcome by
@@ -703,26 +703,26 @@ on the instrument, take the fitted values, and regress the outcome on
 those — <strong>two-stage least squares</strong>, which reproduces the Wald ratio
 exactly with a single binary instrument and generalizes to continuous
 instruments and covariates.</p>
-<div class="sourceCode" id="cb132"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb132-1"><a href="instrumental-variables.html#cb132-1" tabindex="-1"></a>iv_estimator <span class="ot">&lt;-</span> <span class="cf">function</span>(data, instrument, treat, outcome, <span class="at">covs =</span> <span class="cn">NULL</span>,</span>
-<span id="cb132-2"><a href="instrumental-variables.html#cb132-2" tabindex="-1"></a>                         <span class="at">n_boot =</span> <span class="dv">200</span>, <span class="at">conf_level =</span> <span class="fl">0.95</span>, <span class="at">seed =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb132-3"><a href="instrumental-variables.html#cb132-3" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(seed)) <span class="fu">set.seed</span>(seed)</span>
-<span id="cb132-4"><a href="instrumental-variables.html#cb132-4" tabindex="-1"></a></span>
-<span id="cb132-5"><a href="instrumental-variables.html#cb132-5" tabindex="-1"></a>  tsls <span class="ot">&lt;-</span> <span class="cf">function</span>(d) {</span>
-<span id="cb132-6"><a href="instrumental-variables.html#cb132-6" tabindex="-1"></a>    s1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">reformulate</span>(<span class="fu">c</span>(instrument, covs), treat), <span class="at">data =</span> d)</span>
-<span id="cb132-7"><a href="instrumental-variables.html#cb132-7" tabindex="-1"></a>    d<span class="sc">$</span>.that <span class="ot">&lt;-</span> <span class="fu">predict</span>(s1)</span>
-<span id="cb132-8"><a href="instrumental-variables.html#cb132-8" tabindex="-1"></a>    <span class="fu">coef</span>(<span class="fu">lm</span>(<span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;.that&quot;</span>, covs), outcome), <span class="at">data =</span> d))[<span class="st">&quot;.that&quot;</span>]</span>
-<span id="cb132-9"><a href="instrumental-variables.html#cb132-9" tabindex="-1"></a>  }</span>
-<span id="cb132-10"><a href="instrumental-variables.html#cb132-10" tabindex="-1"></a></span>
-<span id="cb132-11"><a href="instrumental-variables.html#cb132-11" tabindex="-1"></a>  est <span class="ot">&lt;-</span> <span class="fu">tsls</span>(data)</span>
-<span id="cb132-12"><a href="instrumental-variables.html#cb132-12" tabindex="-1"></a>  boot_est <span class="ot">&lt;-</span> <span class="fu">replicate</span>(n_boot, <span class="fu">tsls</span>(<span class="fu">slice_sample</span>(data, <span class="at">prop =</span> <span class="dv">1</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>)))</span>
-<span id="cb132-13"><a href="instrumental-variables.html#cb132-13" tabindex="-1"></a>  alpha <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> conf_level</span>
-<span id="cb132-14"><a href="instrumental-variables.html#cb132-14" tabindex="-1"></a></span>
-<span id="cb132-15"><a href="instrumental-variables.html#cb132-15" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
-<span id="cb132-16"><a href="instrumental-variables.html#cb132-16" tabindex="-1"></a>    <span class="at">estimate  =</span> <span class="fu">unname</span>(est),</span>
-<span id="cb132-17"><a href="instrumental-variables.html#cb132-17" tabindex="-1"></a>    <span class="at">conf_low  =</span> <span class="fu">quantile</span>(boot_est, alpha <span class="sc">/</span> <span class="dv">2</span>),</span>
-<span id="cb132-18"><a href="instrumental-variables.html#cb132-18" tabindex="-1"></a>    <span class="at">conf_high =</span> <span class="fu">quantile</span>(boot_est, <span class="dv">1</span> <span class="sc">-</span> alpha <span class="sc">/</span> <span class="dv">2</span>)</span>
-<span id="cb132-19"><a href="instrumental-variables.html#cb132-19" tabindex="-1"></a>  )</span>
-<span id="cb132-20"><a href="instrumental-variables.html#cb132-20" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb126"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb126-1"><a href="instrumental-variables.html#cb126-1" tabindex="-1"></a>iv_estimator <span class="ot">&lt;-</span> <span class="cf">function</span>(data, instrument, treat, outcome, <span class="at">covs =</span> <span class="cn">NULL</span>,</span>
+<span id="cb126-2"><a href="instrumental-variables.html#cb126-2" tabindex="-1"></a>                         <span class="at">n_boot =</span> <span class="dv">200</span>, <span class="at">conf_level =</span> <span class="fl">0.95</span>, <span class="at">seed =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb126-3"><a href="instrumental-variables.html#cb126-3" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(seed)) <span class="fu">set.seed</span>(seed)</span>
+<span id="cb126-4"><a href="instrumental-variables.html#cb126-4" tabindex="-1"></a></span>
+<span id="cb126-5"><a href="instrumental-variables.html#cb126-5" tabindex="-1"></a>  tsls <span class="ot">&lt;-</span> <span class="cf">function</span>(d) {</span>
+<span id="cb126-6"><a href="instrumental-variables.html#cb126-6" tabindex="-1"></a>    s1 <span class="ot">&lt;-</span> <span class="fu">lm</span>(<span class="fu">reformulate</span>(<span class="fu">c</span>(instrument, covs), treat), <span class="at">data =</span> d)</span>
+<span id="cb126-7"><a href="instrumental-variables.html#cb126-7" tabindex="-1"></a>    d<span class="sc">$</span>.that <span class="ot">&lt;-</span> <span class="fu">predict</span>(s1)</span>
+<span id="cb126-8"><a href="instrumental-variables.html#cb126-8" tabindex="-1"></a>    <span class="fu">coef</span>(<span class="fu">lm</span>(<span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;.that&quot;</span>, covs), outcome), <span class="at">data =</span> d))[<span class="st">&quot;.that&quot;</span>]</span>
+<span id="cb126-9"><a href="instrumental-variables.html#cb126-9" tabindex="-1"></a>  }</span>
+<span id="cb126-10"><a href="instrumental-variables.html#cb126-10" tabindex="-1"></a></span>
+<span id="cb126-11"><a href="instrumental-variables.html#cb126-11" tabindex="-1"></a>  est <span class="ot">&lt;-</span> <span class="fu">tsls</span>(data)</span>
+<span id="cb126-12"><a href="instrumental-variables.html#cb126-12" tabindex="-1"></a>  boot_est <span class="ot">&lt;-</span> <span class="fu">replicate</span>(n_boot, <span class="fu">tsls</span>(<span class="fu">slice_sample</span>(data, <span class="at">prop =</span> <span class="dv">1</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>)))</span>
+<span id="cb126-13"><a href="instrumental-variables.html#cb126-13" tabindex="-1"></a>  alpha <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> conf_level</span>
+<span id="cb126-14"><a href="instrumental-variables.html#cb126-14" tabindex="-1"></a></span>
+<span id="cb126-15"><a href="instrumental-variables.html#cb126-15" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb126-16"><a href="instrumental-variables.html#cb126-16" tabindex="-1"></a>    <span class="at">estimate  =</span> <span class="fu">unname</span>(est),</span>
+<span id="cb126-17"><a href="instrumental-variables.html#cb126-17" tabindex="-1"></a>    <span class="at">conf_low  =</span> <span class="fu">quantile</span>(boot_est, alpha <span class="sc">/</span> <span class="dv">2</span>),</span>
+<span id="cb126-18"><a href="instrumental-variables.html#cb126-18" tabindex="-1"></a>    <span class="at">conf_high =</span> <span class="fu">quantile</span>(boot_est, <span class="dv">1</span> <span class="sc">-</span> alpha <span class="sc">/</span> <span class="dv">2</span>)</span>
+<span id="cb126-19"><a href="instrumental-variables.html#cb126-19" tabindex="-1"></a>  )</span>
+<span id="cb126-20"><a href="instrumental-variables.html#cb126-20" tabindex="-1"></a>}</span></code></pre></div>
 <p>Two choices in that code are deliberate. The first stage is <code>lm()</code> even
 though <code>cox2_init</code> is binary, where every instinct from Chapter 8 says
 logistic regression. Substituting fitted probabilities from a
@@ -736,13 +736,13 @@ second-stage <code>lm()</code> would treat <code>.that</code> as data rather tha
 estimate, understating uncertainty; resampling propagates both stages,
 and the <code>seed</code> argument makes a particular set of resamples
 reproducible.</p>
-<div class="sourceCode" id="cb133"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb133-1"><a href="instrumental-variables.html#cb133-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/iv_estimator.R&quot;</span>)</span>
-<span id="cb133-2"><a href="instrumental-variables.html#cb133-2" tabindex="-1"></a></span>
-<span id="cb133-3"><a href="instrumental-variables.html#cb133-3" tabindex="-1"></a>iv_plain <span class="ot">&lt;-</span> <span class="fu">iv_estimator</span>(ns_iv, <span class="st">&quot;pref&quot;</span>, <span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;pud&quot;</span>, <span class="at">seed =</span> <span class="dv">1301</span>)</span>
-<span id="cb133-4"><a href="instrumental-variables.html#cb133-4" tabindex="-1"></a>iv_adj   <span class="ot">&lt;-</span> <span class="fu">iv_estimator</span>(ns_iv, <span class="st">&quot;pref&quot;</span>, <span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;pud&quot;</span>,</span>
-<span id="cb133-5"><a href="instrumental-variables.html#cb133-5" tabindex="-1"></a>                         <span class="at">covs =</span> ns_covs, <span class="at">seed =</span> <span class="dv">1301</span>)</span>
-<span id="cb133-6"><a href="instrumental-variables.html#cb133-6" tabindex="-1"></a><span class="fu">bind_rows</span>(<span class="at">unadjusted =</span> iv_plain, <span class="at">adjusted =</span> iv_adj, <span class="at">.id =</span> <span class="st">&quot;model&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb133-7"><a href="instrumental-variables.html#cb133-7" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb127"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb127-1"><a href="instrumental-variables.html#cb127-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/iv_estimator.R&quot;</span>)</span>
+<span id="cb127-2"><a href="instrumental-variables.html#cb127-2" tabindex="-1"></a></span>
+<span id="cb127-3"><a href="instrumental-variables.html#cb127-3" tabindex="-1"></a>iv_plain <span class="ot">&lt;-</span> <span class="fu">iv_estimator</span>(ns_iv, <span class="st">&quot;pref&quot;</span>, <span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;pud&quot;</span>, <span class="at">seed =</span> <span class="dv">1301</span>)</span>
+<span id="cb127-4"><a href="instrumental-variables.html#cb127-4" tabindex="-1"></a>iv_adj   <span class="ot">&lt;-</span> <span class="fu">iv_estimator</span>(ns_iv, <span class="st">&quot;pref&quot;</span>, <span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;pud&quot;</span>,</span>
+<span id="cb127-5"><a href="instrumental-variables.html#cb127-5" tabindex="-1"></a>                         <span class="at">covs =</span> ns_covs, <span class="at">seed =</span> <span class="dv">1301</span>)</span>
+<span id="cb127-6"><a href="instrumental-variables.html#cb127-6" tabindex="-1"></a><span class="fu">bind_rows</span>(<span class="at">unadjusted =</span> iv_plain, <span class="at">adjusted =</span> iv_adj, <span class="at">.id =</span> <span class="st">&quot;model&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb127-7"><a href="instrumental-variables.html#cb127-7" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -768,35 +768,35 @@ reproducible.</p>
 </tbody>
 </table>
 <p>Now the full comparison, with Part II’s estimates recomputed alongside.</p>
-<div class="sourceCode" id="cb134"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb134-1"><a href="instrumental-variables.html#cb134-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/standardize.R&quot;</span>); <span class="fu">source</span>(<span class="st">&quot;R/propensity.R&quot;</span>); <span class="fu">source</span>(<span class="st">&quot;R/iptw_estimator.R&quot;</span>)</span>
-<span id="cb134-2"><a href="instrumental-variables.html#cb134-2" tabindex="-1"></a></span>
-<span id="cb134-3"><a href="instrumental-variables.html#cb134-3" tabindex="-1"></a>ps_model <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(ns_covs, <span class="st">&quot;cox2_init&quot;</span>)</span>
-<span id="cb134-4"><a href="instrumental-variables.html#cb134-4" tabindex="-1"></a>crude <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">group_by</span>(cox2_init) <span class="sc">|&gt;</span> <span class="fu">summarise</span>(<span class="at">r =</span> <span class="fu">mean</span>(pud), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">pull</span>(r)</span>
-<span id="cb134-5"><a href="instrumental-variables.html#cb134-5" tabindex="-1"></a>std   <span class="ot">&lt;-</span> <span class="fu">standardize</span>(ns, <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, ns_covs), <span class="st">&quot;pud&quot;</span>),</span>
-<span id="cb134-6"><a href="instrumental-variables.html#cb134-6" tabindex="-1"></a>                     <span class="at">treat =</span> <span class="st">&quot;cox2_init&quot;</span>, <span class="at">n_boot =</span> <span class="dv">200</span>, <span class="at">seed =</span> <span class="dv">921</span>)</span>
-<span id="cb134-7"><a href="instrumental-variables.html#cb134-7" tabindex="-1"></a>ipw   <span class="ot">&lt;-</span> <span class="fu">iptw_estimator</span>(ns, ps_model, <span class="at">outcome =</span> <span class="st">&quot;pud&quot;</span>, <span class="at">treat =</span> <span class="st">&quot;cox2_init&quot;</span>)</span>
-<span id="cb134-8"><a href="instrumental-variables.html#cb134-8" tabindex="-1"></a>matched <span class="ot">&lt;-</span> <span class="fu">ps_match</span>(<span class="fu">est_ps</span>(ns, ps_model), <span class="at">treat =</span> <span class="st">&quot;cox2_init&quot;</span>, <span class="at">caliper =</span> <span class="fl">0.05</span>)</span>
-<span id="cb134-9"><a href="instrumental-variables.html#cb134-9" tabindex="-1"></a>mr    <span class="ot">&lt;-</span> <span class="fu">tapply</span>(matched<span class="sc">$</span>pud, matched<span class="sc">$</span>cox2_init, mean)</span>
-<span id="cb134-10"><a href="instrumental-variables.html#cb134-10" tabindex="-1"></a>iv_wald <span class="ot">&lt;-</span> <span class="fu">iv_estimator</span>(ns_iv, <span class="st">&quot;pref_any&quot;</span>, <span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;pud&quot;</span>, <span class="at">seed =</span> <span class="dv">1301</span>)</span>
-<span id="cb134-11"><a href="instrumental-variables.html#cb134-11" tabindex="-1"></a></span>
-<span id="cb134-12"><a href="instrumental-variables.html#cb134-12" tabindex="-1"></a>get <span class="ot">&lt;-</span> <span class="cf">function</span>(d, key, col) d[[col]][d[[<span class="dv">1</span>]] <span class="sc">==</span> key]</span>
-<span id="cb134-13"><a href="instrumental-variables.html#cb134-13" tabindex="-1"></a></span>
-<span id="cb134-14"><a href="instrumental-variables.html#cb134-14" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb134-15"><a href="instrumental-variables.html#cb134-15" tabindex="-1"></a>  <span class="at">estimator =</span> <span class="fu">c</span>(<span class="st">&quot;Crude&quot;</span>, <span class="st">&quot;Standardization (Ch. 7)&quot;</span>, <span class="st">&quot;PS matching (Ch. 8)&quot;</span>,</span>
-<span id="cb134-16"><a href="instrumental-variables.html#cb134-16" tabindex="-1"></a>                <span class="st">&quot;IPTW (Ch. 9)&quot;</span>, <span class="st">&quot;IV: Wald, pref &gt; 0&quot;</span>,</span>
-<span id="cb134-17"><a href="instrumental-variables.html#cb134-17" tabindex="-1"></a>                <span class="st">&quot;IV: 2SLS, continuous pref&quot;</span>, <span class="st">&quot;IV: 2SLS + covariates&quot;</span>),</span>
-<span id="cb134-18"><a href="instrumental-variables.html#cb134-18" tabindex="-1"></a>  <span class="at">estimand  =</span> <span class="fu">c</span>(<span class="st">&quot;none&quot;</span>, <span class="st">&quot;ATE&quot;</span>, <span class="st">&quot;ATT&quot;</span>, <span class="st">&quot;ATE&quot;</span>, <span class="st">&quot;LATE&quot;</span>, <span class="st">&quot;LATE&quot;</span>, <span class="st">&quot;LATE&quot;</span>),</span>
-<span id="cb134-19"><a href="instrumental-variables.html#cb134-19" tabindex="-1"></a>  <span class="at">n         =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(ns), <span class="fu">nrow</span>(ns), <span class="fu">nrow</span>(matched), <span class="fu">nrow</span>(ns), <span class="fu">rep</span>(<span class="fu">nrow</span>(ns_iv), <span class="dv">3</span>)),</span>
-<span id="cb134-20"><a href="instrumental-variables.html#cb134-20" tabindex="-1"></a>  <span class="at">rd_pp =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(crude[<span class="dv">2</span>] <span class="sc">-</span> crude[<span class="dv">1</span>], <span class="fu">get</span>(std, <span class="st">&quot;rd&quot;</span>, <span class="st">&quot;estimate&quot;</span>),</span>
-<span id="cb134-21"><a href="instrumental-variables.html#cb134-21" tabindex="-1"></a>                  mr[[<span class="dv">2</span>]] <span class="sc">-</span> mr[[<span class="dv">1</span>]], <span class="fu">get</span>(ipw, <span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;estimate&quot;</span>),</span>
-<span id="cb134-22"><a href="instrumental-variables.html#cb134-22" tabindex="-1"></a>                  iv_wald<span class="sc">$</span>estimate, iv_plain<span class="sc">$</span>estimate, iv_adj<span class="sc">$</span>estimate),</span>
-<span id="cb134-23"><a href="instrumental-variables.html#cb134-23" tabindex="-1"></a>  <span class="at">lower =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="fu">get</span>(std, <span class="st">&quot;rd&quot;</span>, <span class="st">&quot;conf_low&quot;</span>), <span class="cn">NA</span>,</span>
-<span id="cb134-24"><a href="instrumental-variables.html#cb134-24" tabindex="-1"></a>                  <span class="fu">get</span>(ipw, <span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;conf.low&quot;</span>),</span>
-<span id="cb134-25"><a href="instrumental-variables.html#cb134-25" tabindex="-1"></a>                  iv_wald<span class="sc">$</span>conf_low, iv_plain<span class="sc">$</span>conf_low, iv_adj<span class="sc">$</span>conf_low),</span>
-<span id="cb134-26"><a href="instrumental-variables.html#cb134-26" tabindex="-1"></a>  <span class="at">upper =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="fu">get</span>(std, <span class="st">&quot;rd&quot;</span>, <span class="st">&quot;conf_high&quot;</span>), <span class="cn">NA</span>,</span>
-<span id="cb134-27"><a href="instrumental-variables.html#cb134-27" tabindex="-1"></a>                  <span class="fu">get</span>(ipw, <span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;conf.high&quot;</span>),</span>
-<span id="cb134-28"><a href="instrumental-variables.html#cb134-28" tabindex="-1"></a>                  iv_wald<span class="sc">$</span>conf_high, iv_plain<span class="sc">$</span>conf_high, iv_adj<span class="sc">$</span>conf_high)</span>
-<span id="cb134-29"><a href="instrumental-variables.html#cb134-29" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb128"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb128-1"><a href="instrumental-variables.html#cb128-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/standardize.R&quot;</span>); <span class="fu">source</span>(<span class="st">&quot;R/propensity.R&quot;</span>); <span class="fu">source</span>(<span class="st">&quot;R/iptw_estimator.R&quot;</span>)</span>
+<span id="cb128-2"><a href="instrumental-variables.html#cb128-2" tabindex="-1"></a></span>
+<span id="cb128-3"><a href="instrumental-variables.html#cb128-3" tabindex="-1"></a>ps_model <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(ns_covs, <span class="st">&quot;cox2_init&quot;</span>)</span>
+<span id="cb128-4"><a href="instrumental-variables.html#cb128-4" tabindex="-1"></a>crude <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">group_by</span>(cox2_init) <span class="sc">|&gt;</span> <span class="fu">summarise</span>(<span class="at">r =</span> <span class="fu">mean</span>(pud), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span> <span class="fu">pull</span>(r)</span>
+<span id="cb128-5"><a href="instrumental-variables.html#cb128-5" tabindex="-1"></a>std   <span class="ot">&lt;-</span> <span class="fu">standardize</span>(ns, <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, ns_covs), <span class="st">&quot;pud&quot;</span>),</span>
+<span id="cb128-6"><a href="instrumental-variables.html#cb128-6" tabindex="-1"></a>                     <span class="at">treat =</span> <span class="st">&quot;cox2_init&quot;</span>, <span class="at">n_boot =</span> <span class="dv">200</span>, <span class="at">seed =</span> <span class="dv">921</span>)</span>
+<span id="cb128-7"><a href="instrumental-variables.html#cb128-7" tabindex="-1"></a>ipw   <span class="ot">&lt;-</span> <span class="fu">iptw_estimator</span>(ns, ps_model, <span class="at">outcome =</span> <span class="st">&quot;pud&quot;</span>, <span class="at">treat =</span> <span class="st">&quot;cox2_init&quot;</span>)</span>
+<span id="cb128-8"><a href="instrumental-variables.html#cb128-8" tabindex="-1"></a>matched <span class="ot">&lt;-</span> <span class="fu">ps_match</span>(<span class="fu">est_ps</span>(ns, ps_model), <span class="at">treat =</span> <span class="st">&quot;cox2_init&quot;</span>, <span class="at">caliper =</span> <span class="fl">0.05</span>)</span>
+<span id="cb128-9"><a href="instrumental-variables.html#cb128-9" tabindex="-1"></a>mr    <span class="ot">&lt;-</span> <span class="fu">tapply</span>(matched<span class="sc">$</span>pud, matched<span class="sc">$</span>cox2_init, mean)</span>
+<span id="cb128-10"><a href="instrumental-variables.html#cb128-10" tabindex="-1"></a>iv_wald <span class="ot">&lt;-</span> <span class="fu">iv_estimator</span>(ns_iv, <span class="st">&quot;pref_any&quot;</span>, <span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;pud&quot;</span>, <span class="at">seed =</span> <span class="dv">1301</span>)</span>
+<span id="cb128-11"><a href="instrumental-variables.html#cb128-11" tabindex="-1"></a></span>
+<span id="cb128-12"><a href="instrumental-variables.html#cb128-12" tabindex="-1"></a>get <span class="ot">&lt;-</span> <span class="cf">function</span>(d, key, col) d[[col]][d[[<span class="dv">1</span>]] <span class="sc">==</span> key]</span>
+<span id="cb128-13"><a href="instrumental-variables.html#cb128-13" tabindex="-1"></a></span>
+<span id="cb128-14"><a href="instrumental-variables.html#cb128-14" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb128-15"><a href="instrumental-variables.html#cb128-15" tabindex="-1"></a>  <span class="at">estimator =</span> <span class="fu">c</span>(<span class="st">&quot;Crude&quot;</span>, <span class="st">&quot;Standardization (Ch. 7)&quot;</span>, <span class="st">&quot;PS matching (Ch. 8)&quot;</span>,</span>
+<span id="cb128-16"><a href="instrumental-variables.html#cb128-16" tabindex="-1"></a>                <span class="st">&quot;IPTW (Ch. 9)&quot;</span>, <span class="st">&quot;IV: Wald, pref &gt; 0&quot;</span>,</span>
+<span id="cb128-17"><a href="instrumental-variables.html#cb128-17" tabindex="-1"></a>                <span class="st">&quot;IV: 2SLS, continuous pref&quot;</span>, <span class="st">&quot;IV: 2SLS + covariates&quot;</span>),</span>
+<span id="cb128-18"><a href="instrumental-variables.html#cb128-18" tabindex="-1"></a>  <span class="at">estimand  =</span> <span class="fu">c</span>(<span class="st">&quot;none&quot;</span>, <span class="st">&quot;ATE&quot;</span>, <span class="st">&quot;ATT&quot;</span>, <span class="st">&quot;ATE&quot;</span>, <span class="st">&quot;LATE&quot;</span>, <span class="st">&quot;LATE&quot;</span>, <span class="st">&quot;LATE&quot;</span>),</span>
+<span id="cb128-19"><a href="instrumental-variables.html#cb128-19" tabindex="-1"></a>  <span class="at">n         =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(ns), <span class="fu">nrow</span>(ns), <span class="fu">nrow</span>(matched), <span class="fu">nrow</span>(ns), <span class="fu">rep</span>(<span class="fu">nrow</span>(ns_iv), <span class="dv">3</span>)),</span>
+<span id="cb128-20"><a href="instrumental-variables.html#cb128-20" tabindex="-1"></a>  <span class="at">rd_pp =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(crude[<span class="dv">2</span>] <span class="sc">-</span> crude[<span class="dv">1</span>], <span class="fu">get</span>(std, <span class="st">&quot;rd&quot;</span>, <span class="st">&quot;estimate&quot;</span>),</span>
+<span id="cb128-21"><a href="instrumental-variables.html#cb128-21" tabindex="-1"></a>                  mr[[<span class="dv">2</span>]] <span class="sc">-</span> mr[[<span class="dv">1</span>]], <span class="fu">get</span>(ipw, <span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;estimate&quot;</span>),</span>
+<span id="cb128-22"><a href="instrumental-variables.html#cb128-22" tabindex="-1"></a>                  iv_wald<span class="sc">$</span>estimate, iv_plain<span class="sc">$</span>estimate, iv_adj<span class="sc">$</span>estimate),</span>
+<span id="cb128-23"><a href="instrumental-variables.html#cb128-23" tabindex="-1"></a>  <span class="at">lower =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="fu">get</span>(std, <span class="st">&quot;rd&quot;</span>, <span class="st">&quot;conf_low&quot;</span>), <span class="cn">NA</span>,</span>
+<span id="cb128-24"><a href="instrumental-variables.html#cb128-24" tabindex="-1"></a>                  <span class="fu">get</span>(ipw, <span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;conf.low&quot;</span>),</span>
+<span id="cb128-25"><a href="instrumental-variables.html#cb128-25" tabindex="-1"></a>                  iv_wald<span class="sc">$</span>conf_low, iv_plain<span class="sc">$</span>conf_low, iv_adj<span class="sc">$</span>conf_low),</span>
+<span id="cb128-26"><a href="instrumental-variables.html#cb128-26" tabindex="-1"></a>  <span class="at">upper =</span> <span class="dv">100</span> <span class="sc">*</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="fu">get</span>(std, <span class="st">&quot;rd&quot;</span>, <span class="st">&quot;conf_high&quot;</span>), <span class="cn">NA</span>,</span>
+<span id="cb128-27"><a href="instrumental-variables.html#cb128-27" tabindex="-1"></a>                  <span class="fu">get</span>(ipw, <span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;conf.high&quot;</span>),</span>
+<span id="cb128-28"><a href="instrumental-variables.html#cb128-28" tabindex="-1"></a>                  iv_wald<span class="sc">$</span>conf_high, iv_plain<span class="sc">$</span>conf_high, iv_adj<span class="sc">$</span>conf_high)</span>
+<span id="cb128-29"><a href="instrumental-variables.html#cb128-29" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">

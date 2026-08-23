@@ -141,11 +141,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Causal Inference in Epidemiology Using R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a>
 <ul>
-<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
-<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
-<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+<li class="chapter" data-level="0.1" data-path="preface.html"><a href="preface.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="preface.html"><a href="preface.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="preface.html"><a href="preface.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
 </ul></li>
 <li class="part"><span><b>I Foundations</b></span></li>
 <li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
@@ -393,6 +393,15 @@ visit, and nobody’s baseline covariates were measured after the drug
 had a chance to act on them. <code>ns</code> is, in other words, already a
 new-user cohort by construction — we have simply not yet named the
 design principle it follows.</p>
+<p>The idea generalizes beyond initiation. Starting a drug is one clinical
+decision, but stopping one, switching, and intensifying a dose are
+decisions too, and each can anchor a comparison the same way: enroll
+patients at the moment the decision is made, classify them by what was
+decided, and follow them forward. This framing — the <strong>treatment
+decision design</strong> (Brookhart 2015) — is the general form of the
+new-user design, and it is what makes the target trials of Chapter 4
+emulable at decision points other than a first prescription; Chapter
+12’s treatment strategies lean on exactly this view.</p>
 <p>Pharmacoepidemiology has accumulated names for the specific ways these
 comparisons go wrong, and the names are worth knowing because they are how
 reviewers will describe your study. Each is a special case of confounding
@@ -460,16 +469,16 @@ covariates, by rebuilding Chapter 2’s Table 1 for every covariate in
 everything else is categorical — so we route each kind through its own
 helper from <code>R/table1.R</code>, casting <code>year</code> to numeric first since it
 arrives from NAMCS as a factor.</p>
-<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="study-design-for-causal-questions.html#cb40-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/table1.R&quot;</span>)</span>
-<span id="cb40-2"><a href="study-design-for-causal-questions.html#cb40-2" tabindex="-1"></a>ns_year_num <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(year)))</span>
-<span id="cb40-3"><a href="study-design-for-causal-questions.html#cb40-3" tabindex="-1"></a><span class="fu">table1_continuous</span>(</span>
-<span id="cb40-4"><a href="study-design-for-causal-questions.html#cb40-4" tabindex="-1"></a>  ns_year_num,</span>
-<span id="cb40-5"><a href="study-design-for-causal-questions.html#cb40-5" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;year&quot;</span>),</span>
-<span id="cb40-6"><a href="study-design-for-causal-questions.html#cb40-6" tabindex="-1"></a>  <span class="at">by =</span> <span class="st">&quot;cox2_initiation&quot;</span></span>
-<span id="cb40-7"><a href="study-design-for-causal-questions.html#cb40-7" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb40-8"><a href="study-design-for-causal-questions.html#cb40-8" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Variable&quot;</span>, <span class="st">&quot;Nonselective (No)&quot;</span>, <span class="st">&quot;Cox-2 (Yes)&quot;</span>),</span>
-<span id="cb40-9"><a href="study-design-for-causal-questions.html#cb40-9" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Table 1, continuous covariates, ns cohort by cox2_initiation&quot;</span></span>
-<span id="cb40-10"><a href="study-design-for-causal-questions.html#cb40-10" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb38-1"><a href="study-design-for-causal-questions.html#cb38-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/table1.R&quot;</span>)</span>
+<span id="cb38-2"><a href="study-design-for-causal-questions.html#cb38-2" tabindex="-1"></a>ns_year_num <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">year =</span> <span class="fu">as.numeric</span>(<span class="fu">as.character</span>(year)))</span>
+<span id="cb38-3"><a href="study-design-for-causal-questions.html#cb38-3" tabindex="-1"></a><span class="fu">table1_continuous</span>(</span>
+<span id="cb38-4"><a href="study-design-for-causal-questions.html#cb38-4" tabindex="-1"></a>  ns_year_num,</span>
+<span id="cb38-5"><a href="study-design-for-causal-questions.html#cb38-5" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;year&quot;</span>),</span>
+<span id="cb38-6"><a href="study-design-for-causal-questions.html#cb38-6" tabindex="-1"></a>  <span class="at">by =</span> <span class="st">&quot;cox2_initiation&quot;</span></span>
+<span id="cb38-7"><a href="study-design-for-causal-questions.html#cb38-7" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb38-8"><a href="study-design-for-causal-questions.html#cb38-8" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Variable&quot;</span>, <span class="st">&quot;Nonselective (No)&quot;</span>, <span class="st">&quot;Cox-2 (Yes)&quot;</span>),</span>
+<span id="cb38-9"><a href="study-design-for-causal-questions.html#cb38-9" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Table 1, continuous covariates, ns cohort by cox2_initiation&quot;</span></span>
+<span id="cb38-10"><a href="study-design-for-causal-questions.html#cb38-10" tabindex="-1"></a>)</span></code></pre></div>
 <table>
 <caption><span id="tab:ch06-table1-continuous">Table 6.1: </span>Table 1, continuous covariates, ns cohort by cox2_initiation</caption>
 <thead>
@@ -492,14 +501,14 @@ arrives from NAMCS as a factor.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="study-design-for-causal-questions.html#cb41-1" tabindex="-1"></a><span class="fu">table1_categorical</span>(</span>
-<span id="cb41-2"><a href="study-design-for-causal-questions.html#cb41-2" tabindex="-1"></a>  ns,</span>
-<span id="cb41-3"><a href="study-design-for-causal-questions.html#cb41-3" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">setdiff</span>(ns_covs, <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;year&quot;</span>)),</span>
-<span id="cb41-4"><a href="study-design-for-causal-questions.html#cb41-4" tabindex="-1"></a>  <span class="at">by =</span> <span class="st">&quot;cox2_initiation&quot;</span></span>
-<span id="cb41-5"><a href="study-design-for-causal-questions.html#cb41-5" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb41-6"><a href="study-design-for-causal-questions.html#cb41-6" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Variable&quot;</span>, <span class="st">&quot;Level&quot;</span>, <span class="st">&quot;Nonselective (No)&quot;</span>, <span class="st">&quot;Cox-2 (Yes)&quot;</span>),</span>
-<span id="cb41-7"><a href="study-design-for-causal-questions.html#cb41-7" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Table 1, categorical covariates, ns cohort by cox2_initiation&quot;</span></span>
-<span id="cb41-8"><a href="study-design-for-causal-questions.html#cb41-8" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="study-design-for-causal-questions.html#cb39-1" tabindex="-1"></a><span class="fu">table1_categorical</span>(</span>
+<span id="cb39-2"><a href="study-design-for-causal-questions.html#cb39-2" tabindex="-1"></a>  ns,</span>
+<span id="cb39-3"><a href="study-design-for-causal-questions.html#cb39-3" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">setdiff</span>(ns_covs, <span class="fu">c</span>(<span class="st">&quot;age&quot;</span>, <span class="st">&quot;year&quot;</span>)),</span>
+<span id="cb39-4"><a href="study-design-for-causal-questions.html#cb39-4" tabindex="-1"></a>  <span class="at">by =</span> <span class="st">&quot;cox2_initiation&quot;</span></span>
+<span id="cb39-5"><a href="study-design-for-causal-questions.html#cb39-5" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
+<span id="cb39-6"><a href="study-design-for-causal-questions.html#cb39-6" tabindex="-1"></a>  <span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">&quot;Variable&quot;</span>, <span class="st">&quot;Level&quot;</span>, <span class="st">&quot;Nonselective (No)&quot;</span>, <span class="st">&quot;Cox-2 (Yes)&quot;</span>),</span>
+<span id="cb39-7"><a href="study-design-for-causal-questions.html#cb39-7" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Table 1, categorical covariates, ns cohort by cox2_initiation&quot;</span></span>
+<span id="cb39-8"><a href="study-design-for-causal-questions.html#cb39-8" tabindex="-1"></a>)</span></code></pre></div>
 <table>
 <caption><span id="tab:ch06-table1-categorical">Table 6.2: </span>Table 1, categorical covariates, ns cohort by cox2_initiation</caption>
 <thead>
@@ -799,29 +808,29 @@ future drug-taking behavior, and suppose “persistent user” status
 requires two things: surviving past a 90-day grace period, and an
 independent adherence habit that is fixed for each patient and has no
 effect on survival whatsoever.</p>
-<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="study-design-for-causal-questions.html#cb42-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">6</span>)</span>
-<span id="cb42-2"><a href="study-design-for-causal-questions.html#cb42-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">20000</span></span>
-<span id="cb42-3"><a href="study-design-for-causal-questions.html#cb42-3" tabindex="-1"></a>grace <span class="ot">&lt;-</span> <span class="dv">90</span></span>
-<span id="cb42-4"><a href="study-design-for-causal-questions.html#cb42-4" tabindex="-1"></a>follow_up <span class="ot">&lt;-</span> <span class="dv">730</span></span>
-<span id="cb42-5"><a href="study-design-for-causal-questions.html#cb42-5" tabindex="-1"></a></span>
-<span id="cb42-6"><a href="study-design-for-causal-questions.html#cb42-6" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb42-7"><a href="study-design-for-causal-questions.html#cb42-7" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span>n,</span>
-<span id="cb42-8"><a href="study-design-for-causal-questions.html#cb42-8" tabindex="-1"></a>  <span class="at">death_time =</span> <span class="fu">rexp</span>(n, <span class="at">rate =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">2000</span>),</span>
-<span id="cb42-9"><a href="study-design-for-causal-questions.html#cb42-9" tabindex="-1"></a>  <span class="at">adherent   =</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="fl">0.6</span>)   <span class="co"># a habit unrelated to survival, by construction</span></span>
-<span id="cb42-10"><a href="study-design-for-causal-questions.html#cb42-10" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb42-11"><a href="study-design-for-causal-questions.html#cb42-11" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb42-12"><a href="study-design-for-causal-questions.html#cb42-12" tabindex="-1"></a>    <span class="at">alive_grace =</span> death_time <span class="sc">&gt;</span> grace,</span>
-<span id="cb42-13"><a href="study-design-for-causal-questions.html#cb42-13" tabindex="-1"></a>    <span class="at">persistent  =</span> <span class="fu">as.integer</span>(alive_grace <span class="sc">&amp;</span> adherent <span class="sc">==</span> <span class="dv">1</span>),</span>
-<span id="cb42-14"><a href="study-design-for-causal-questions.html#cb42-14" tabindex="-1"></a>    <span class="at">died_by_end =</span> <span class="fu">as.integer</span>(death_time <span class="sc">&lt;=</span> follow_up)</span>
-<span id="cb42-15"><a href="study-design-for-causal-questions.html#cb42-15" tabindex="-1"></a>  )</span></code></pre></div>
+<div class="sourceCode" id="cb40"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb40-1"><a href="study-design-for-causal-questions.html#cb40-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">6</span>)</span>
+<span id="cb40-2"><a href="study-design-for-causal-questions.html#cb40-2" tabindex="-1"></a>n <span class="ot">&lt;-</span> <span class="dv">20000</span></span>
+<span id="cb40-3"><a href="study-design-for-causal-questions.html#cb40-3" tabindex="-1"></a>grace <span class="ot">&lt;-</span> <span class="dv">90</span></span>
+<span id="cb40-4"><a href="study-design-for-causal-questions.html#cb40-4" tabindex="-1"></a>follow_up <span class="ot">&lt;-</span> <span class="dv">730</span></span>
+<span id="cb40-5"><a href="study-design-for-causal-questions.html#cb40-5" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="study-design-for-causal-questions.html#cb40-6" tabindex="-1"></a>hyp <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb40-7"><a href="study-design-for-causal-questions.html#cb40-7" tabindex="-1"></a>  <span class="at">id =</span> <span class="dv">1</span><span class="sc">:</span>n,</span>
+<span id="cb40-8"><a href="study-design-for-causal-questions.html#cb40-8" tabindex="-1"></a>  <span class="at">death_time =</span> <span class="fu">rexp</span>(n, <span class="at">rate =</span> <span class="dv">1</span> <span class="sc">/</span> <span class="dv">2000</span>),</span>
+<span id="cb40-9"><a href="study-design-for-causal-questions.html#cb40-9" tabindex="-1"></a>  <span class="at">adherent   =</span> <span class="fu">rbinom</span>(n, <span class="dv">1</span>, <span class="fl">0.6</span>)   <span class="co"># a habit unrelated to survival, by construction</span></span>
+<span id="cb40-10"><a href="study-design-for-causal-questions.html#cb40-10" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb40-11"><a href="study-design-for-causal-questions.html#cb40-11" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb40-12"><a href="study-design-for-causal-questions.html#cb40-12" tabindex="-1"></a>    <span class="at">alive_grace =</span> death_time <span class="sc">&gt;</span> grace,</span>
+<span id="cb40-13"><a href="study-design-for-causal-questions.html#cb40-13" tabindex="-1"></a>    <span class="at">persistent  =</span> <span class="fu">as.integer</span>(alive_grace <span class="sc">&amp;</span> adherent <span class="sc">==</span> <span class="dv">1</span>),</span>
+<span id="cb40-14"><a href="study-design-for-causal-questions.html#cb40-14" tabindex="-1"></a>    <span class="at">died_by_end =</span> <span class="fu">as.integer</span>(death_time <span class="sc">&lt;=</span> follow_up)</span>
+<span id="cb40-15"><a href="study-design-for-causal-questions.html#cb40-15" tabindex="-1"></a>  )</span></code></pre></div>
 <p>A naive analysis, of the kind a misaligned time-zero produces, starts
 every patient’s clock on day zero and simply compares mortality risk
 between “persistent users” and everyone else over the full
 730-day window:</p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="study-design-for-causal-questions.html#cb43-1" tabindex="-1"></a>naive_tab <span class="ot">&lt;-</span> hyp <span class="sc">|&gt;</span></span>
-<span id="cb43-2"><a href="study-design-for-causal-questions.html#cb43-2" tabindex="-1"></a>  <span class="fu">group_by</span>(persistent) <span class="sc">|&gt;</span></span>
-<span id="cb43-3"><a href="study-design-for-causal-questions.html#cb43-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">risk =</span> <span class="fu">mean</span>(died_by_end), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span>
-<span id="cb43-4"><a href="study-design-for-causal-questions.html#cb43-4" tabindex="-1"></a>naive_tab <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="study-design-for-causal-questions.html#cb41-1" tabindex="-1"></a>naive_tab <span class="ot">&lt;-</span> hyp <span class="sc">|&gt;</span></span>
+<span id="cb41-2"><a href="study-design-for-causal-questions.html#cb41-2" tabindex="-1"></a>  <span class="fu">group_by</span>(persistent) <span class="sc">|&gt;</span></span>
+<span id="cb41-3"><a href="study-design-for-causal-questions.html#cb41-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">risk =</span> <span class="fu">mean</span>(died_by_end), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>)</span>
+<span id="cb41-4"><a href="study-design-for-causal-questions.html#cb41-4" tabindex="-1"></a>naive_tab <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -860,7 +869,7 @@ treatment actually started.</p>
 group: restrict the comparison to patients who survived to the end of
 the grace period, and start everyone’s clock there, at day
 90, rather than at day zero.</p>
-<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="study-design-for-causal-questions.html#cb44-1" tabindex="-1"></a>landmark_tab <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="study-design-for-causal-questions.html#cb42-1" tabindex="-1"></a>landmark_tab <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">

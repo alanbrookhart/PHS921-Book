@@ -141,11 +141,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Causal Inference in Epidemiology Using R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a>
 <ul>
-<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
-<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
-<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+<li class="chapter" data-level="0.1" data-path="preface.html"><a href="preface.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="preface.html"><a href="preface.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="preface.html"><a href="preface.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
 </ul></li>
 <li class="part"><span><b>I Foundations</b></span></li>
 <li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
@@ -333,10 +333,10 @@ between arms is confounded — and confounded in a direction we can
 anticipate, since the patients steered toward the Cox-2 drug were
 steered there partly <em>because</em> their physicians judged them to be at
 higher GI risk.</p>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="outcome-regression-and-standardization.html#cb45-1" tabindex="-1"></a>ns <span class="sc">|&gt;</span></span>
-<span id="cb45-2"><a href="outcome-regression-and-standardization.html#cb45-2" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_init) <span class="sc">|&gt;</span></span>
-<span id="cb45-3"><a href="outcome-regression-and-standardization.html#cb45-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">cases =</span> <span class="fu">sum</span>(pud), <span class="at">risk =</span> <span class="fu">mean</span>(pud), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb45-4"><a href="outcome-regression-and-standardization.html#cb45-4" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="outcome-regression-and-standardization.html#cb43-1" tabindex="-1"></a>ns <span class="sc">|&gt;</span></span>
+<span id="cb43-2"><a href="outcome-regression-and-standardization.html#cb43-2" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_init) <span class="sc">|&gt;</span></span>
+<span id="cb43-3"><a href="outcome-regression-and-standardization.html#cb43-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">cases =</span> <span class="fu">sum</span>(pud), <span class="at">risk =</span> <span class="fu">mean</span>(pud), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-4"><a href="outcome-regression-and-standardization.html#cb43-4" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -374,17 +374,17 @@ treatment indicator alongside every covariate in the adjustment set.
 Rather than typing nineteen covariate names, we let <code>reformulate()</code>
 assemble the formula from <code>ns_covs</code>, which keeps <code>R/setup.R</code> as the
 single source of truth for what “adjusted” means in this book.</p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="outcome-regression-and-standardization.html#cb46-1" tabindex="-1"></a><span class="fu">library</span>(broom)</span></code></pre></div>
-<pre><code>## Warning: package &#39;broom&#39; was built under R version 4.3.3</code></pre>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="outcome-regression-and-standardization.html#cb48-1" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
-<span id="cb48-2"><a href="outcome-regression-and-standardization.html#cb48-2" tabindex="-1"></a>  <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, ns_covs), <span class="st">&quot;pud&quot;</span>),</span>
-<span id="cb48-3"><a href="outcome-regression-and-standardization.html#cb48-3" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
-<span id="cb48-4"><a href="outcome-regression-and-standardization.html#cb48-4" tabindex="-1"></a>  <span class="at">data =</span> ns</span>
-<span id="cb48-5"><a href="outcome-regression-and-standardization.html#cb48-5" tabindex="-1"></a>)</span>
-<span id="cb48-6"><a href="outcome-regression-and-standardization.html#cb48-6" tabindex="-1"></a></span>
-<span id="cb48-7"><a href="outcome-regression-and-standardization.html#cb48-7" tabindex="-1"></a><span class="fu">tidy</span>(fit, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb48-8"><a href="outcome-regression-and-standardization.html#cb48-8" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;arthritisYes&quot;</span>, <span class="st">&quot;corticosteroid_useYes&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb48-9"><a href="outcome-regression-and-standardization.html#cb48-9" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="outcome-regression-and-standardization.html#cb44-1" tabindex="-1"></a><span class="fu">library</span>(broom)</span>
+<span id="cb44-2"><a href="outcome-regression-and-standardization.html#cb44-2" tabindex="-1"></a></span>
+<span id="cb44-3"><a href="outcome-regression-and-standardization.html#cb44-3" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb44-4"><a href="outcome-regression-and-standardization.html#cb44-4" tabindex="-1"></a>  <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, ns_covs), <span class="st">&quot;pud&quot;</span>),</span>
+<span id="cb44-5"><a href="outcome-regression-and-standardization.html#cb44-5" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
+<span id="cb44-6"><a href="outcome-regression-and-standardization.html#cb44-6" tabindex="-1"></a>  <span class="at">data =</span> ns</span>
+<span id="cb44-7"><a href="outcome-regression-and-standardization.html#cb44-7" tabindex="-1"></a>)</span>
+<span id="cb44-8"><a href="outcome-regression-and-standardization.html#cb44-8" tabindex="-1"></a></span>
+<span id="cb44-9"><a href="outcome-regression-and-standardization.html#cb44-9" tabindex="-1"></a><span class="fu">tidy</span>(fit, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb44-10"><a href="outcome-regression-and-standardization.html#cb44-10" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;arthritisYes&quot;</span>, <span class="st">&quot;corticosteroid_useYes&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb44-11"><a href="outcome-regression-and-standardization.html#cb44-11" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <colgroup>
 <col width="28%" />
@@ -493,11 +493,11 @@ averaging — over the observed covariate distribution of the whole
 cohort — is what turns those individual predictions into a marginal,
 population-level contrast.</p>
 <p>It takes five lines.</p>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="outcome-regression-and-standardization.html#cb49-1" tabindex="-1"></a>ns1 <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cox2_init =</span> <span class="dv">1</span>)</span>
-<span id="cb49-2"><a href="outcome-regression-and-standardization.html#cb49-2" tabindex="-1"></a>ns0 <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cox2_init =</span> <span class="dv">0</span>)</span>
-<span id="cb49-3"><a href="outcome-regression-and-standardization.html#cb49-3" tabindex="-1"></a>risk1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> ns1, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
-<span id="cb49-4"><a href="outcome-regression-and-standardization.html#cb49-4" tabindex="-1"></a>risk0 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> ns0, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
-<span id="cb49-5"><a href="outcome-regression-and-standardization.html#cb49-5" tabindex="-1"></a><span class="fu">c</span>(<span class="at">risk0 =</span> risk0, <span class="at">risk1 =</span> risk1, <span class="at">rd =</span> risk1 <span class="sc">-</span> risk0, <span class="at">rr =</span> risk1 <span class="sc">/</span> risk0)</span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="outcome-regression-and-standardization.html#cb45-1" tabindex="-1"></a>ns1 <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cox2_init =</span> <span class="dv">1</span>)</span>
+<span id="cb45-2"><a href="outcome-regression-and-standardization.html#cb45-2" tabindex="-1"></a>ns0 <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cox2_init =</span> <span class="dv">0</span>)</span>
+<span id="cb45-3"><a href="outcome-regression-and-standardization.html#cb45-3" tabindex="-1"></a>risk1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> ns1, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb45-4"><a href="outcome-regression-and-standardization.html#cb45-4" tabindex="-1"></a>risk0 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> ns0, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb45-5"><a href="outcome-regression-and-standardization.html#cb45-5" tabindex="-1"></a><span class="fu">c</span>(<span class="at">risk0 =</span> risk0, <span class="at">risk1 =</span> risk1, <span class="at">rd =</span> risk1 <span class="sc">-</span> risk0, <span class="at">rr =</span> risk1 <span class="sc">/</span> risk0)</span></code></pre></div>
 <pre><code>##        risk0        risk1           rd           rr 
 ##  0.100531704  0.095016560 -0.005515145  0.945140244</code></pre>
 <p>Notice what the two copies of the data are doing. <code>ns1</code> is the cohort as
@@ -531,41 +531,41 @@ own inner function, <code>point_estimates()</code>, because the bootstrap in the
 next section needs to run exactly the same computation on a resampled
 data set — fitting the model <em>inside</em> the resample, not reusing the
 original fit.</p>
-<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="outcome-regression-and-standardization.html#cb51-1" tabindex="-1"></a>standardize <span class="ot">&lt;-</span> <span class="cf">function</span>(data, outcome_model, treat, <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
-<span id="cb51-2"><a href="outcome-regression-and-standardization.html#cb51-2" tabindex="-1"></a>                        <span class="at">n_boot =</span> <span class="dv">200</span>, <span class="at">conf_level =</span> <span class="fl">0.95</span>, <span class="at">seed =</span> <span class="cn">NULL</span>) {</span>
-<span id="cb51-3"><a href="outcome-regression-and-standardization.html#cb51-3" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(seed)) <span class="fu">set.seed</span>(seed)</span>
-<span id="cb51-4"><a href="outcome-regression-and-standardization.html#cb51-4" tabindex="-1"></a></span>
-<span id="cb51-5"><a href="outcome-regression-and-standardization.html#cb51-5" tabindex="-1"></a>  point_estimates <span class="ot">&lt;-</span> <span class="cf">function</span>(d) {</span>
-<span id="cb51-6"><a href="outcome-regression-and-standardization.html#cb51-6" tabindex="-1"></a>    fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(outcome_model, <span class="at">family =</span> family, <span class="at">data =</span> d)</span>
-<span id="cb51-7"><a href="outcome-regression-and-standardization.html#cb51-7" tabindex="-1"></a>    d1 <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="st">&quot;{treat}&quot;</span> <span class="sc">:=</span> <span class="dv">1</span>)</span>
-<span id="cb51-8"><a href="outcome-regression-and-standardization.html#cb51-8" tabindex="-1"></a>    d0 <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="st">&quot;{treat}&quot;</span> <span class="sc">:=</span> <span class="dv">0</span>)</span>
-<span id="cb51-9"><a href="outcome-regression-and-standardization.html#cb51-9" tabindex="-1"></a>    risk1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> d1, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
-<span id="cb51-10"><a href="outcome-regression-and-standardization.html#cb51-10" tabindex="-1"></a>    risk0 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> d0, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
-<span id="cb51-11"><a href="outcome-regression-and-standardization.html#cb51-11" tabindex="-1"></a>    <span class="fu">c</span>(<span class="at">risk0 =</span> risk0, <span class="at">risk1 =</span> risk1, <span class="at">rd =</span> risk1 <span class="sc">-</span> risk0, <span class="at">rr =</span> risk1 <span class="sc">/</span> risk0)</span>
-<span id="cb51-12"><a href="outcome-regression-and-standardization.html#cb51-12" tabindex="-1"></a>  }</span>
-<span id="cb51-13"><a href="outcome-regression-and-standardization.html#cb51-13" tabindex="-1"></a></span>
-<span id="cb51-14"><a href="outcome-regression-and-standardization.html#cb51-14" tabindex="-1"></a>  est <span class="ot">&lt;-</span> <span class="fu">point_estimates</span>(data)</span>
-<span id="cb51-15"><a href="outcome-regression-and-standardization.html#cb51-15" tabindex="-1"></a>  boot_est <span class="ot">&lt;-</span> <span class="fu">replicate</span>(n_boot, {</span>
-<span id="cb51-16"><a href="outcome-regression-and-standardization.html#cb51-16" tabindex="-1"></a>    <span class="fu">point_estimates</span>(<span class="fu">slice_sample</span>(data, <span class="at">prop =</span> <span class="dv">1</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
-<span id="cb51-17"><a href="outcome-regression-and-standardization.html#cb51-17" tabindex="-1"></a>  })</span>
-<span id="cb51-18"><a href="outcome-regression-and-standardization.html#cb51-18" tabindex="-1"></a>  alpha <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> conf_level</span>
-<span id="cb51-19"><a href="outcome-regression-and-standardization.html#cb51-19" tabindex="-1"></a></span>
-<span id="cb51-20"><a href="outcome-regression-and-standardization.html#cb51-20" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
-<span id="cb51-21"><a href="outcome-regression-and-standardization.html#cb51-21" tabindex="-1"></a>    <span class="at">estimand  =</span> <span class="fu">names</span>(est),</span>
-<span id="cb51-22"><a href="outcome-regression-and-standardization.html#cb51-22" tabindex="-1"></a>    <span class="at">estimate  =</span> <span class="fu">unname</span>(est),</span>
-<span id="cb51-23"><a href="outcome-regression-and-standardization.html#cb51-23" tabindex="-1"></a>    <span class="at">conf_low  =</span> <span class="fu">apply</span>(boot_est, <span class="dv">1</span>, quantile, <span class="at">probs =</span> alpha <span class="sc">/</span> <span class="dv">2</span>),</span>
-<span id="cb51-24"><a href="outcome-regression-and-standardization.html#cb51-24" tabindex="-1"></a>    <span class="at">conf_high =</span> <span class="fu">apply</span>(boot_est, <span class="dv">1</span>, quantile, <span class="at">probs =</span> <span class="dv">1</span> <span class="sc">-</span> alpha <span class="sc">/</span> <span class="dv">2</span>)</span>
-<span id="cb51-25"><a href="outcome-regression-and-standardization.html#cb51-25" tabindex="-1"></a>  )</span>
-<span id="cb51-26"><a href="outcome-regression-and-standardization.html#cb51-26" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="outcome-regression-and-standardization.html#cb47-1" tabindex="-1"></a>standardize <span class="ot">&lt;-</span> <span class="cf">function</span>(data, outcome_model, treat, <span class="at">family =</span> <span class="fu">binomial</span>(),</span>
+<span id="cb47-2"><a href="outcome-regression-and-standardization.html#cb47-2" tabindex="-1"></a>                        <span class="at">n_boot =</span> <span class="dv">200</span>, <span class="at">conf_level =</span> <span class="fl">0.95</span>, <span class="at">seed =</span> <span class="cn">NULL</span>) {</span>
+<span id="cb47-3"><a href="outcome-regression-and-standardization.html#cb47-3" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(seed)) <span class="fu">set.seed</span>(seed)</span>
+<span id="cb47-4"><a href="outcome-regression-and-standardization.html#cb47-4" tabindex="-1"></a></span>
+<span id="cb47-5"><a href="outcome-regression-and-standardization.html#cb47-5" tabindex="-1"></a>  point_estimates <span class="ot">&lt;-</span> <span class="cf">function</span>(d) {</span>
+<span id="cb47-6"><a href="outcome-regression-and-standardization.html#cb47-6" tabindex="-1"></a>    fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(outcome_model, <span class="at">family =</span> family, <span class="at">data =</span> d)</span>
+<span id="cb47-7"><a href="outcome-regression-and-standardization.html#cb47-7" tabindex="-1"></a>    d1 <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="st">&quot;{treat}&quot;</span> <span class="sc">:=</span> <span class="dv">1</span>)</span>
+<span id="cb47-8"><a href="outcome-regression-and-standardization.html#cb47-8" tabindex="-1"></a>    d0 <span class="ot">&lt;-</span> d <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="st">&quot;{treat}&quot;</span> <span class="sc">:=</span> <span class="dv">0</span>)</span>
+<span id="cb47-9"><a href="outcome-regression-and-standardization.html#cb47-9" tabindex="-1"></a>    risk1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> d1, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb47-10"><a href="outcome-regression-and-standardization.html#cb47-10" tabindex="-1"></a>    risk0 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> d0, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb47-11"><a href="outcome-regression-and-standardization.html#cb47-11" tabindex="-1"></a>    <span class="fu">c</span>(<span class="at">risk0 =</span> risk0, <span class="at">risk1 =</span> risk1, <span class="at">rd =</span> risk1 <span class="sc">-</span> risk0, <span class="at">rr =</span> risk1 <span class="sc">/</span> risk0)</span>
+<span id="cb47-12"><a href="outcome-regression-and-standardization.html#cb47-12" tabindex="-1"></a>  }</span>
+<span id="cb47-13"><a href="outcome-regression-and-standardization.html#cb47-13" tabindex="-1"></a></span>
+<span id="cb47-14"><a href="outcome-regression-and-standardization.html#cb47-14" tabindex="-1"></a>  est <span class="ot">&lt;-</span> <span class="fu">point_estimates</span>(data)</span>
+<span id="cb47-15"><a href="outcome-regression-and-standardization.html#cb47-15" tabindex="-1"></a>  boot_est <span class="ot">&lt;-</span> <span class="fu">replicate</span>(n_boot, {</span>
+<span id="cb47-16"><a href="outcome-regression-and-standardization.html#cb47-16" tabindex="-1"></a>    <span class="fu">point_estimates</span>(<span class="fu">slice_sample</span>(data, <span class="at">prop =</span> <span class="dv">1</span>, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb47-17"><a href="outcome-regression-and-standardization.html#cb47-17" tabindex="-1"></a>  })</span>
+<span id="cb47-18"><a href="outcome-regression-and-standardization.html#cb47-18" tabindex="-1"></a>  alpha <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> conf_level</span>
+<span id="cb47-19"><a href="outcome-regression-and-standardization.html#cb47-19" tabindex="-1"></a></span>
+<span id="cb47-20"><a href="outcome-regression-and-standardization.html#cb47-20" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb47-21"><a href="outcome-regression-and-standardization.html#cb47-21" tabindex="-1"></a>    <span class="at">estimand  =</span> <span class="fu">names</span>(est),</span>
+<span id="cb47-22"><a href="outcome-regression-and-standardization.html#cb47-22" tabindex="-1"></a>    <span class="at">estimate  =</span> <span class="fu">unname</span>(est),</span>
+<span id="cb47-23"><a href="outcome-regression-and-standardization.html#cb47-23" tabindex="-1"></a>    <span class="at">conf_low  =</span> <span class="fu">apply</span>(boot_est, <span class="dv">1</span>, quantile, <span class="at">probs =</span> alpha <span class="sc">/</span> <span class="dv">2</span>),</span>
+<span id="cb47-24"><a href="outcome-regression-and-standardization.html#cb47-24" tabindex="-1"></a>    <span class="at">conf_high =</span> <span class="fu">apply</span>(boot_est, <span class="dv">1</span>, quantile, <span class="at">probs =</span> <span class="dv">1</span> <span class="sc">-</span> alpha <span class="sc">/</span> <span class="dv">2</span>)</span>
+<span id="cb47-25"><a href="outcome-regression-and-standardization.html#cb47-25" tabindex="-1"></a>  )</span>
+<span id="cb47-26"><a href="outcome-regression-and-standardization.html#cb47-26" tabindex="-1"></a>}</span></code></pre></div>
 <p>That code lives in <code>R/standardize.R</code>, so from here on we source it
 rather than retype it.</p>
-<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="outcome-regression-and-standardization.html#cb52-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/standardize.R&quot;</span>)</span>
-<span id="cb52-2"><a href="outcome-regression-and-standardization.html#cb52-2" tabindex="-1"></a>std <span class="ot">&lt;-</span> <span class="fu">standardize</span>(</span>
-<span id="cb52-3"><a href="outcome-regression-and-standardization.html#cb52-3" tabindex="-1"></a>  ns,</span>
-<span id="cb52-4"><a href="outcome-regression-and-standardization.html#cb52-4" tabindex="-1"></a>  <span class="at">outcome_model =</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, ns_covs), <span class="st">&quot;pud&quot;</span>),</span>
-<span id="cb52-5"><a href="outcome-regression-and-standardization.html#cb52-5" tabindex="-1"></a>  <span class="at">treat =</span> <span class="st">&quot;cox2_init&quot;</span>, <span class="at">n_boot =</span> <span class="dv">200</span>, <span class="at">seed =</span> <span class="dv">921</span></span>
-<span id="cb52-6"><a href="outcome-regression-and-standardization.html#cb52-6" tabindex="-1"></a>)</span>
-<span id="cb52-7"><a href="outcome-regression-and-standardization.html#cb52-7" tabindex="-1"></a>std <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="outcome-regression-and-standardization.html#cb48-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/standardize.R&quot;</span>)</span>
+<span id="cb48-2"><a href="outcome-regression-and-standardization.html#cb48-2" tabindex="-1"></a>std <span class="ot">&lt;-</span> <span class="fu">standardize</span>(</span>
+<span id="cb48-3"><a href="outcome-regression-and-standardization.html#cb48-3" tabindex="-1"></a>  ns,</span>
+<span id="cb48-4"><a href="outcome-regression-and-standardization.html#cb48-4" tabindex="-1"></a>  <span class="at">outcome_model =</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, ns_covs), <span class="st">&quot;pud&quot;</span>),</span>
+<span id="cb48-5"><a href="outcome-regression-and-standardization.html#cb48-5" tabindex="-1"></a>  <span class="at">treat =</span> <span class="st">&quot;cox2_init&quot;</span>, <span class="at">n_boot =</span> <span class="dv">200</span>, <span class="at">seed =</span> <span class="dv">921</span></span>
+<span id="cb48-6"><a href="outcome-regression-and-standardization.html#cb48-6" tabindex="-1"></a>)</span>
+<span id="cb48-7"><a href="outcome-regression-and-standardization.html#cb48-7" tabindex="-1"></a>std <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -669,14 +669,14 @@ causal effect differs across levels of a covariate, we call that
 <strong>effect modification</strong> (or heterogeneity of treatment effect), and we
 look for it by letting the treatment coefficient depend on that
 covariate — an interaction term.</p>
-<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="outcome-regression-and-standardization.html#cb53-1" tabindex="-1"></a>fit_int <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
-<span id="cb53-2"><a href="outcome-regression-and-standardization.html#cb53-2" tabindex="-1"></a>  <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, ns_covs, <span class="st">&quot;cox2_init:aspirin_use&quot;</span>), <span class="st">&quot;pud&quot;</span>),</span>
-<span id="cb53-3"><a href="outcome-regression-and-standardization.html#cb53-3" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> ns</span>
-<span id="cb53-4"><a href="outcome-regression-and-standardization.html#cb53-4" tabindex="-1"></a>)</span>
-<span id="cb53-5"><a href="outcome-regression-and-standardization.html#cb53-5" tabindex="-1"></a></span>
-<span id="cb53-6"><a href="outcome-regression-and-standardization.html#cb53-6" tabindex="-1"></a><span class="fu">tidy</span>(fit_int, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb53-7"><a href="outcome-regression-and-standardization.html#cb53-7" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(term, <span class="st">&quot;cox2_init&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb53-8"><a href="outcome-regression-and-standardization.html#cb53-8" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="outcome-regression-and-standardization.html#cb49-1" tabindex="-1"></a>fit_int <span class="ot">&lt;-</span> <span class="fu">glm</span>(</span>
+<span id="cb49-2"><a href="outcome-regression-and-standardization.html#cb49-2" tabindex="-1"></a>  <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, ns_covs, <span class="st">&quot;cox2_init:aspirin_use&quot;</span>), <span class="st">&quot;pud&quot;</span>),</span>
+<span id="cb49-3"><a href="outcome-regression-and-standardization.html#cb49-3" tabindex="-1"></a>  <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> ns</span>
+<span id="cb49-4"><a href="outcome-regression-and-standardization.html#cb49-4" tabindex="-1"></a>)</span>
+<span id="cb49-5"><a href="outcome-regression-and-standardization.html#cb49-5" tabindex="-1"></a></span>
+<span id="cb49-6"><a href="outcome-regression-and-standardization.html#cb49-6" tabindex="-1"></a><span class="fu">tidy</span>(fit_int, <span class="at">exponentiate =</span> <span class="cn">TRUE</span>, <span class="at">conf.int =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb49-7"><a href="outcome-regression-and-standardization.html#cb49-7" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(term, <span class="st">&quot;cox2_init&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb49-8"><a href="outcome-regression-and-standardization.html#cb49-8" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table style="width:100%;">
 <colgroup>
 <col width="30%" />
@@ -741,15 +741,15 @@ leave the covariate list, and among aspirin users
 92 aspirin users we cannot support nineteen covariates in that
 stratum in any case. We fit a deliberately lean model in both strata so the
 two are comparable.</p>
-<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="outcome-regression-and-standardization.html#cb54-1" tabindex="-1"></a>lean <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;arthritis&quot;</span>), <span class="st">&quot;pud&quot;</span>)</span>
-<span id="cb54-2"><a href="outcome-regression-and-standardization.html#cb54-2" tabindex="-1"></a></span>
-<span id="cb54-3"><a href="outcome-regression-and-standardization.html#cb54-3" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb54-4"><a href="outcome-regression-and-standardization.html#cb54-4" tabindex="-1"></a>  <span class="fu">standardize</span>(<span class="fu">filter</span>(ns, aspirin_use <span class="sc">==</span> <span class="st">&quot;No&quot;</span>),  lean, <span class="st">&quot;cox2_init&quot;</span>, <span class="at">seed =</span> <span class="dv">922</span>) <span class="sc">|&gt;</span></span>
-<span id="cb54-5"><a href="outcome-regression-and-standardization.html#cb54-5" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">aspirin =</span> <span class="st">&quot;No&quot;</span>, <span class="at">.before =</span> <span class="dv">1</span>),</span>
-<span id="cb54-6"><a href="outcome-regression-and-standardization.html#cb54-6" tabindex="-1"></a>  <span class="fu">standardize</span>(<span class="fu">filter</span>(ns, aspirin_use <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span>), lean, <span class="st">&quot;cox2_init&quot;</span>, <span class="at">seed =</span> <span class="dv">923</span>) <span class="sc">|&gt;</span></span>
-<span id="cb54-7"><a href="outcome-regression-and-standardization.html#cb54-7" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">aspirin =</span> <span class="st">&quot;Yes&quot;</span>, <span class="at">.before =</span> <span class="dv">1</span>)</span>
-<span id="cb54-8"><a href="outcome-regression-and-standardization.html#cb54-8" tabindex="-1"></a>)</span>
-<span id="cb54-9"><a href="outcome-regression-and-standardization.html#cb54-9" tabindex="-1"></a>sub <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="outcome-regression-and-standardization.html#cb50-1" tabindex="-1"></a>lean <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;cox2_init&quot;</span>, <span class="st">&quot;age&quot;</span>, <span class="st">&quot;sex&quot;</span>, <span class="st">&quot;arthritis&quot;</span>), <span class="st">&quot;pud&quot;</span>)</span>
+<span id="cb50-2"><a href="outcome-regression-and-standardization.html#cb50-2" tabindex="-1"></a></span>
+<span id="cb50-3"><a href="outcome-regression-and-standardization.html#cb50-3" tabindex="-1"></a>sub <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
+<span id="cb50-4"><a href="outcome-regression-and-standardization.html#cb50-4" tabindex="-1"></a>  <span class="fu">standardize</span>(<span class="fu">filter</span>(ns, aspirin_use <span class="sc">==</span> <span class="st">&quot;No&quot;</span>),  lean, <span class="st">&quot;cox2_init&quot;</span>, <span class="at">seed =</span> <span class="dv">922</span>) <span class="sc">|&gt;</span></span>
+<span id="cb50-5"><a href="outcome-regression-and-standardization.html#cb50-5" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">aspirin =</span> <span class="st">&quot;No&quot;</span>, <span class="at">.before =</span> <span class="dv">1</span>),</span>
+<span id="cb50-6"><a href="outcome-regression-and-standardization.html#cb50-6" tabindex="-1"></a>  <span class="fu">standardize</span>(<span class="fu">filter</span>(ns, aspirin_use <span class="sc">==</span> <span class="st">&quot;Yes&quot;</span>), lean, <span class="st">&quot;cox2_init&quot;</span>, <span class="at">seed =</span> <span class="dv">923</span>) <span class="sc">|&gt;</span></span>
+<span id="cb50-7"><a href="outcome-regression-and-standardization.html#cb50-7" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">aspirin =</span> <span class="st">&quot;Yes&quot;</span>, <span class="at">.before =</span> <span class="dv">1</span>)</span>
+<span id="cb50-8"><a href="outcome-regression-and-standardization.html#cb50-8" tabindex="-1"></a>)</span>
+<span id="cb50-9"><a href="outcome-regression-and-standardization.html#cb50-9" tabindex="-1"></a>sub <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">

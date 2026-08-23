@@ -141,11 +141,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Causal Inference in Epidemiology Using R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a>
 <ul>
-<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
-<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
-<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+<li class="chapter" data-level="0.1" data-path="preface.html"><a href="preface.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="preface.html"><a href="preface.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="preface.html"><a href="preface.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
 </ul></li>
 <li class="part"><span><b>I Foundations</b></span></li>
 <li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
@@ -405,7 +405,7 @@ matching the treatment each patient actually got.</p>
 <span id="cb23-11"><a href="potential-outcomes-and-causal-effects.html#cb23-11" tabindex="-1"></a>  <span class="at">att   =</span> <span class="fu">mean</span>(y1[a <span class="sc">==</span> <span class="dv">1</span>]) <span class="sc">-</span> <span class="fu">mean</span>(y0[a <span class="sc">==</span> <span class="dv">1</span>]),</span>
 <span id="cb23-12"><a href="potential-outcomes-and-causal-effects.html#cb23-12" tabindex="-1"></a>  <span class="at">naive =</span> <span class="fu">mean</span>(y[a <span class="sc">==</span> <span class="dv">1</span>]) <span class="sc">-</span> <span class="fu">mean</span>(y[a <span class="sc">==</span> <span class="dv">0</span>])</span>
 <span id="cb23-13"><a href="potential-outcomes-and-causal-effects.html#cb23-13" tabindex="-1"></a>)</span></code></pre></div>
-<pre><code>## # A tibble: 1 x 3
+<pre><code>## # A tibble: 1 × 3
 ##       ate     att  naive
 ##     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
 ## 1 -0.0202 -0.0237 0.0484</code></pre>
@@ -549,7 +549,7 @@ exactly the way conditional exchangeability requires:</p>
 <span id="cb25-5"><a href="potential-outcomes-and-causal-effects.html#cb25-5" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
 <span id="cb25-6"><a href="potential-outcomes-and-causal-effects.html#cb25-6" tabindex="-1"></a>  )</span>
 <span id="cb25-7"><a href="potential-outcomes-and-causal-effects.html#cb25-7" tabindex="-1"></a>by_severity</span></code></pre></div>
-<pre><code>## # A tibble: 2 x 2
+<pre><code>## # A tibble: 2 × 2
 ##   severity naive_within
 ##      &lt;int&gt;        &lt;dbl&gt;
 ## 1        0      -0.0184

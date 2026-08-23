@@ -141,11 +141,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Causal Inference in Epidemiology Using R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a>
 <ul>
-<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
-<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
-<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+<li class="chapter" data-level="0.1" data-path="preface.html"><a href="preface.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="preface.html"><a href="preface.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="preface.html"><a href="preface.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
 </ul></li>
 <li class="part"><span><b>I Foundations</b></span></li>
 <li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
@@ -366,25 +366,25 @@ we can check directly, and will.</p>
 so the function that does it is short. It fits the treatment model and
 returns the data with the fitted probabilities attached as a column
 named <code>ps</code>, which is what every method later in the chapter consumes.</p>
-<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="propensity-scores.html#cb55-1" tabindex="-1"></a>est_ps <span class="ot">&lt;-</span> <span class="cf">function</span>(data, treat_model) {</span>
-<span id="cb55-2"><a href="propensity-scores.html#cb55-2" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(treat_model, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> data)</span>
-<span id="cb55-3"><a href="propensity-scores.html#cb55-3" tabindex="-1"></a>  data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">ps =</span> <span class="fu">predict</span>(fit, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
-<span id="cb55-4"><a href="propensity-scores.html#cb55-4" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="propensity-scores.html#cb51-1" tabindex="-1"></a>est_ps <span class="ot">&lt;-</span> <span class="cf">function</span>(data, treat_model) {</span>
+<span id="cb51-2"><a href="propensity-scores.html#cb51-2" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(treat_model, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> data)</span>
+<span id="cb51-3"><a href="propensity-scores.html#cb51-3" tabindex="-1"></a>  data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">ps =</span> <span class="fu">predict</span>(fit, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb51-4"><a href="propensity-scores.html#cb51-4" tabindex="-1"></a>}</span></code></pre></div>
 <p><code>predict()</code> with <code>type = "response"</code> is what puts the predictions on the
 probability scale rather than the log-odds scale; without it we would
 get linear predictors, which balance just as well but are harder to
 read. That code and the matching function below live in
 <code>R/propensity.R</code>, so from here on we source it.</p>
-<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="propensity-scores.html#cb56-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/propensity.R&quot;</span>)</span>
-<span id="cb56-2"><a href="propensity-scores.html#cb56-2" tabindex="-1"></a></span>
-<span id="cb56-3"><a href="propensity-scores.html#cb56-3" tabindex="-1"></a>ps_model <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(ns_covs, <span class="st">&quot;cox2_init&quot;</span>)</span>
-<span id="cb56-4"><a href="propensity-scores.html#cb56-4" tabindex="-1"></a>ns_ps <span class="ot">&lt;-</span> <span class="fu">est_ps</span>(ns, ps_model) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>())</span>
-<span id="cb56-5"><a href="propensity-scores.html#cb56-5" tabindex="-1"></a></span>
-<span id="cb56-6"><a href="propensity-scores.html#cb56-6" tabindex="-1"></a>ns_ps <span class="sc">|&gt;</span></span>
-<span id="cb56-7"><a href="propensity-scores.html#cb56-7" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_init) <span class="sc">|&gt;</span></span>
-<span id="cb56-8"><a href="propensity-scores.html#cb56-8" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">mean_ps =</span> <span class="fu">mean</span>(ps), <span class="at">min =</span> <span class="fu">min</span>(ps), <span class="at">max =</span> <span class="fu">max</span>(ps),</span>
-<span id="cb56-9"><a href="propensity-scores.html#cb56-9" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb56-10"><a href="propensity-scores.html#cb56-10" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="propensity-scores.html#cb52-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/propensity.R&quot;</span>)</span>
+<span id="cb52-2"><a href="propensity-scores.html#cb52-2" tabindex="-1"></a></span>
+<span id="cb52-3"><a href="propensity-scores.html#cb52-3" tabindex="-1"></a>ps_model <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(ns_covs, <span class="st">&quot;cox2_init&quot;</span>)</span>
+<span id="cb52-4"><a href="propensity-scores.html#cb52-4" tabindex="-1"></a>ns_ps <span class="ot">&lt;-</span> <span class="fu">est_ps</span>(ns, ps_model) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">id =</span> <span class="fu">row_number</span>())</span>
+<span id="cb52-5"><a href="propensity-scores.html#cb52-5" tabindex="-1"></a></span>
+<span id="cb52-6"><a href="propensity-scores.html#cb52-6" tabindex="-1"></a>ns_ps <span class="sc">|&gt;</span></span>
+<span id="cb52-7"><a href="propensity-scores.html#cb52-7" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_init) <span class="sc">|&gt;</span></span>
+<span id="cb52-8"><a href="propensity-scores.html#cb52-8" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">mean_ps =</span> <span class="fu">mean</span>(ps), <span class="at">min =</span> <span class="fu">min</span>(ps), <span class="at">max =</span> <span class="fu">max</span>(ps),</span>
+<span id="cb52-9"><a href="propensity-scores.html#cb52-9" tabindex="-1"></a>            <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb52-10"><a href="propensity-scores.html#cb52-10" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -432,13 +432,13 @@ initiators, straddling the cohort-wide treatment prevalence of
 Chapter 6’s Table 1, now expressed as one number: the model can tell the
 arms apart because the arms genuinely differ. What matters more is how
 much the two distributions overlap.</p>
-<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="propensity-scores.html#cb57-1" tabindex="-1"></a><span class="fu">ggplot</span>(ns_ps, <span class="fu">aes</span>(<span class="at">x =</span> ps, <span class="at">fill =</span> <span class="fu">factor</span>(cox2_init))) <span class="sc">+</span></span>
-<span id="cb57-2"><a href="propensity-scores.html#cb57-2" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.45</span>, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb57-3"><a href="propensity-scores.html#cb57-3" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(<span class="at">name =</span> <span class="cn">NULL</span>,</span>
-<span id="cb57-4"><a href="propensity-scores.html#cb57-4" tabindex="-1"></a>                      <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Nonselective NSAID&quot;</span>, <span class="st">&quot;Cox-2 selective&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb57-5"><a href="propensity-scores.html#cb57-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Estimated propensity score&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="sc">+</span></span>
-<span id="cb57-6"><a href="propensity-scores.html#cb57-6" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
-<p><img src="causal-inference-epi-r_files/figure-html/ch08-overlap-1.png" width="672" /></p>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="propensity-scores.html#cb53-1" tabindex="-1"></a><span class="fu">ggplot</span>(ns_ps, <span class="fu">aes</span>(<span class="at">x =</span> ps, <span class="at">fill =</span> <span class="fu">factor</span>(cox2_init))) <span class="sc">+</span></span>
+<span id="cb53-2"><a href="propensity-scores.html#cb53-2" tabindex="-1"></a>  <span class="fu">geom_density</span>(<span class="at">alpha =</span> <span class="fl">0.45</span>, <span class="at">colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb53-3"><a href="propensity-scores.html#cb53-3" tabindex="-1"></a>  <span class="fu">scale_fill_discrete</span>(<span class="at">name =</span> <span class="cn">NULL</span>,</span>
+<span id="cb53-4"><a href="propensity-scores.html#cb53-4" tabindex="-1"></a>                      <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">&quot;Nonselective NSAID&quot;</span>, <span class="st">&quot;Cox-2 selective&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb53-5"><a href="propensity-scores.html#cb53-5" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">&quot;Estimated propensity score&quot;</span>, <span class="at">y =</span> <span class="st">&quot;Density&quot;</span>) <span class="sc">+</span></span>
+<span id="cb53-6"><a href="propensity-scores.html#cb53-6" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/ch08-overlap-1.png" alt="" width="672" /></p>
 <p>This plot is the practical face of the positivity assumption, and the
 first thing to look at before any propensity-score analysis: we want the
 region where treated patients live to be a region where untreated
@@ -467,20 +467,20 @@ comparable, then a risk difference computed inside a narrow band of the
 score is unconfounded, and we can pool those within-band differences
 into one estimate. Bands of exactly equal score would be empty, so in
 practice we cut the score into quantiles — quintiles, conventionally.</p>
-<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="propensity-scores.html#cb58-1" tabindex="-1"></a>strata <span class="ot">&lt;-</span> ns_ps <span class="sc">|&gt;</span></span>
-<span id="cb58-2"><a href="propensity-scores.html#cb58-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ps_q =</span> <span class="fu">ntile</span>(ps, <span class="dv">5</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb58-3"><a href="propensity-scores.html#cb58-3" tabindex="-1"></a>  <span class="fu">group_by</span>(ps_q) <span class="sc">|&gt;</span></span>
-<span id="cb58-4"><a href="propensity-scores.html#cb58-4" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb58-5"><a href="propensity-scores.html#cb58-5" tabindex="-1"></a>    <span class="at">n_treat =</span> <span class="fu">sum</span>(cox2_init),</span>
-<span id="cb58-6"><a href="propensity-scores.html#cb58-6" tabindex="-1"></a>    <span class="at">n_ctrl  =</span> <span class="fu">sum</span>(<span class="dv">1</span> <span class="sc">-</span> cox2_init),</span>
-<span id="cb58-7"><a href="propensity-scores.html#cb58-7" tabindex="-1"></a>    <span class="at">risk1   =</span> <span class="fu">mean</span>(pud[cox2_init <span class="sc">==</span> <span class="dv">1</span>]),</span>
-<span id="cb58-8"><a href="propensity-scores.html#cb58-8" tabindex="-1"></a>    <span class="at">risk0   =</span> <span class="fu">mean</span>(pud[cox2_init <span class="sc">==</span> <span class="dv">0</span>]),</span>
-<span id="cb58-9"><a href="propensity-scores.html#cb58-9" tabindex="-1"></a>    <span class="at">rd      =</span> risk1 <span class="sc">-</span> risk0,</span>
-<span id="cb58-10"><a href="propensity-scores.html#cb58-10" tabindex="-1"></a>    <span class="at">var_rd  =</span> risk1 <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> risk1) <span class="sc">/</span> n_treat <span class="sc">+</span> risk0 <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> risk0) <span class="sc">/</span> n_ctrl,</span>
-<span id="cb58-11"><a href="propensity-scores.html#cb58-11" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
-<span id="cb58-12"><a href="propensity-scores.html#cb58-12" tabindex="-1"></a>  )</span>
-<span id="cb58-13"><a href="propensity-scores.html#cb58-13" tabindex="-1"></a></span>
-<span id="cb58-14"><a href="propensity-scores.html#cb58-14" tabindex="-1"></a>strata <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>var_rd) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="propensity-scores.html#cb54-1" tabindex="-1"></a>strata <span class="ot">&lt;-</span> ns_ps <span class="sc">|&gt;</span></span>
+<span id="cb54-2"><a href="propensity-scores.html#cb54-2" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">ps_q =</span> <span class="fu">ntile</span>(ps, <span class="dv">5</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb54-3"><a href="propensity-scores.html#cb54-3" tabindex="-1"></a>  <span class="fu">group_by</span>(ps_q) <span class="sc">|&gt;</span></span>
+<span id="cb54-4"><a href="propensity-scores.html#cb54-4" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb54-5"><a href="propensity-scores.html#cb54-5" tabindex="-1"></a>    <span class="at">n_treat =</span> <span class="fu">sum</span>(cox2_init),</span>
+<span id="cb54-6"><a href="propensity-scores.html#cb54-6" tabindex="-1"></a>    <span class="at">n_ctrl  =</span> <span class="fu">sum</span>(<span class="dv">1</span> <span class="sc">-</span> cox2_init),</span>
+<span id="cb54-7"><a href="propensity-scores.html#cb54-7" tabindex="-1"></a>    <span class="at">risk1   =</span> <span class="fu">mean</span>(pud[cox2_init <span class="sc">==</span> <span class="dv">1</span>]),</span>
+<span id="cb54-8"><a href="propensity-scores.html#cb54-8" tabindex="-1"></a>    <span class="at">risk0   =</span> <span class="fu">mean</span>(pud[cox2_init <span class="sc">==</span> <span class="dv">0</span>]),</span>
+<span id="cb54-9"><a href="propensity-scores.html#cb54-9" tabindex="-1"></a>    <span class="at">rd      =</span> risk1 <span class="sc">-</span> risk0,</span>
+<span id="cb54-10"><a href="propensity-scores.html#cb54-10" tabindex="-1"></a>    <span class="at">var_rd  =</span> risk1 <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> risk1) <span class="sc">/</span> n_treat <span class="sc">+</span> risk0 <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> risk0) <span class="sc">/</span> n_ctrl,</span>
+<span id="cb54-11"><a href="propensity-scores.html#cb54-11" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb54-12"><a href="propensity-scores.html#cb54-12" tabindex="-1"></a>  )</span>
+<span id="cb54-13"><a href="propensity-scores.html#cb54-13" tabindex="-1"></a></span>
+<span id="cb54-14"><a href="propensity-scores.html#cb54-14" tabindex="-1"></a>strata <span class="sc">|&gt;</span> <span class="fu">select</span>(<span class="sc">-</span>var_rd) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -551,7 +551,7 @@ estimand rather than a computational detail. Weighting each stratum by
 the inverse of its variance — precision weighting, the logic behind the
 Mantel–Haenszel estimator — gives the most statistically efficient
 combination:</p>
-<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="propensity-scores.html#cb59-1" tabindex="-1"></a><span class="fu">c</span>(<span class="at">rd_precision_weighted =</span> rd_prec, <span class="at">se =</span> se_prec)</span></code></pre></div>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="propensity-scores.html#cb55-1" tabindex="-1"></a><span class="fu">c</span>(<span class="at">rd_precision_weighted =</span> rd_prec, <span class="at">se =</span> se_prec)</span></code></pre></div>
 <pre><code>## rd_precision_weighted                    se 
 ##           -0.02074445            0.01777657</code></pre>
 <p>That is -2.1 percentage points with a
@@ -576,12 +576,12 @@ points, and both have intervals wide enough to include no effect.</p>
 a balancing score, covariates should look similar between arms <em>within</em>
 a stratum even though they differ sharply overall. Chapter 2’s
 <code>table1_categorical()</code> will show us, applied to the top quintile.</p>
-<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="propensity-scores.html#cb61-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/table1.R&quot;</span>)</span>
-<span id="cb61-2"><a href="propensity-scores.html#cb61-2" tabindex="-1"></a></span>
-<span id="cb61-3"><a href="propensity-scores.html#cb61-3" tabindex="-1"></a>top_q <span class="ot">&lt;-</span> ns_ps <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">ps_q =</span> <span class="fu">ntile</span>(ps, <span class="dv">5</span>)) <span class="sc">|&gt;</span> <span class="fu">filter</span>(ps_q <span class="sc">==</span> <span class="dv">5</span>)</span>
-<span id="cb61-4"><a href="propensity-scores.html#cb61-4" tabindex="-1"></a><span class="fu">table1_categorical</span>(top_q, <span class="fu">c</span>(<span class="st">&quot;arthritis&quot;</span>, <span class="st">&quot;corticosteroid_use&quot;</span>, <span class="st">&quot;hypertension&quot;</span>),</span>
-<span id="cb61-5"><a href="propensity-scores.html#cb61-5" tabindex="-1"></a>                   <span class="at">by =</span> <span class="st">&quot;cox2_init&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb61-6"><a href="propensity-scores.html#cb61-6" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="propensity-scores.html#cb57-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/table1.R&quot;</span>)</span>
+<span id="cb57-2"><a href="propensity-scores.html#cb57-2" tabindex="-1"></a></span>
+<span id="cb57-3"><a href="propensity-scores.html#cb57-3" tabindex="-1"></a>top_q <span class="ot">&lt;-</span> ns_ps <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">ps_q =</span> <span class="fu">ntile</span>(ps, <span class="dv">5</span>)) <span class="sc">|&gt;</span> <span class="fu">filter</span>(ps_q <span class="sc">==</span> <span class="dv">5</span>)</span>
+<span id="cb57-4"><a href="propensity-scores.html#cb57-4" tabindex="-1"></a><span class="fu">table1_categorical</span>(top_q, <span class="fu">c</span>(<span class="st">&quot;arthritis&quot;</span>, <span class="st">&quot;corticosteroid_use&quot;</span>, <span class="st">&quot;hypertension&quot;</span>),</span>
+<span id="cb57-5"><a href="propensity-scores.html#cb57-5" tabindex="-1"></a>                   <span class="at">by =</span> <span class="st">&quot;cox2_init&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb57-6"><a href="propensity-scores.html#cb57-6" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -630,7 +630,7 @@ a stratum even though they differ sharply overall. Chapter 2’s
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="propensity-scores.html#cb62-1" tabindex="-1"></a><span class="fu">table1_continuous</span>(top_q, <span class="st">&quot;age&quot;</span>, <span class="at">by =</span> <span class="st">&quot;cox2_init&quot;</span>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="propensity-scores.html#cb58-1" tabindex="-1"></a><span class="fu">table1_continuous</span>(top_q, <span class="st">&quot;age&quot;</span>, <span class="at">by =</span> <span class="st">&quot;cox2_init&quot;</span>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -670,23 +670,23 @@ happen between individuals rather than within bands.</p>
 propensity score is close, and analyzes the paired sample. The version
 below is the simplest one that is still respectable: <strong>greedy 1:1
 nearest-neighbor matching without replacement, within a caliper</strong>.</p>
-<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="propensity-scores.html#cb63-1" tabindex="-1"></a><span class="co"># Greedy 1:1 nearest-neighbor matching without replacement.</span></span>
-<span id="cb63-2"><a href="propensity-scores.html#cb63-2" tabindex="-1"></a>ps_match <span class="ot">&lt;-</span> <span class="cf">function</span>(data, treat, <span class="at">ps =</span> <span class="st">&quot;ps&quot;</span>, <span class="at">caliper =</span> <span class="fl">0.05</span>) {</span>
-<span id="cb63-3"><a href="propensity-scores.html#cb63-3" tabindex="-1"></a>  treated <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(.data[[treat]] <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(.data[[ps]]))</span>
-<span id="cb63-4"><a href="propensity-scores.html#cb63-4" tabindex="-1"></a>  controls <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(.data[[treat]] <span class="sc">==</span> <span class="dv">0</span>)</span>
-<span id="cb63-5"><a href="propensity-scores.html#cb63-5" tabindex="-1"></a>  used <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">FALSE</span>, <span class="fu">nrow</span>(controls))</span>
-<span id="cb63-6"><a href="propensity-scores.html#cb63-6" tabindex="-1"></a>  pairs <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="fu">nrow</span>(treated))</span>
-<span id="cb63-7"><a href="propensity-scores.html#cb63-7" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(treated))) {</span>
-<span id="cb63-8"><a href="propensity-scores.html#cb63-8" tabindex="-1"></a>    dist <span class="ot">&lt;-</span> <span class="fu">abs</span>(controls[[ps]] <span class="sc">-</span> treated[[ps]][i])</span>
-<span id="cb63-9"><a href="propensity-scores.html#cb63-9" tabindex="-1"></a>    dist[used] <span class="ot">&lt;-</span> <span class="cn">Inf</span></span>
-<span id="cb63-10"><a href="propensity-scores.html#cb63-10" tabindex="-1"></a>    j <span class="ot">&lt;-</span> <span class="fu">which.min</span>(dist)</span>
-<span id="cb63-11"><a href="propensity-scores.html#cb63-11" tabindex="-1"></a>    <span class="cf">if</span> (dist[j] <span class="sc">&lt;=</span> caliper) {</span>
-<span id="cb63-12"><a href="propensity-scores.html#cb63-12" tabindex="-1"></a>      used[j] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
-<span id="cb63-13"><a href="propensity-scores.html#cb63-13" tabindex="-1"></a>      pairs[[i]] <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(treated[i, ], controls[j, ])</span>
-<span id="cb63-14"><a href="propensity-scores.html#cb63-14" tabindex="-1"></a>    }</span>
-<span id="cb63-15"><a href="propensity-scores.html#cb63-15" tabindex="-1"></a>  }</span>
-<span id="cb63-16"><a href="propensity-scores.html#cb63-16" tabindex="-1"></a>  <span class="fu">bind_rows</span>(pairs, <span class="at">.id =</span> <span class="st">&quot;pair_id&quot;</span>)</span>
-<span id="cb63-17"><a href="propensity-scores.html#cb63-17" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb59"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb59-1"><a href="propensity-scores.html#cb59-1" tabindex="-1"></a><span class="co"># Greedy 1:1 nearest-neighbor matching without replacement.</span></span>
+<span id="cb59-2"><a href="propensity-scores.html#cb59-2" tabindex="-1"></a>ps_match <span class="ot">&lt;-</span> <span class="cf">function</span>(data, treat, <span class="at">ps =</span> <span class="st">&quot;ps&quot;</span>, <span class="at">caliper =</span> <span class="fl">0.05</span>) {</span>
+<span id="cb59-3"><a href="propensity-scores.html#cb59-3" tabindex="-1"></a>  treated <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(.data[[treat]] <span class="sc">==</span> <span class="dv">1</span>) <span class="sc">|&gt;</span> <span class="fu">arrange</span>(<span class="fu">desc</span>(.data[[ps]]))</span>
+<span id="cb59-4"><a href="propensity-scores.html#cb59-4" tabindex="-1"></a>  controls <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">filter</span>(.data[[treat]] <span class="sc">==</span> <span class="dv">0</span>)</span>
+<span id="cb59-5"><a href="propensity-scores.html#cb59-5" tabindex="-1"></a>  used <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="cn">FALSE</span>, <span class="fu">nrow</span>(controls))</span>
+<span id="cb59-6"><a href="propensity-scores.html#cb59-6" tabindex="-1"></a>  pairs <span class="ot">&lt;-</span> <span class="fu">vector</span>(<span class="st">&quot;list&quot;</span>, <span class="fu">nrow</span>(treated))</span>
+<span id="cb59-7"><a href="propensity-scores.html#cb59-7" tabindex="-1"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(treated))) {</span>
+<span id="cb59-8"><a href="propensity-scores.html#cb59-8" tabindex="-1"></a>    dist <span class="ot">&lt;-</span> <span class="fu">abs</span>(controls[[ps]] <span class="sc">-</span> treated[[ps]][i])</span>
+<span id="cb59-9"><a href="propensity-scores.html#cb59-9" tabindex="-1"></a>    dist[used] <span class="ot">&lt;-</span> <span class="cn">Inf</span></span>
+<span id="cb59-10"><a href="propensity-scores.html#cb59-10" tabindex="-1"></a>    j <span class="ot">&lt;-</span> <span class="fu">which.min</span>(dist)</span>
+<span id="cb59-11"><a href="propensity-scores.html#cb59-11" tabindex="-1"></a>    <span class="cf">if</span> (dist[j] <span class="sc">&lt;=</span> caliper) {</span>
+<span id="cb59-12"><a href="propensity-scores.html#cb59-12" tabindex="-1"></a>      used[j] <span class="ot">&lt;-</span> <span class="cn">TRUE</span></span>
+<span id="cb59-13"><a href="propensity-scores.html#cb59-13" tabindex="-1"></a>      pairs[[i]] <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(treated[i, ], controls[j, ])</span>
+<span id="cb59-14"><a href="propensity-scores.html#cb59-14" tabindex="-1"></a>    }</span>
+<span id="cb59-15"><a href="propensity-scores.html#cb59-15" tabindex="-1"></a>  }</span>
+<span id="cb59-16"><a href="propensity-scores.html#cb59-16" tabindex="-1"></a>  <span class="fu">bind_rows</span>(pairs, <span class="at">.id =</span> <span class="st">&quot;pair_id&quot;</span>)</span>
+<span id="cb59-17"><a href="propensity-scores.html#cb59-17" tabindex="-1"></a>}</span></code></pre></div>
 <p>Four decisions are encoded in those lines. <em>Greedy</em> means we take
 treated patients one at a time and give each its closest available
 control, never revisiting an earlier choice; it is not guaranteed to
@@ -702,10 +702,10 @@ available control is further than 0.05 on the propensity scale, that
 treated patient is left unmatched rather than paired with someone
 implausible. Unmatched patients are how a matched analysis reports a
 positivity problem instead of extrapolating through one.</p>
-<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="propensity-scores.html#cb64-1" tabindex="-1"></a>matched <span class="ot">&lt;-</span> <span class="fu">ps_match</span>(ns_ps, <span class="at">treat =</span> <span class="st">&quot;cox2_init&quot;</span>, <span class="at">caliper =</span> <span class="fl">0.05</span>)</span>
-<span id="cb64-2"><a href="propensity-scores.html#cb64-2" tabindex="-1"></a>n_pairs <span class="ot">&lt;-</span> <span class="fu">n_distinct</span>(matched<span class="sc">$</span>pair_id)</span>
-<span id="cb64-3"><a href="propensity-scores.html#cb64-3" tabindex="-1"></a><span class="fu">c</span>(<span class="at">pairs =</span> n_pairs, <span class="at">treated_available =</span> <span class="fu">sum</span>(ns_ps<span class="sc">$</span>cox2_init),</span>
-<span id="cb64-4"><a href="propensity-scores.html#cb64-4" tabindex="-1"></a>  <span class="at">unmatched =</span> <span class="fu">sum</span>(ns_ps<span class="sc">$</span>cox2_init) <span class="sc">-</span> n_pairs)</span></code></pre></div>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="propensity-scores.html#cb60-1" tabindex="-1"></a>matched <span class="ot">&lt;-</span> <span class="fu">ps_match</span>(ns_ps, <span class="at">treat =</span> <span class="st">&quot;cox2_init&quot;</span>, <span class="at">caliper =</span> <span class="fl">0.05</span>)</span>
+<span id="cb60-2"><a href="propensity-scores.html#cb60-2" tabindex="-1"></a>n_pairs <span class="ot">&lt;-</span> <span class="fu">n_distinct</span>(matched<span class="sc">$</span>pair_id)</span>
+<span id="cb60-3"><a href="propensity-scores.html#cb60-3" tabindex="-1"></a><span class="fu">c</span>(<span class="at">pairs =</span> n_pairs, <span class="at">treated_available =</span> <span class="fu">sum</span>(ns_ps<span class="sc">$</span>cox2_init),</span>
+<span id="cb60-4"><a href="propensity-scores.html#cb60-4" tabindex="-1"></a>  <span class="at">unmatched =</span> <span class="fu">sum</span>(ns_ps<span class="sc">$</span>cox2_init) <span class="sc">-</span> n_pairs)</span></code></pre></div>
 <pre><code>##             pairs treated_available         unmatched 
 ##               239               240                 1</code></pre>
 <p>239 pairs from 240 Cox-2 initiators, a
@@ -720,14 +720,14 @@ exposure the loss would be larger and more consequential.</p>
 mean differences before and after matching and plots them. We pass the
 full cohort along with a 0/1 weight flagging which rows survived
 matching, which lets <code>bal.tab()</code> compute both columns at once.</p>
-<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="propensity-scores.html#cb66-1" tabindex="-1"></a><span class="fu">library</span>(cobalt)</span>
-<span id="cb66-2"><a href="propensity-scores.html#cb66-2" tabindex="-1"></a></span>
-<span id="cb66-3"><a href="propensity-scores.html#cb66-3" tabindex="-1"></a>ns_ps <span class="ot">&lt;-</span> ns_ps <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">matched_wt =</span> <span class="fu">as.integer</span>(id <span class="sc">%in%</span> matched<span class="sc">$</span>id))</span>
-<span id="cb66-4"><a href="propensity-scores.html#cb66-4" tabindex="-1"></a></span>
-<span id="cb66-5"><a href="propensity-scores.html#cb66-5" tabindex="-1"></a>bt <span class="ot">&lt;-</span> <span class="fu">bal.tab</span>(ps_model, <span class="at">data =</span> ns_ps, <span class="at">weights =</span> ns_ps<span class="sc">$</span>matched_wt,</span>
-<span id="cb66-6"><a href="propensity-scores.html#cb66-6" tabindex="-1"></a>              <span class="at">estimand =</span> <span class="st">&quot;ATT&quot;</span>, <span class="at">un =</span> <span class="cn">TRUE</span>, <span class="at">binary =</span> <span class="st">&quot;std&quot;</span>,</span>
-<span id="cb66-7"><a href="propensity-scores.html#cb66-7" tabindex="-1"></a>              <span class="at">thresholds =</span> <span class="fu">c</span>(<span class="at">m =</span> <span class="fl">0.1</span>))</span>
-<span id="cb66-8"><a href="propensity-scores.html#cb66-8" tabindex="-1"></a>bt</span></code></pre></div>
+<div class="sourceCode" id="cb62"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb62-1"><a href="propensity-scores.html#cb62-1" tabindex="-1"></a><span class="fu">library</span>(cobalt)</span>
+<span id="cb62-2"><a href="propensity-scores.html#cb62-2" tabindex="-1"></a></span>
+<span id="cb62-3"><a href="propensity-scores.html#cb62-3" tabindex="-1"></a>ns_ps <span class="ot">&lt;-</span> ns_ps <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">matched_wt =</span> <span class="fu">as.integer</span>(id <span class="sc">%in%</span> matched<span class="sc">$</span>id))</span>
+<span id="cb62-4"><a href="propensity-scores.html#cb62-4" tabindex="-1"></a></span>
+<span id="cb62-5"><a href="propensity-scores.html#cb62-5" tabindex="-1"></a>bt <span class="ot">&lt;-</span> <span class="fu">bal.tab</span>(ps_model, <span class="at">data =</span> ns_ps, <span class="at">weights =</span> ns_ps<span class="sc">$</span>matched_wt,</span>
+<span id="cb62-6"><a href="propensity-scores.html#cb62-6" tabindex="-1"></a>              <span class="at">estimand =</span> <span class="st">&quot;ATT&quot;</span>, <span class="at">un =</span> <span class="cn">TRUE</span>, <span class="at">binary =</span> <span class="st">&quot;std&quot;</span>,</span>
+<span id="cb62-7"><a href="propensity-scores.html#cb62-7" tabindex="-1"></a>              <span class="at">thresholds =</span> <span class="fu">c</span>(<span class="at">m =</span> <span class="fl">0.1</span>))</span>
+<span id="cb62-8"><a href="propensity-scores.html#cb62-8" tabindex="-1"></a>bt</span></code></pre></div>
 <pre><code>## Balance Measures
 ##                                Type Diff.Un Diff.Adj        M.Threshold
 ## age                         Contin.  0.3901  -0.0537     Balanced, &lt;0.1
@@ -772,11 +772,11 @@ matching, which lets <code>bal.tab()</code> compute both columns at once.</p>
 ##            Control Treated
 ## Unadjusted    2642     240
 ## Adjusted       239     239</code></pre>
-<div class="sourceCode" id="cb68"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb68-1"><a href="propensity-scores.html#cb68-1" tabindex="-1"></a><span class="fu">love.plot</span>(bt, <span class="at">abs =</span> <span class="cn">TRUE</span>, <span class="at">var.order =</span> <span class="st">&quot;unadjusted&quot;</span>,</span>
-<span id="cb68-2"><a href="propensity-scores.html#cb68-2" tabindex="-1"></a>          <span class="at">thresholds =</span> <span class="fu">c</span>(<span class="at">m =</span> <span class="fl">0.1</span>),</span>
-<span id="cb68-3"><a href="propensity-scores.html#cb68-3" tabindex="-1"></a>          <span class="at">sample.names =</span> <span class="fu">c</span>(<span class="st">&quot;Before matching&quot;</span>, <span class="st">&quot;After matching&quot;</span>)) <span class="sc">+</span></span>
-<span id="cb68-4"><a href="propensity-scores.html#cb68-4" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
-<p><img src="causal-inference-epi-r_files/figure-html/ch08-loveplot-1.png" width="672" /></p>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="propensity-scores.html#cb64-1" tabindex="-1"></a><span class="fu">love.plot</span>(bt, <span class="at">abs =</span> <span class="cn">TRUE</span>, <span class="at">var.order =</span> <span class="st">&quot;unadjusted&quot;</span>,</span>
+<span id="cb64-2"><a href="propensity-scores.html#cb64-2" tabindex="-1"></a>          <span class="at">thresholds =</span> <span class="fu">c</span>(<span class="at">m =</span> <span class="fl">0.1</span>),</span>
+<span id="cb64-3"><a href="propensity-scores.html#cb64-3" tabindex="-1"></a>          <span class="at">sample.names =</span> <span class="fu">c</span>(<span class="st">&quot;Before matching&quot;</span>, <span class="st">&quot;After matching&quot;</span>)) <span class="sc">+</span></span>
+<span id="cb64-4"><a href="propensity-scores.html#cb64-4" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">&quot;bottom&quot;</span>)</span></code></pre></div>
+<p><img src="causal-inference-epi-r_files/figure-html/ch08-loveplot-1.png" alt="" width="672" /></p>
 <p>The love plot is the standard way to present this, and it reads at a
 glance: each covariate is a row, absolute standardized mean difference
 runs along the horizontal axis, and the dashed line at 0.1 marks the
@@ -805,10 +805,10 @@ the standardized and the raw scale before deciding whether an imbalance
 is worth acting on.</p>
 <p>With balance established, the effect estimate is a comparison of two
 proportions in the matched sample.</p>
-<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="propensity-scores.html#cb69-1" tabindex="-1"></a>matched <span class="sc">|&gt;</span></span>
-<span id="cb69-2"><a href="propensity-scores.html#cb69-2" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_init) <span class="sc">|&gt;</span></span>
-<span id="cb69-3"><a href="propensity-scores.html#cb69-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">cases =</span> <span class="fu">sum</span>(pud), <span class="at">risk =</span> <span class="fu">mean</span>(pud), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb69-4"><a href="propensity-scores.html#cb69-4" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb65"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb65-1"><a href="propensity-scores.html#cb65-1" tabindex="-1"></a>matched <span class="sc">|&gt;</span></span>
+<span id="cb65-2"><a href="propensity-scores.html#cb65-2" tabindex="-1"></a>  <span class="fu">group_by</span>(cox2_init) <span class="sc">|&gt;</span></span>
+<span id="cb65-3"><a href="propensity-scores.html#cb65-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(), <span class="at">cases =</span> <span class="fu">sum</span>(pud), <span class="at">risk =</span> <span class="fu">mean</span>(pud), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb65-4"><a href="propensity-scores.html#cb65-4" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">

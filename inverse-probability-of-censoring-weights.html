@@ -141,11 +141,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Causal Inference in Epidemiology Using R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a>
 <ul>
-<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
-<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
-<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+<li class="chapter" data-level="0.1" data-path="preface.html"><a href="preface.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="preface.html"><a href="preface.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="preface.html"><a href="preface.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
 </ul></li>
 <li class="part"><span><b>I Foundations</b></span></li>
 <li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
@@ -361,14 +361,14 @@ outcome happened in it, and whether censoring happened in it. A patient
 followed 3.1 years contributes four rows, the last a stub from year 3 to
 year 3.1. <code>survival::survSplit()</code> does the cutting, and wrapping it fixes
 the column names we will rely on later.</p>
-<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="inverse-probability-of-censoring-weights.html#cb102-1" tabindex="-1"></a>make_person_period <span class="ot">&lt;-</span> <span class="cf">function</span>(data, time, event, cuts) {</span>
-<span id="cb102-2"><a href="inverse-probability-of-censoring-weights.html#cb102-2" tabindex="-1"></a>  data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">.row_id =</span> dplyr<span class="sc">::</span><span class="fu">row_number</span>())</span>
-<span id="cb102-3"><a href="inverse-probability-of-censoring-weights.html#cb102-3" tabindex="-1"></a>  survival<span class="sc">::</span><span class="fu">survSplit</span>(</span>
-<span id="cb102-4"><a href="inverse-probability-of-censoring-weights.html#cb102-4" tabindex="-1"></a>    <span class="fu">as.formula</span>(<span class="fu">paste0</span>(<span class="st">&quot;Surv(&quot;</span>, time, <span class="st">&quot;, &quot;</span>, event, <span class="st">&quot;) ~ .&quot;</span>)),</span>
-<span id="cb102-5"><a href="inverse-probability-of-censoring-weights.html#cb102-5" tabindex="-1"></a>    <span class="at">data =</span> data, <span class="at">cut =</span> cuts, <span class="at">start =</span> <span class="st">&quot;tstart&quot;</span>, <span class="at">end =</span> <span class="st">&quot;tstop&quot;</span>,</span>
-<span id="cb102-6"><a href="inverse-probability-of-censoring-weights.html#cb102-6" tabindex="-1"></a>    <span class="at">event =</span> event</span>
-<span id="cb102-7"><a href="inverse-probability-of-censoring-weights.html#cb102-7" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>()</span>
-<span id="cb102-8"><a href="inverse-probability-of-censoring-weights.html#cb102-8" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb96"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb96-1"><a href="inverse-probability-of-censoring-weights.html#cb96-1" tabindex="-1"></a>make_person_period <span class="ot">&lt;-</span> <span class="cf">function</span>(data, time, event, cuts) {</span>
+<span id="cb96-2"><a href="inverse-probability-of-censoring-weights.html#cb96-2" tabindex="-1"></a>  data <span class="ot">&lt;-</span> data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">.row_id =</span> dplyr<span class="sc">::</span><span class="fu">row_number</span>())</span>
+<span id="cb96-3"><a href="inverse-probability-of-censoring-weights.html#cb96-3" tabindex="-1"></a>  survival<span class="sc">::</span><span class="fu">survSplit</span>(</span>
+<span id="cb96-4"><a href="inverse-probability-of-censoring-weights.html#cb96-4" tabindex="-1"></a>    <span class="fu">as.formula</span>(<span class="fu">paste0</span>(<span class="st">&quot;Surv(&quot;</span>, time, <span class="st">&quot;, &quot;</span>, event, <span class="st">&quot;) ~ .&quot;</span>)),</span>
+<span id="cb96-5"><a href="inverse-probability-of-censoring-weights.html#cb96-5" tabindex="-1"></a>    <span class="at">data =</span> data, <span class="at">cut =</span> cuts, <span class="at">start =</span> <span class="st">&quot;tstart&quot;</span>, <span class="at">end =</span> <span class="st">&quot;tstop&quot;</span>,</span>
+<span id="cb96-6"><a href="inverse-probability-of-censoring-weights.html#cb96-6" tabindex="-1"></a>    <span class="at">event =</span> event</span>
+<span id="cb96-7"><a href="inverse-probability-of-censoring-weights.html#cb96-7" tabindex="-1"></a>  ) <span class="sc">|&gt;</span> <span class="fu">as_tibble</span>()</span>
+<span id="cb96-8"><a href="inverse-probability-of-censoring-weights.html#cb96-8" tabindex="-1"></a>}</span></code></pre></div>
 <p>The <code>. ~</code> on the right of the formula keeps every other column, so
 covariates are repeated down a patient’s rows unchanged. <code>.row_id</code> is
 added before splitting and is what glues the rows back into people —
@@ -378,21 +378,21 @@ being lost to follow-up before having a cardiovascular event; the next
 section takes up why that definition and not another. Because
 <code>survSplit()</code> cannot make an interval out of nothing, we first set aside
 the handful of patients whose follow-up ends at time zero.</p>
-<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="inverse-probability-of-censoring-weights.html#cb103-1" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
-<span id="cb103-2"><a href="inverse-probability-of-censoring-weights.html#cb103-2" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/ipcw.R&quot;</span>)</span>
-<span id="cb103-3"><a href="inverse-probability-of-censoring-weights.html#cb103-3" tabindex="-1"></a></span>
-<span id="cb103-4"><a href="inverse-probability-of-censoring-weights.html#cb103-4" tabindex="-1"></a>sta_cens <span class="ot">&lt;-</span> sta <span class="sc">|&gt;</span></span>
-<span id="cb103-5"><a href="inverse-probability-of-censoring-weights.html#cb103-5" tabindex="-1"></a>  <span class="fu">filter</span>(event_time <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
-<span id="cb103-6"><a href="inverse-probability-of-censoring-weights.html#cb103-6" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb103-7"><a href="inverse-probability-of-censoring-weights.html#cb103-7" tabindex="-1"></a>    <span class="at">censored  =</span> <span class="fu">as.integer</span>(<span class="sc">!</span><span class="fu">is.na</span>(loss_fu_time) <span class="sc">&amp;</span> loss_fu_time <span class="sc">&lt;=</span> event_time <span class="sc">&amp;</span></span>
-<span id="cb103-8"><a href="inverse-probability-of-censoring-weights.html#cb103-8" tabindex="-1"></a>                             cv_event <span class="sc">==</span> <span class="dv">0</span>),</span>
-<span id="cb103-9"><a href="inverse-probability-of-censoring-weights.html#cb103-9" tabindex="-1"></a>    <span class="at">cens_time =</span> event_time</span>
-<span id="cb103-10"><a href="inverse-probability-of-censoring-weights.html#cb103-10" tabindex="-1"></a>  )</span>
-<span id="cb103-11"><a href="inverse-probability-of-censoring-weights.html#cb103-11" tabindex="-1"></a></span>
-<span id="cb103-12"><a href="inverse-probability-of-censoring-weights.html#cb103-12" tabindex="-1"></a>pp <span class="ot">&lt;-</span> <span class="fu">make_person_period</span>(sta_cens, <span class="at">time =</span> <span class="st">&quot;cens_time&quot;</span>, <span class="at">event =</span> <span class="st">&quot;censored&quot;</span>,</span>
-<span id="cb103-13"><a href="inverse-probability-of-censoring-weights.html#cb103-13" tabindex="-1"></a>                         <span class="at">cuts =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="sc">|&gt;</span></span>
-<span id="cb103-14"><a href="inverse-probability-of-censoring-weights.html#cb103-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">event =</span> <span class="fu">as.integer</span>(cv_event <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span></span>
-<span id="cb103-15"><a href="inverse-probability-of-censoring-weights.html#cb103-15" tabindex="-1"></a>                            event_time <span class="sc">&gt;</span> tstart <span class="sc">&amp;</span> event_time <span class="sc">&lt;=</span> tstop))</span></code></pre></div>
+<div class="sourceCode" id="cb97"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb97-1"><a href="inverse-probability-of-censoring-weights.html#cb97-1" tabindex="-1"></a><span class="fu">library</span>(survival)</span>
+<span id="cb97-2"><a href="inverse-probability-of-censoring-weights.html#cb97-2" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/ipcw.R&quot;</span>)</span>
+<span id="cb97-3"><a href="inverse-probability-of-censoring-weights.html#cb97-3" tabindex="-1"></a></span>
+<span id="cb97-4"><a href="inverse-probability-of-censoring-weights.html#cb97-4" tabindex="-1"></a>sta_cens <span class="ot">&lt;-</span> sta <span class="sc">|&gt;</span></span>
+<span id="cb97-5"><a href="inverse-probability-of-censoring-weights.html#cb97-5" tabindex="-1"></a>  <span class="fu">filter</span>(event_time <span class="sc">&gt;</span> <span class="dv">0</span>) <span class="sc">|&gt;</span></span>
+<span id="cb97-6"><a href="inverse-probability-of-censoring-weights.html#cb97-6" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb97-7"><a href="inverse-probability-of-censoring-weights.html#cb97-7" tabindex="-1"></a>    <span class="at">censored  =</span> <span class="fu">as.integer</span>(<span class="sc">!</span><span class="fu">is.na</span>(loss_fu_time) <span class="sc">&amp;</span> loss_fu_time <span class="sc">&lt;=</span> event_time <span class="sc">&amp;</span></span>
+<span id="cb97-8"><a href="inverse-probability-of-censoring-weights.html#cb97-8" tabindex="-1"></a>                             cv_event <span class="sc">==</span> <span class="dv">0</span>),</span>
+<span id="cb97-9"><a href="inverse-probability-of-censoring-weights.html#cb97-9" tabindex="-1"></a>    <span class="at">cens_time =</span> event_time</span>
+<span id="cb97-10"><a href="inverse-probability-of-censoring-weights.html#cb97-10" tabindex="-1"></a>  )</span>
+<span id="cb97-11"><a href="inverse-probability-of-censoring-weights.html#cb97-11" tabindex="-1"></a></span>
+<span id="cb97-12"><a href="inverse-probability-of-censoring-weights.html#cb97-12" tabindex="-1"></a>pp <span class="ot">&lt;-</span> <span class="fu">make_person_period</span>(sta_cens, <span class="at">time =</span> <span class="st">&quot;cens_time&quot;</span>, <span class="at">event =</span> <span class="st">&quot;censored&quot;</span>,</span>
+<span id="cb97-13"><a href="inverse-probability-of-censoring-weights.html#cb97-13" tabindex="-1"></a>                         <span class="at">cuts =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>) <span class="sc">|&gt;</span></span>
+<span id="cb97-14"><a href="inverse-probability-of-censoring-weights.html#cb97-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">event =</span> <span class="fu">as.integer</span>(cv_event <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span></span>
+<span id="cb97-15"><a href="inverse-probability-of-censoring-weights.html#cb97-15" tabindex="-1"></a>                            event_time <span class="sc">&gt;</span> tstart <span class="sc">&amp;</span> event_time <span class="sc">&lt;=</span> tstop))</span></code></pre></div>
 <p>Two details of bookkeeping deserve naming, because getting either wrong
 silently changes the analysis. First, <code>cens_time</code> is a copy of
 <code>event_time</code>: <code>survSplit()</code> consumes the time variable it splits on and
@@ -407,18 +407,18 @@ an event would appear to have one in each of her intervals. The
 interval
 that contains it. Look at two patients, one lost to follow-up and one
 with an event, before and after expansion.</p>
-<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="inverse-probability-of-censoring-weights.html#cb104-1" tabindex="-1"></a>mid <span class="ot">&lt;-</span> sta_cens<span class="sc">$</span>event_time <span class="sc">&gt;</span> <span class="dv">2</span> <span class="sc">&amp;</span> sta_cens<span class="sc">$</span>event_time <span class="sc">&lt;</span> <span class="dv">3</span></span>
-<span id="cb104-2"><a href="inverse-probability-of-censoring-weights.html#cb104-2" tabindex="-1"></a>ids <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">first</span>(<span class="fu">which</span>(sta_cens<span class="sc">$</span>censored <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> mid)),</span>
-<span id="cb104-3"><a href="inverse-probability-of-censoring-weights.html#cb104-3" tabindex="-1"></a>         <span class="fu">first</span>(<span class="fu">which</span>(sta_cens<span class="sc">$</span>cv_event <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> mid)))</span>
-<span id="cb104-4"><a href="inverse-probability-of-censoring-weights.html#cb104-4" tabindex="-1"></a></span>
-<span id="cb104-5"><a href="inverse-probability-of-censoring-weights.html#cb104-5" tabindex="-1"></a>sta_cens <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">.row_id =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span> <span class="fu">slice</span>(ids) <span class="sc">|&gt;</span></span>
-<span id="cb104-6"><a href="inverse-probability-of-censoring-weights.html#cb104-6" tabindex="-1"></a>  <span class="fu">select</span>(.row_id, statin, event_time, cv_event, censored)</span></code></pre></div>
+<div class="sourceCode" id="cb98"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb98-1"><a href="inverse-probability-of-censoring-weights.html#cb98-1" tabindex="-1"></a>mid <span class="ot">&lt;-</span> sta_cens<span class="sc">$</span>event_time <span class="sc">&gt;</span> <span class="dv">2</span> <span class="sc">&amp;</span> sta_cens<span class="sc">$</span>event_time <span class="sc">&lt;</span> <span class="dv">3</span></span>
+<span id="cb98-2"><a href="inverse-probability-of-censoring-weights.html#cb98-2" tabindex="-1"></a>ids <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fu">first</span>(<span class="fu">which</span>(sta_cens<span class="sc">$</span>censored <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> mid)),</span>
+<span id="cb98-3"><a href="inverse-probability-of-censoring-weights.html#cb98-3" tabindex="-1"></a>         <span class="fu">first</span>(<span class="fu">which</span>(sta_cens<span class="sc">$</span>cv_event <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> mid)))</span>
+<span id="cb98-4"><a href="inverse-probability-of-censoring-weights.html#cb98-4" tabindex="-1"></a></span>
+<span id="cb98-5"><a href="inverse-probability-of-censoring-weights.html#cb98-5" tabindex="-1"></a>sta_cens <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">.row_id =</span> <span class="fu">row_number</span>()) <span class="sc">|&gt;</span> <span class="fu">slice</span>(ids) <span class="sc">|&gt;</span></span>
+<span id="cb98-6"><a href="inverse-probability-of-censoring-weights.html#cb98-6" tabindex="-1"></a>  <span class="fu">select</span>(.row_id, statin, event_time, cv_event, censored)</span></code></pre></div>
 <pre><code>##   .row_id statin event_time cv_event censored
 ## 1       4      0       2.90        0        1
 ## 2     243      0       2.75        1        0</code></pre>
-<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="inverse-probability-of-censoring-weights.html#cb106-1" tabindex="-1"></a>pp <span class="sc">|&gt;</span> <span class="fu">filter</span>(.row_id <span class="sc">%in%</span> ids) <span class="sc">|&gt;</span></span>
-<span id="cb106-2"><a href="inverse-probability-of-censoring-weights.html#cb106-2" tabindex="-1"></a>  <span class="fu">select</span>(.row_id, statin, tstart, tstop, event, censored)</span></code></pre></div>
-<pre><code>## # A tibble: 6 x 6
+<div class="sourceCode" id="cb100"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb100-1"><a href="inverse-probability-of-censoring-weights.html#cb100-1" tabindex="-1"></a>pp <span class="sc">|&gt;</span> <span class="fu">filter</span>(.row_id <span class="sc">%in%</span> ids) <span class="sc">|&gt;</span></span>
+<span id="cb100-2"><a href="inverse-probability-of-censoring-weights.html#cb100-2" tabindex="-1"></a>  <span class="fu">select</span>(.row_id, statin, tstart, tstop, event, censored)</span></code></pre></div>
+<pre><code>## # A tibble: 6 × 6
 ##   .row_id statin tstart tstop event censored
 ##     &lt;int&gt;  &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt;    &lt;dbl&gt;
 ## 1       4      0      0  1        0        0
@@ -432,14 +432,14 @@ then one final interval in which either the outcome arrives or the patient
 disappears. Since the two indicators are now built from three different
 columns, they need checking against the patient-level cohort rather than
 trusted.</p>
-<div class="sourceCode" id="cb108"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb108-1"><a href="inverse-probability-of-censoring-weights.html#cb108-1" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb108-2"><a href="inverse-probability-of-censoring-weights.html#cb108-2" tabindex="-1"></a>  <span class="at">quantity        =</span> <span class="fu">c</span>(<span class="st">&quot;patients&quot;</span>, <span class="st">&quot;person-period rows&quot;</span>, <span class="st">&quot;outcome events&quot;</span>,</span>
-<span id="cb108-3"><a href="inverse-probability-of-censoring-weights.html#cb108-3" tabindex="-1"></a>                      <span class="st">&quot;patients censored&quot;</span>),</span>
-<span id="cb108-4"><a href="inverse-probability-of-censoring-weights.html#cb108-4" tabindex="-1"></a>  <span class="at">person_period   =</span> <span class="fu">c</span>(<span class="fu">n_distinct</span>(pp<span class="sc">$</span>.row_id), <span class="fu">nrow</span>(pp), <span class="fu">sum</span>(pp<span class="sc">$</span>event),</span>
-<span id="cb108-5"><a href="inverse-probability-of-censoring-weights.html#cb108-5" tabindex="-1"></a>                      <span class="fu">sum</span>(pp<span class="sc">$</span>censored)),</span>
-<span id="cb108-6"><a href="inverse-probability-of-censoring-weights.html#cb108-6" tabindex="-1"></a>  <span class="at">patient_level   =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(sta_cens), <span class="cn">NA</span>, <span class="fu">sum</span>(sta_cens<span class="sc">$</span>cv_event),</span>
-<span id="cb108-7"><a href="inverse-probability-of-censoring-weights.html#cb108-7" tabindex="-1"></a>                      <span class="fu">sum</span>(sta_cens<span class="sc">$</span>censored))</span>
-<span id="cb108-8"><a href="inverse-probability-of-censoring-weights.html#cb108-8" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb102"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb102-1"><a href="inverse-probability-of-censoring-weights.html#cb102-1" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb102-2"><a href="inverse-probability-of-censoring-weights.html#cb102-2" tabindex="-1"></a>  <span class="at">quantity        =</span> <span class="fu">c</span>(<span class="st">&quot;patients&quot;</span>, <span class="st">&quot;person-period rows&quot;</span>, <span class="st">&quot;outcome events&quot;</span>,</span>
+<span id="cb102-3"><a href="inverse-probability-of-censoring-weights.html#cb102-3" tabindex="-1"></a>                      <span class="st">&quot;patients censored&quot;</span>),</span>
+<span id="cb102-4"><a href="inverse-probability-of-censoring-weights.html#cb102-4" tabindex="-1"></a>  <span class="at">person_period   =</span> <span class="fu">c</span>(<span class="fu">n_distinct</span>(pp<span class="sc">$</span>.row_id), <span class="fu">nrow</span>(pp), <span class="fu">sum</span>(pp<span class="sc">$</span>event),</span>
+<span id="cb102-5"><a href="inverse-probability-of-censoring-weights.html#cb102-5" tabindex="-1"></a>                      <span class="fu">sum</span>(pp<span class="sc">$</span>censored)),</span>
+<span id="cb102-6"><a href="inverse-probability-of-censoring-weights.html#cb102-6" tabindex="-1"></a>  <span class="at">patient_level   =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(sta_cens), <span class="cn">NA</span>, <span class="fu">sum</span>(sta_cens<span class="sc">$</span>cv_event),</span>
+<span id="cb102-7"><a href="inverse-probability-of-censoring-weights.html#cb102-7" tabindex="-1"></a>                      <span class="fu">sum</span>(sta_cens<span class="sc">$</span>censored))</span>
+<span id="cb102-8"><a href="inverse-probability-of-censoring-weights.html#cb102-8" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -518,36 +518,36 @@ essentially the same weights. Our estimator wraps the whole
 sequence: fit the censoring model, fit the numerator model, take the
 running product down each patient’s rows, truncate, and fit the weighted
 outcome model.</p>
-<div class="sourceCode" id="cb109"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb109-1"><a href="inverse-probability-of-censoring-weights.html#cb109-1" tabindex="-1"></a>ipcw_estimator <span class="ot">&lt;-</span> <span class="cf">function</span>(pp_data, censor_model, outcome_formula,</span>
-<span id="cb109-2"><a href="inverse-probability-of-censoring-weights.html#cb109-2" tabindex="-1"></a>                           <span class="at">id =</span> <span class="st">&quot;.row_id&quot;</span>, <span class="at">numerator_model =</span> <span class="cn">NULL</span>,</span>
-<span id="cb109-3"><a href="inverse-probability-of-censoring-weights.html#cb109-3" tabindex="-1"></a>                           <span class="at">truncate_at =</span> <span class="fl">0.99</span>) {</span>
-<span id="cb109-4"><a href="inverse-probability-of-censoring-weights.html#cb109-4" tabindex="-1"></a>  cens_fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(censor_model, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp_data)</span>
-<span id="cb109-5"><a href="inverse-probability-of-censoring-weights.html#cb109-5" tabindex="-1"></a>  pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">p_uncens =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">predict</span>(cens_fit, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
-<span id="cb109-6"><a href="inverse-probability-of-censoring-weights.html#cb109-6" tabindex="-1"></a></span>
-<span id="cb109-7"><a href="inverse-probability-of-censoring-weights.html#cb109-7" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(numerator_model)) {</span>
-<span id="cb109-8"><a href="inverse-probability-of-censoring-weights.html#cb109-8" tabindex="-1"></a>    num_fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(numerator_model, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp_data)</span>
-<span id="cb109-9"><a href="inverse-probability-of-censoring-weights.html#cb109-9" tabindex="-1"></a>    pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">p_uncens_num =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">predict</span>(num_fit, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
-<span id="cb109-10"><a href="inverse-probability-of-censoring-weights.html#cb109-10" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb109-11"><a href="inverse-probability-of-censoring-weights.html#cb109-11" tabindex="-1"></a>    pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">p_uncens_num =</span> <span class="dv">1</span>)</span>
-<span id="cb109-12"><a href="inverse-probability-of-censoring-weights.html#cb109-12" tabindex="-1"></a>  }</span>
-<span id="cb109-13"><a href="inverse-probability-of-censoring-weights.html#cb109-13" tabindex="-1"></a></span>
-<span id="cb109-14"><a href="inverse-probability-of-censoring-weights.html#cb109-14" tabindex="-1"></a>  pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span></span>
-<span id="cb109-15"><a href="inverse-probability-of-censoring-weights.html#cb109-15" tabindex="-1"></a>    <span class="fu">group_by</span>(.data[[id]]) <span class="sc">|&gt;</span></span>
-<span id="cb109-16"><a href="inverse-probability-of-censoring-weights.html#cb109-16" tabindex="-1"></a>    <span class="fu">arrange</span>(tstop, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
-<span id="cb109-17"><a href="inverse-probability-of-censoring-weights.html#cb109-17" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">w_cens =</span> <span class="fu">cumprod</span>(p_uncens_num) <span class="sc">/</span> <span class="fu">cumprod</span>(p_uncens)) <span class="sc">|&gt;</span></span>
-<span id="cb109-18"><a href="inverse-probability-of-censoring-weights.html#cb109-18" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb109-19"><a href="inverse-probability-of-censoring-weights.html#cb109-19" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">w_cens =</span> <span class="fu">pmin</span>(w_cens, <span class="fu">quantile</span>(w_cens, truncate_at)))</span>
-<span id="cb109-20"><a href="inverse-probability-of-censoring-weights.html#cb109-20" tabindex="-1"></a></span>
-<span id="cb109-21"><a href="inverse-probability-of-censoring-weights.html#cb109-21" tabindex="-1"></a>  <span class="co"># geeglm() looks up `id` and `weights` in the environment of the formula it</span></span>
-<span id="cb109-22"><a href="inverse-probability-of-censoring-weights.html#cb109-22" tabindex="-1"></a>  <span class="co"># is handed; ours was built by the caller, so re-home it here.</span></span>
-<span id="cb109-23"><a href="inverse-probability-of-censoring-weights.html#cb109-23" tabindex="-1"></a>  <span class="fu">environment</span>(outcome_formula) <span class="ot">&lt;-</span> <span class="fu">environment</span>()</span>
-<span id="cb109-24"><a href="inverse-probability-of-censoring-weights.html#cb109-24" tabindex="-1"></a></span>
-<span id="cb109-25"><a href="inverse-probability-of-censoring-weights.html#cb109-25" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> geepack<span class="sc">::</span><span class="fu">geeglm</span>(</span>
-<span id="cb109-26"><a href="inverse-probability-of-censoring-weights.html#cb109-26" tabindex="-1"></a>    outcome_formula, <span class="at">id =</span> pp_data[[id]], <span class="at">weights =</span> pp_data<span class="sc">$</span>w_cens,</span>
-<span id="cb109-27"><a href="inverse-probability-of-censoring-weights.html#cb109-27" tabindex="-1"></a>    <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp_data</span>
-<span id="cb109-28"><a href="inverse-probability-of-censoring-weights.html#cb109-28" tabindex="-1"></a>  )</span>
-<span id="cb109-29"><a href="inverse-probability-of-censoring-weights.html#cb109-29" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">fit =</span> broom<span class="sc">::</span><span class="fu">tidy</span>(fit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>), <span class="at">data =</span> pp_data)</span>
-<span id="cb109-30"><a href="inverse-probability-of-censoring-weights.html#cb109-30" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="inverse-probability-of-censoring-weights.html#cb103-1" tabindex="-1"></a>ipcw_estimator <span class="ot">&lt;-</span> <span class="cf">function</span>(pp_data, censor_model, outcome_formula,</span>
+<span id="cb103-2"><a href="inverse-probability-of-censoring-weights.html#cb103-2" tabindex="-1"></a>                           <span class="at">id =</span> <span class="st">&quot;.row_id&quot;</span>, <span class="at">numerator_model =</span> <span class="cn">NULL</span>,</span>
+<span id="cb103-3"><a href="inverse-probability-of-censoring-weights.html#cb103-3" tabindex="-1"></a>                           <span class="at">truncate_at =</span> <span class="fl">0.99</span>) {</span>
+<span id="cb103-4"><a href="inverse-probability-of-censoring-weights.html#cb103-4" tabindex="-1"></a>  cens_fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(censor_model, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp_data)</span>
+<span id="cb103-5"><a href="inverse-probability-of-censoring-weights.html#cb103-5" tabindex="-1"></a>  pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">p_uncens =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">predict</span>(cens_fit, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb103-6"><a href="inverse-probability-of-censoring-weights.html#cb103-6" tabindex="-1"></a></span>
+<span id="cb103-7"><a href="inverse-probability-of-censoring-weights.html#cb103-7" tabindex="-1"></a>  <span class="cf">if</span> (<span class="sc">!</span><span class="fu">is.null</span>(numerator_model)) {</span>
+<span id="cb103-8"><a href="inverse-probability-of-censoring-weights.html#cb103-8" tabindex="-1"></a>    num_fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(numerator_model, <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp_data)</span>
+<span id="cb103-9"><a href="inverse-probability-of-censoring-weights.html#cb103-9" tabindex="-1"></a>    pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">p_uncens_num =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">predict</span>(num_fit, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
+<span id="cb103-10"><a href="inverse-probability-of-censoring-weights.html#cb103-10" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
+<span id="cb103-11"><a href="inverse-probability-of-censoring-weights.html#cb103-11" tabindex="-1"></a>    pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">p_uncens_num =</span> <span class="dv">1</span>)</span>
+<span id="cb103-12"><a href="inverse-probability-of-censoring-weights.html#cb103-12" tabindex="-1"></a>  }</span>
+<span id="cb103-13"><a href="inverse-probability-of-censoring-weights.html#cb103-13" tabindex="-1"></a></span>
+<span id="cb103-14"><a href="inverse-probability-of-censoring-weights.html#cb103-14" tabindex="-1"></a>  pp_data <span class="ot">&lt;-</span> pp_data <span class="sc">|&gt;</span></span>
+<span id="cb103-15"><a href="inverse-probability-of-censoring-weights.html#cb103-15" tabindex="-1"></a>    <span class="fu">group_by</span>(.data[[id]]) <span class="sc">|&gt;</span></span>
+<span id="cb103-16"><a href="inverse-probability-of-censoring-weights.html#cb103-16" tabindex="-1"></a>    <span class="fu">arrange</span>(tstop, <span class="at">.by_group =</span> <span class="cn">TRUE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb103-17"><a href="inverse-probability-of-censoring-weights.html#cb103-17" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">w_cens =</span> <span class="fu">cumprod</span>(p_uncens_num) <span class="sc">/</span> <span class="fu">cumprod</span>(p_uncens)) <span class="sc">|&gt;</span></span>
+<span id="cb103-18"><a href="inverse-probability-of-censoring-weights.html#cb103-18" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb103-19"><a href="inverse-probability-of-censoring-weights.html#cb103-19" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">w_cens =</span> <span class="fu">pmin</span>(w_cens, <span class="fu">quantile</span>(w_cens, truncate_at)))</span>
+<span id="cb103-20"><a href="inverse-probability-of-censoring-weights.html#cb103-20" tabindex="-1"></a></span>
+<span id="cb103-21"><a href="inverse-probability-of-censoring-weights.html#cb103-21" tabindex="-1"></a>  <span class="co"># geeglm() looks up `id` and `weights` in the environment of the formula it</span></span>
+<span id="cb103-22"><a href="inverse-probability-of-censoring-weights.html#cb103-22" tabindex="-1"></a>  <span class="co"># is handed; ours was built by the caller, so re-home it here.</span></span>
+<span id="cb103-23"><a href="inverse-probability-of-censoring-weights.html#cb103-23" tabindex="-1"></a>  <span class="fu">environment</span>(outcome_formula) <span class="ot">&lt;-</span> <span class="fu">environment</span>()</span>
+<span id="cb103-24"><a href="inverse-probability-of-censoring-weights.html#cb103-24" tabindex="-1"></a></span>
+<span id="cb103-25"><a href="inverse-probability-of-censoring-weights.html#cb103-25" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> geepack<span class="sc">::</span><span class="fu">geeglm</span>(</span>
+<span id="cb103-26"><a href="inverse-probability-of-censoring-weights.html#cb103-26" tabindex="-1"></a>    outcome_formula, <span class="at">id =</span> pp_data[[id]], <span class="at">weights =</span> pp_data<span class="sc">$</span>w_cens,</span>
+<span id="cb103-27"><a href="inverse-probability-of-censoring-weights.html#cb103-27" tabindex="-1"></a>    <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> pp_data</span>
+<span id="cb103-28"><a href="inverse-probability-of-censoring-weights.html#cb103-28" tabindex="-1"></a>  )</span>
+<span id="cb103-29"><a href="inverse-probability-of-censoring-weights.html#cb103-29" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">fit =</span> broom<span class="sc">::</span><span class="fu">tidy</span>(fit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>), <span class="at">data =</span> pp_data)</span>
+<span id="cb103-30"><a href="inverse-probability-of-censoring-weights.html#cb103-30" tabindex="-1"></a>}</span></code></pre></div>
 <p>The <code>cumprod()</code> line is the whole time-varying idea in one expression:
 grouped by patient and ordered by interval, the weight at interval <span class="math inline">\(t\)</span> is
 the running product of stabilized numerators over the running product of
@@ -562,14 +562,14 @@ error twice over — once for the weights and once for the repeated rows.
 Clustering on the patient repairs both. The function returns the tidied
 fit and the weighted data, so the weights can be inspected rather than
 taken on trust.</p>
-<div class="sourceCode" id="cb110"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb110-1"><a href="inverse-probability-of-censoring-weights.html#cb110-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">ipcw_estimator</span>(</span>
-<span id="cb110-2"><a href="inverse-probability-of-censoring-weights.html#cb110-2" tabindex="-1"></a>  pp,</span>
-<span id="cb110-3"><a href="inverse-probability-of-censoring-weights.html#cb110-3" tabindex="-1"></a>  <span class="at">censor_model    =</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;splines::ns(tstop, 3)&quot;</span>, sta_covs), <span class="st">&quot;censored&quot;</span>),</span>
-<span id="cb110-4"><a href="inverse-probability-of-censoring-weights.html#cb110-4" tabindex="-1"></a>  <span class="at">outcome_formula =</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;statin&quot;</span>, <span class="st">&quot;splines::ns(tstop, 3)&quot;</span>), <span class="st">&quot;event&quot;</span>),</span>
-<span id="cb110-5"><a href="inverse-probability-of-censoring-weights.html#cb110-5" tabindex="-1"></a>  <span class="at">numerator_model =</span> <span class="fu">reformulate</span>(<span class="st">&quot;splines::ns(tstop, 3)&quot;</span>, <span class="st">&quot;censored&quot;</span>)</span>
-<span id="cb110-6"><a href="inverse-probability-of-censoring-weights.html#cb110-6" tabindex="-1"></a>)</span>
-<span id="cb110-7"><a href="inverse-probability-of-censoring-weights.html#cb110-7" tabindex="-1"></a></span>
-<span id="cb110-8"><a href="inverse-probability-of-censoring-weights.html#cb110-8" tabindex="-1"></a>res<span class="sc">$</span>fit <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="inverse-probability-of-censoring-weights.html#cb104-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">ipcw_estimator</span>(</span>
+<span id="cb104-2"><a href="inverse-probability-of-censoring-weights.html#cb104-2" tabindex="-1"></a>  pp,</span>
+<span id="cb104-3"><a href="inverse-probability-of-censoring-weights.html#cb104-3" tabindex="-1"></a>  <span class="at">censor_model    =</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;splines::ns(tstop, 3)&quot;</span>, sta_covs), <span class="st">&quot;censored&quot;</span>),</span>
+<span id="cb104-4"><a href="inverse-probability-of-censoring-weights.html#cb104-4" tabindex="-1"></a>  <span class="at">outcome_formula =</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;statin&quot;</span>, <span class="st">&quot;splines::ns(tstop, 3)&quot;</span>), <span class="st">&quot;event&quot;</span>),</span>
+<span id="cb104-5"><a href="inverse-probability-of-censoring-weights.html#cb104-5" tabindex="-1"></a>  <span class="at">numerator_model =</span> <span class="fu">reformulate</span>(<span class="st">&quot;splines::ns(tstop, 3)&quot;</span>, <span class="st">&quot;censored&quot;</span>)</span>
+<span id="cb104-6"><a href="inverse-probability-of-censoring-weights.html#cb104-6" tabindex="-1"></a>)</span>
+<span id="cb104-7"><a href="inverse-probability-of-censoring-weights.html#cb104-7" tabindex="-1"></a></span>
+<span id="cb104-8"><a href="inverse-probability-of-censoring-weights.html#cb104-8" tabindex="-1"></a>res<span class="sc">$</span>fit <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <colgroup>
 <col width="29%" />
@@ -651,11 +651,11 @@ relying on rather than the likelihood.)</p>
 <h2><span class="header-section-number">11.4</span> Weight diagnostics<a href="inverse-probability-of-censoring-weights.html#weight-diagnostics" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>A weight is a claim about how many unseen patients each observed patient
 represents, and the claim should be looked at before it is believed.</p>
-<div class="sourceCode" id="cb111"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb111-1"><a href="inverse-probability-of-censoring-weights.html#cb111-1" tabindex="-1"></a>res<span class="sc">$</span>data <span class="sc">|&gt;</span></span>
-<span id="cb111-2"><a href="inverse-probability-of-censoring-weights.html#cb111-2" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">interval =</span> <span class="fu">ceiling</span>(tstop)) <span class="sc">|&gt;</span></span>
-<span id="cb111-3"><a href="inverse-probability-of-censoring-weights.html#cb111-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">rows =</span> <span class="fu">n</span>(), <span class="at">mean =</span> <span class="fu">mean</span>(w_cens), <span class="at">sd =</span> <span class="fu">sd</span>(w_cens),</span>
-<span id="cb111-4"><a href="inverse-probability-of-censoring-weights.html#cb111-4" tabindex="-1"></a>            <span class="at">max =</span> <span class="fu">max</span>(w_cens), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb111-5"><a href="inverse-probability-of-censoring-weights.html#cb111-5" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb105"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb105-1"><a href="inverse-probability-of-censoring-weights.html#cb105-1" tabindex="-1"></a>res<span class="sc">$</span>data <span class="sc">|&gt;</span></span>
+<span id="cb105-2"><a href="inverse-probability-of-censoring-weights.html#cb105-2" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="at">interval =</span> <span class="fu">ceiling</span>(tstop)) <span class="sc">|&gt;</span></span>
+<span id="cb105-3"><a href="inverse-probability-of-censoring-weights.html#cb105-3" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">rows =</span> <span class="fu">n</span>(), <span class="at">mean =</span> <span class="fu">mean</span>(w_cens), <span class="at">sd =</span> <span class="fu">sd</span>(w_cens),</span>
+<span id="cb105-4"><a href="inverse-probability-of-censoring-weights.html#cb105-4" tabindex="-1"></a>            <span class="at">max =</span> <span class="fu">max</span>(w_cens), <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb105-5"><a href="inverse-probability-of-censoring-weights.html#cb105-5" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -777,22 +777,22 @@ rather than choosing.</p>
 the censoring weights and once with weights of 1, and put the answers
 beside each other. Since the model is a hazard model, we also multiply
 the fitted hazards back into risks at the horizons Chapter 10 named.</p>
-<div class="sourceCode" id="cb112"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb112-1"><a href="inverse-probability-of-censoring-weights.html#cb112-1" tabindex="-1"></a>d      <span class="ot">&lt;-</span> res<span class="sc">$</span>data</span>
-<span id="cb112-2"><a href="inverse-probability-of-censoring-weights.html#cb112-2" tabindex="-1"></a>w_one  <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">nrow</span>(d))</span>
-<span id="cb112-3"><a href="inverse-probability-of-censoring-weights.html#cb112-3" tabindex="-1"></a>outcome_formula <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;statin&quot;</span>, <span class="st">&quot;splines::ns(tstop, 3)&quot;</span>), <span class="st">&quot;event&quot;</span>)</span>
-<span id="cb112-4"><a href="inverse-probability-of-censoring-weights.html#cb112-4" tabindex="-1"></a></span>
-<span id="cb112-5"><a href="inverse-probability-of-censoring-weights.html#cb112-5" tabindex="-1"></a>wfit <span class="ot">&lt;-</span> geepack<span class="sc">::</span><span class="fu">geeglm</span>(outcome_formula, <span class="at">id =</span> d<span class="sc">$</span>.row_id, <span class="at">weights =</span> d<span class="sc">$</span>w_cens,</span>
-<span id="cb112-6"><a href="inverse-probability-of-censoring-weights.html#cb112-6" tabindex="-1"></a>                        <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> d)</span>
-<span id="cb112-7"><a href="inverse-probability-of-censoring-weights.html#cb112-7" tabindex="-1"></a>ufit <span class="ot">&lt;-</span> geepack<span class="sc">::</span><span class="fu">geeglm</span>(outcome_formula, <span class="at">id =</span> d<span class="sc">$</span>.row_id, <span class="at">weights =</span> w_one,</span>
-<span id="cb112-8"><a href="inverse-probability-of-censoring-weights.html#cb112-8" tabindex="-1"></a>                        <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> d)</span>
-<span id="cb112-9"><a href="inverse-probability-of-censoring-weights.html#cb112-9" tabindex="-1"></a></span>
-<span id="cb112-10"><a href="inverse-probability-of-censoring-weights.html#cb112-10" tabindex="-1"></a><span class="fu">bind_rows</span>(<span class="st">&quot;IPCW weighted&quot;</span> <span class="ot">=</span> broom<span class="sc">::</span><span class="fu">tidy</span>(wfit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb112-11"><a href="inverse-probability-of-censoring-weights.html#cb112-11" tabindex="-1"></a>          <span class="st">&quot;Unweighted&quot;</span>    <span class="ot">=</span> broom<span class="sc">::</span><span class="fu">tidy</span>(ufit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>),</span>
-<span id="cb112-12"><a href="inverse-probability-of-censoring-weights.html#cb112-12" tabindex="-1"></a>          <span class="at">.id =</span> <span class="st">&quot;analysis&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb112-13"><a href="inverse-probability-of-censoring-weights.html#cb112-13" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">&quot;statin&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb112-14"><a href="inverse-probability-of-censoring-weights.html#cb112-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(estimate, conf.low, conf.high), exp)) <span class="sc">|&gt;</span></span>
-<span id="cb112-15"><a href="inverse-probability-of-censoring-weights.html#cb112-15" tabindex="-1"></a>  <span class="fu">select</span>(analysis, <span class="at">odds_ratio =</span> estimate, conf.low, conf.high) <span class="sc">|&gt;</span></span>
-<span id="cb112-16"><a href="inverse-probability-of-censoring-weights.html#cb112-16" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb106"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb106-1"><a href="inverse-probability-of-censoring-weights.html#cb106-1" tabindex="-1"></a>d      <span class="ot">&lt;-</span> res<span class="sc">$</span>data</span>
+<span id="cb106-2"><a href="inverse-probability-of-censoring-weights.html#cb106-2" tabindex="-1"></a>w_one  <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span>, <span class="fu">nrow</span>(d))</span>
+<span id="cb106-3"><a href="inverse-probability-of-censoring-weights.html#cb106-3" tabindex="-1"></a>outcome_formula <span class="ot">&lt;-</span> <span class="fu">reformulate</span>(<span class="fu">c</span>(<span class="st">&quot;statin&quot;</span>, <span class="st">&quot;splines::ns(tstop, 3)&quot;</span>), <span class="st">&quot;event&quot;</span>)</span>
+<span id="cb106-4"><a href="inverse-probability-of-censoring-weights.html#cb106-4" tabindex="-1"></a></span>
+<span id="cb106-5"><a href="inverse-probability-of-censoring-weights.html#cb106-5" tabindex="-1"></a>wfit <span class="ot">&lt;-</span> geepack<span class="sc">::</span><span class="fu">geeglm</span>(outcome_formula, <span class="at">id =</span> d<span class="sc">$</span>.row_id, <span class="at">weights =</span> d<span class="sc">$</span>w_cens,</span>
+<span id="cb106-6"><a href="inverse-probability-of-censoring-weights.html#cb106-6" tabindex="-1"></a>                        <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> d)</span>
+<span id="cb106-7"><a href="inverse-probability-of-censoring-weights.html#cb106-7" tabindex="-1"></a>ufit <span class="ot">&lt;-</span> geepack<span class="sc">::</span><span class="fu">geeglm</span>(outcome_formula, <span class="at">id =</span> d<span class="sc">$</span>.row_id, <span class="at">weights =</span> w_one,</span>
+<span id="cb106-8"><a href="inverse-probability-of-censoring-weights.html#cb106-8" tabindex="-1"></a>                        <span class="at">family =</span> <span class="fu">binomial</span>(), <span class="at">data =</span> d)</span>
+<span id="cb106-9"><a href="inverse-probability-of-censoring-weights.html#cb106-9" tabindex="-1"></a></span>
+<span id="cb106-10"><a href="inverse-probability-of-censoring-weights.html#cb106-10" tabindex="-1"></a><span class="fu">bind_rows</span>(<span class="st">&quot;IPCW weighted&quot;</span> <span class="ot">=</span> broom<span class="sc">::</span><span class="fu">tidy</span>(wfit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb106-11"><a href="inverse-probability-of-censoring-weights.html#cb106-11" tabindex="-1"></a>          <span class="st">&quot;Unweighted&quot;</span>    <span class="ot">=</span> broom<span class="sc">::</span><span class="fu">tidy</span>(ufit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb106-12"><a href="inverse-probability-of-censoring-weights.html#cb106-12" tabindex="-1"></a>          <span class="at">.id =</span> <span class="st">&quot;analysis&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb106-13"><a href="inverse-probability-of-censoring-weights.html#cb106-13" tabindex="-1"></a>  <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">&quot;statin&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb106-14"><a href="inverse-probability-of-censoring-weights.html#cb106-14" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="fu">across</span>(<span class="fu">c</span>(estimate, conf.low, conf.high), exp)) <span class="sc">|&gt;</span></span>
+<span id="cb106-15"><a href="inverse-probability-of-censoring-weights.html#cb106-15" tabindex="-1"></a>  <span class="fu">select</span>(analysis, <span class="at">odds_ratio =</span> estimate, conf.low, conf.high) <span class="sc">|&gt;</span></span>
+<span id="cb106-16"><a href="inverse-probability-of-censoring-weights.html#cb106-16" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">
@@ -817,21 +817,21 @@ the fitted hazards back into risks at the horizons Chapter 10 named.</p>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb113"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb113-1"><a href="inverse-probability-of-censoring-weights.html#cb113-1" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand_grid</span>(<span class="at">statin =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">tstop =</span> <span class="dv">1</span><span class="sc">:</span>admin_end)</span>
-<span id="cb113-2"><a href="inverse-probability-of-censoring-weights.html#cb113-2" tabindex="-1"></a></span>
-<span id="cb113-3"><a href="inverse-probability-of-censoring-weights.html#cb113-3" tabindex="-1"></a>risk_at <span class="ot">&lt;-</span> <span class="cf">function</span>(fit) {</span>
-<span id="cb113-4"><a href="inverse-probability-of-censoring-weights.html#cb113-4" tabindex="-1"></a>  grid <span class="sc">|&gt;</span></span>
-<span id="cb113-5"><a href="inverse-probability-of-censoring-weights.html#cb113-5" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">h =</span> <span class="fu">predict</span>(fit, <span class="at">newdata =</span> grid, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb113-6"><a href="inverse-probability-of-censoring-weights.html#cb113-6" tabindex="-1"></a>    <span class="fu">group_by</span>(statin) <span class="sc">|&gt;</span></span>
-<span id="cb113-7"><a href="inverse-probability-of-censoring-weights.html#cb113-7" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">risk =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">cumprod</span>(<span class="dv">1</span> <span class="sc">-</span> h)) <span class="sc">|&gt;</span></span>
-<span id="cb113-8"><a href="inverse-probability-of-censoring-weights.html#cb113-8" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
-<span id="cb113-9"><a href="inverse-probability-of-censoring-weights.html#cb113-9" tabindex="-1"></a>    <span class="fu">filter</span>(tstop <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">5</span>, admin_end))</span>
-<span id="cb113-10"><a href="inverse-probability-of-censoring-weights.html#cb113-10" tabindex="-1"></a>}</span>
-<span id="cb113-11"><a href="inverse-probability-of-censoring-weights.html#cb113-11" tabindex="-1"></a></span>
-<span id="cb113-12"><a href="inverse-probability-of-censoring-weights.html#cb113-12" tabindex="-1"></a><span class="fu">bind_rows</span>(<span class="st">&quot;IPCW weighted&quot;</span> <span class="ot">=</span> <span class="fu">risk_at</span>(wfit), <span class="st">&quot;Unweighted&quot;</span> <span class="ot">=</span> <span class="fu">risk_at</span>(ufit),</span>
-<span id="cb113-13"><a href="inverse-probability-of-censoring-weights.html#cb113-13" tabindex="-1"></a>          <span class="at">.id =</span> <span class="st">&quot;analysis&quot;</span>) <span class="sc">|&gt;</span></span>
-<span id="cb113-14"><a href="inverse-probability-of-censoring-weights.html#cb113-14" tabindex="-1"></a>  <span class="fu">select</span>(analysis, statin, <span class="at">years =</span> tstop, risk) <span class="sc">|&gt;</span></span>
-<span id="cb113-15"><a href="inverse-probability-of-censoring-weights.html#cb113-15" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb107"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb107-1"><a href="inverse-probability-of-censoring-weights.html#cb107-1" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="fu">expand_grid</span>(<span class="at">statin =</span> <span class="dv">0</span><span class="sc">:</span><span class="dv">1</span>, <span class="at">tstop =</span> <span class="dv">1</span><span class="sc">:</span>admin_end)</span>
+<span id="cb107-2"><a href="inverse-probability-of-censoring-weights.html#cb107-2" tabindex="-1"></a></span>
+<span id="cb107-3"><a href="inverse-probability-of-censoring-weights.html#cb107-3" tabindex="-1"></a>risk_at <span class="ot">&lt;-</span> <span class="cf">function</span>(fit) {</span>
+<span id="cb107-4"><a href="inverse-probability-of-censoring-weights.html#cb107-4" tabindex="-1"></a>  grid <span class="sc">|&gt;</span></span>
+<span id="cb107-5"><a href="inverse-probability-of-censoring-weights.html#cb107-5" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">h =</span> <span class="fu">predict</span>(fit, <span class="at">newdata =</span> grid, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb107-6"><a href="inverse-probability-of-censoring-weights.html#cb107-6" tabindex="-1"></a>    <span class="fu">group_by</span>(statin) <span class="sc">|&gt;</span></span>
+<span id="cb107-7"><a href="inverse-probability-of-censoring-weights.html#cb107-7" tabindex="-1"></a>    <span class="fu">mutate</span>(<span class="at">risk =</span> <span class="dv">1</span> <span class="sc">-</span> <span class="fu">cumprod</span>(<span class="dv">1</span> <span class="sc">-</span> h)) <span class="sc">|&gt;</span></span>
+<span id="cb107-8"><a href="inverse-probability-of-censoring-weights.html#cb107-8" tabindex="-1"></a>    <span class="fu">ungroup</span>() <span class="sc">|&gt;</span></span>
+<span id="cb107-9"><a href="inverse-probability-of-censoring-weights.html#cb107-9" tabindex="-1"></a>    <span class="fu">filter</span>(tstop <span class="sc">%in%</span> <span class="fu">c</span>(<span class="dv">5</span>, admin_end))</span>
+<span id="cb107-10"><a href="inverse-probability-of-censoring-weights.html#cb107-10" tabindex="-1"></a>}</span>
+<span id="cb107-11"><a href="inverse-probability-of-censoring-weights.html#cb107-11" tabindex="-1"></a></span>
+<span id="cb107-12"><a href="inverse-probability-of-censoring-weights.html#cb107-12" tabindex="-1"></a><span class="fu">bind_rows</span>(<span class="st">&quot;IPCW weighted&quot;</span> <span class="ot">=</span> <span class="fu">risk_at</span>(wfit), <span class="st">&quot;Unweighted&quot;</span> <span class="ot">=</span> <span class="fu">risk_at</span>(ufit),</span>
+<span id="cb107-13"><a href="inverse-probability-of-censoring-weights.html#cb107-13" tabindex="-1"></a>          <span class="at">.id =</span> <span class="st">&quot;analysis&quot;</span>) <span class="sc">|&gt;</span></span>
+<span id="cb107-14"><a href="inverse-probability-of-censoring-weights.html#cb107-14" tabindex="-1"></a>  <span class="fu">select</span>(analysis, statin, <span class="at">years =</span> tstop, risk) <span class="sc">|&gt;</span></span>
+<span id="cb107-15"><a href="inverse-probability-of-censoring-weights.html#cb107-15" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
 <table>
 <thead>
 <tr class="header">

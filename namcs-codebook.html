@@ -141,11 +141,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Causal Inference in Epidemiology Using R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a>
 <ul>
-<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
-<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
-<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+<li class="chapter" data-level="0.1" data-path="preface.html"><a href="preface.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="preface.html"><a href="preface.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="preface.html"><a href="preface.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
 </ul></li>
 <li class="part"><span><b>I Foundations</b></span></li>
 <li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
@@ -314,12 +314,12 @@ directly from the data rather than typed out by hand, so it will always
 match whatever is actually in the installed <code>NAMCS</code> package.</p>
 <div id="the-nsaid-cohort-ns" class="section level2 hasAnchor" number="16.1">
 <h2><span class="header-section-number">B.1</span> The NSAID cohort (<code>ns</code>)<a href="namcs-codebook.html#the-nsaid-cohort-ns" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb146"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb146-1"><a href="namcs-codebook.html#cb146-1" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb146-2"><a href="namcs-codebook.html#cb146-2" tabindex="-1"></a>  <span class="at">variable =</span> <span class="fu">names</span>(ns),</span>
-<span id="cb146-3"><a href="namcs-codebook.html#cb146-3" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">map_chr</span>(ns, <span class="sc">~</span> <span class="fu">class</span>(.x)[<span class="dv">1</span>]),</span>
-<span id="cb146-4"><a href="namcs-codebook.html#cb146-4" tabindex="-1"></a>  <span class="at">example_values =</span> <span class="fu">map_chr</span>(ns, <span class="sc">~</span> <span class="fu">paste</span>(<span class="fu">head</span>(<span class="fu">unique</span>(.x), <span class="dv">3</span>), <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>))</span>
-<span id="cb146-5"><a href="namcs-codebook.html#cb146-5" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb146-6"><a href="namcs-codebook.html#cb146-6" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Variables in the `ns` (NSAID) cohort.&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb140"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb140-1"><a href="namcs-codebook.html#cb140-1" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb140-2"><a href="namcs-codebook.html#cb140-2" tabindex="-1"></a>  <span class="at">variable =</span> <span class="fu">names</span>(ns),</span>
+<span id="cb140-3"><a href="namcs-codebook.html#cb140-3" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">map_chr</span>(ns, <span class="sc">~</span> <span class="fu">class</span>(.x)[<span class="dv">1</span>]),</span>
+<span id="cb140-4"><a href="namcs-codebook.html#cb140-4" tabindex="-1"></a>  <span class="at">example_values =</span> <span class="fu">map_chr</span>(ns, <span class="sc">~</span> <span class="fu">paste</span>(<span class="fu">head</span>(<span class="fu">unique</span>(.x), <span class="dv">3</span>), <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>))</span>
+<span id="cb140-5"><a href="namcs-codebook.html#cb140-5" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb140-6"><a href="namcs-codebook.html#cb140-6" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Variables in the `ns` (NSAID) cohort.&quot;</span>)</span></code></pre></div>
 <table>
 <caption><span id="tab:app-nsaid-codebook">Table B.1: </span>Variables in the <code>ns</code> (NSAID) cohort.</caption>
 <colgroup>
@@ -640,12 +640,12 @@ match whatever is actually in the installed <code>NAMCS</code> package.</p>
 </div>
 <div id="the-statin-cohort-sta" class="section level2 hasAnchor" number="16.2">
 <h2><span class="header-section-number">B.2</span> The statin cohort (<code>sta</code>)<a href="namcs-codebook.html#the-statin-cohort-sta" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<div class="sourceCode" id="cb147"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb147-1"><a href="namcs-codebook.html#cb147-1" tabindex="-1"></a><span class="fu">tibble</span>(</span>
-<span id="cb147-2"><a href="namcs-codebook.html#cb147-2" tabindex="-1"></a>  <span class="at">variable =</span> <span class="fu">names</span>(sta),</span>
-<span id="cb147-3"><a href="namcs-codebook.html#cb147-3" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">map_chr</span>(sta, <span class="sc">~</span> <span class="fu">class</span>(.x)[<span class="dv">1</span>]),</span>
-<span id="cb147-4"><a href="namcs-codebook.html#cb147-4" tabindex="-1"></a>  <span class="at">example_values =</span> <span class="fu">map_chr</span>(sta, <span class="sc">~</span> <span class="fu">paste</span>(<span class="fu">head</span>(<span class="fu">unique</span>(.x), <span class="dv">3</span>), <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>))</span>
-<span id="cb147-5"><a href="namcs-codebook.html#cb147-5" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb147-6"><a href="namcs-codebook.html#cb147-6" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Variables in the `sta` (statin) cohort.&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb141"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb141-1"><a href="namcs-codebook.html#cb141-1" tabindex="-1"></a><span class="fu">tibble</span>(</span>
+<span id="cb141-2"><a href="namcs-codebook.html#cb141-2" tabindex="-1"></a>  <span class="at">variable =</span> <span class="fu">names</span>(sta),</span>
+<span id="cb141-3"><a href="namcs-codebook.html#cb141-3" tabindex="-1"></a>  <span class="at">type =</span> <span class="fu">map_chr</span>(sta, <span class="sc">~</span> <span class="fu">class</span>(.x)[<span class="dv">1</span>]),</span>
+<span id="cb141-4"><a href="namcs-codebook.html#cb141-4" tabindex="-1"></a>  <span class="at">example_values =</span> <span class="fu">map_chr</span>(sta, <span class="sc">~</span> <span class="fu">paste</span>(<span class="fu">head</span>(<span class="fu">unique</span>(.x), <span class="dv">3</span>), <span class="at">collapse =</span> <span class="st">&quot;, &quot;</span>))</span>
+<span id="cb141-5"><a href="namcs-codebook.html#cb141-5" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb141-6"><a href="namcs-codebook.html#cb141-6" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">caption =</span> <span class="st">&quot;Variables in the `sta` (statin) cohort.&quot;</span>)</span></code></pre></div>
 <table>
 <caption><span id="tab:app-statin-codebook">Table B.2: </span>Variables in the <code>sta</code> (statin) cohort.</caption>
 <colgroup>

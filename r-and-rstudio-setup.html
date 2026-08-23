@@ -141,11 +141,11 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li><a href="./">Causal Inference in Epidemiology Using R</a></li>
 
 <li class="divider"></li>
-<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Preface</a>
+<li class="chapter" data-level="" data-path="preface.html"><a href="preface.html"><i class="fa fa-check"></i>Preface</a>
 <ul>
-<li class="chapter" data-level="0.1" data-path="index.html"><a href="index.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
-<li class="chapter" data-level="0.2" data-path="index.html"><a href="index.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
-<li class="chapter" data-level="0.3" data-path="index.html"><a href="index.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
+<li class="chapter" data-level="0.1" data-path="preface.html"><a href="preface.html#who-this-book-is-for"><i class="fa fa-check"></i><b>0.1</b> Who this book is for</a></li>
+<li class="chapter" data-level="0.2" data-path="preface.html"><a href="preface.html#how-the-book-works"><i class="fa fa-check"></i><b>0.2</b> How the book works</a></li>
+<li class="chapter" data-level="0.3" data-path="preface.html"><a href="preface.html#software"><i class="fa fa-check"></i><b>0.3</b> Software</a></li>
 </ul></li>
 <li class="part"><span><b>I Foundations</b></span></li>
 <li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
@@ -332,18 +332,18 @@ installation (it will say so in the Console pane on startup).</p>
 and plotting, and most chapters bring in one or two special-purpose
 packages on top of that. Install all of them at once by pasting the
 following into the R console and running it:</p>
-<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="r-and-rstudio-setup.html#cb143-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(</span>
-<span id="cb143-2"><a href="r-and-rstudio-setup.html#cb143-2" tabindex="-1"></a>  <span class="st">&quot;tidyverse&quot;</span>,  <span class="co"># dplyr, ggplot2, purrr, and friends</span></span>
-<span id="cb143-3"><a href="r-and-rstudio-setup.html#cb143-3" tabindex="-1"></a>  <span class="st">&quot;bookdown&quot;</span>,   <span class="co"># builds this book; only needed if you render it yourself</span></span>
-<span id="cb143-4"><a href="r-and-rstudio-setup.html#cb143-4" tabindex="-1"></a>  <span class="st">&quot;dagitty&quot;</span>,    <span class="co"># causal diagrams, Chapter 5</span></span>
-<span id="cb143-5"><a href="r-and-rstudio-setup.html#cb143-5" tabindex="-1"></a>  <span class="st">&quot;ggdag&quot;</span>,      <span class="co"># plotting causal diagrams, Chapter 5 and later chapters</span></span>
-<span id="cb143-6"><a href="r-and-rstudio-setup.html#cb143-6" tabindex="-1"></a>  <span class="st">&quot;survival&quot;</span>,   <span class="co"># Surv(), survfit(), survSplit(), Chapters 10-12</span></span>
-<span id="cb143-7"><a href="r-and-rstudio-setup.html#cb143-7" tabindex="-1"></a>  <span class="st">&quot;cobalt&quot;</span>,     <span class="co"># covariate-balance tables and plots, Chapter 8</span></span>
-<span id="cb143-8"><a href="r-and-rstudio-setup.html#cb143-8" tabindex="-1"></a>  <span class="st">&quot;geepack&quot;</span>,    <span class="co"># weighted GEE, the engine behind iptw_estimator() and</span></span>
-<span id="cb143-9"><a href="r-and-rstudio-setup.html#cb143-9" tabindex="-1"></a>                <span class="co"># ipcw_estimator(), Chapters 9 and 11</span></span>
-<span id="cb143-10"><a href="r-and-rstudio-setup.html#cb143-10" tabindex="-1"></a>  <span class="st">&quot;broom&quot;</span>,      <span class="co"># tidy() for turning model objects into tibbles</span></span>
-<span id="cb143-11"><a href="r-and-rstudio-setup.html#cb143-11" tabindex="-1"></a>  <span class="st">&quot;remotes&quot;</span>     <span class="co"># installs packages from GitHub, including NAMCS below</span></span>
-<span id="cb143-12"><a href="r-and-rstudio-setup.html#cb143-12" tabindex="-1"></a>))</span></code></pre></div>
+<div class="sourceCode" id="cb137"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb137-1"><a href="r-and-rstudio-setup.html#cb137-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(</span>
+<span id="cb137-2"><a href="r-and-rstudio-setup.html#cb137-2" tabindex="-1"></a>  <span class="st">&quot;tidyverse&quot;</span>,  <span class="co"># dplyr, ggplot2, purrr, and friends</span></span>
+<span id="cb137-3"><a href="r-and-rstudio-setup.html#cb137-3" tabindex="-1"></a>  <span class="st">&quot;bookdown&quot;</span>,   <span class="co"># builds this book; only needed if you render it yourself</span></span>
+<span id="cb137-4"><a href="r-and-rstudio-setup.html#cb137-4" tabindex="-1"></a>  <span class="st">&quot;dagitty&quot;</span>,    <span class="co"># causal diagrams, Chapter 5</span></span>
+<span id="cb137-5"><a href="r-and-rstudio-setup.html#cb137-5" tabindex="-1"></a>  <span class="st">&quot;ggdag&quot;</span>,      <span class="co"># plotting causal diagrams, Chapter 5 and later chapters</span></span>
+<span id="cb137-6"><a href="r-and-rstudio-setup.html#cb137-6" tabindex="-1"></a>  <span class="st">&quot;survival&quot;</span>,   <span class="co"># Surv(), survfit(), survSplit(), Chapters 10-12</span></span>
+<span id="cb137-7"><a href="r-and-rstudio-setup.html#cb137-7" tabindex="-1"></a>  <span class="st">&quot;cobalt&quot;</span>,     <span class="co"># covariate-balance tables and plots, Chapter 8</span></span>
+<span id="cb137-8"><a href="r-and-rstudio-setup.html#cb137-8" tabindex="-1"></a>  <span class="st">&quot;geepack&quot;</span>,    <span class="co"># weighted GEE, the engine behind iptw_estimator() and</span></span>
+<span id="cb137-9"><a href="r-and-rstudio-setup.html#cb137-9" tabindex="-1"></a>                <span class="co"># ipcw_estimator(), Chapters 9 and 11</span></span>
+<span id="cb137-10"><a href="r-and-rstudio-setup.html#cb137-10" tabindex="-1"></a>  <span class="st">&quot;broom&quot;</span>,      <span class="co"># tidy() for turning model objects into tibbles</span></span>
+<span id="cb137-11"><a href="r-and-rstudio-setup.html#cb137-11" tabindex="-1"></a>  <span class="st">&quot;remotes&quot;</span>     <span class="co"># installs packages from GitHub, including NAMCS below</span></span>
+<span id="cb137-12"><a href="r-and-rstudio-setup.html#cb137-12" tabindex="-1"></a>))</span></code></pre></div>
 <p>One package used in Chapters 11 and 12, <code>splines</code>, ships with base R
 and never needs installing.</p>
 </div>
@@ -352,7 +352,7 @@ and never needs installing.</p>
 <p>The two cohorts this book uses throughout, <code>ns</code> and <code>sta</code>, are not on
 CRAN. They live in a companion package, <code>NAMCS</code>, distributed from
 GitHub. With <code>remotes</code> installed from the previous step, run:</p>
-<div class="sourceCode" id="cb144"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb144-1"><a href="r-and-rstudio-setup.html#cb144-1" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;alanbrookhart/NAMCS&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb138"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb138-1"><a href="r-and-rstudio-setup.html#cb138-1" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&quot;alanbrookhart/NAMCS&quot;</span>)</span></code></pre></div>
 <p>If that command fails, it is almost always one of two things: <code>remotes</code>
 is not installed (revisit the previous step), or GitHub is unreachable
 from your network (try again from a different network, or ask your
@@ -361,7 +361,7 @@ instructor for the data files directly).</p>
 <div id="loading-everything-a-chapter-needs" class="section level2 hasAnchor" number="15.4">
 <h2><span class="header-section-number">A.4</span> Loading everything a chapter needs<a href="r-and-rstudio-setup.html#loading-everything-a-chapter-needs" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Every chapter and appendix in this book opens with a chunk that runs</p>
-<div class="sourceCode" id="cb145"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb145-1"><a href="r-and-rstudio-setup.html#cb145-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/setup.R&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb139"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb139-1"><a href="r-and-rstudio-setup.html#cb139-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/setup.R&quot;</span>)</span></code></pre></div>
 <p><code>R/setup.R</code> loads the tidyverse and the <code>NAMCS</code> package, loads <code>ns</code> and
 <code>sta</code>, and derives the handful of analysis columns and covariate lists
 (<code>ns_covs</code>, <code>sta_covs</code>, and so on) that later chapters take for granted.
