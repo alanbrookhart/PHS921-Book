@@ -285,8 +285,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="B.3" data-path="namcs-codebook.html"><a href="namcs-codebook.html#a-note-on-the-outcomes"><i class="fa fa-check"></i><b>B.3</b> A note on the outcomes</a></li>
 </ul></li>
 <li class="chapter" data-level="C" data-path="the-estimator-toolkit.html"><a href="the-estimator-toolkit.html"><i class="fa fa-check"></i><b>C</b> The estimator toolkit</a></li>
-<li class="chapter" data-level="D" data-path="course-map-phs-921.html"><a href="course-map-phs-921.html"><i class="fa fa-check"></i><b>D</b> Course map: PHS 921</a></li>
-<li class="chapter" data-level="E" data-path="further-reading.html"><a href="further-reading.html"><i class="fa fa-check"></i><b>E</b> Further reading</a></li>
+<li class="chapter" data-level="D" data-path="generalized-linear-models-for-causal-contrasts.html"><a href="generalized-linear-models-for-causal-contrasts.html"><i class="fa fa-check"></i><b>D</b> Generalized linear models for causal contrasts</a></li>
+<li class="chapter" data-level="E" data-path="a-bridge-to-cox-regression.html"><a href="a-bridge-to-cox-regression.html"><i class="fa fa-check"></i><b>E</b> A bridge to Cox regression</a></li>
+<li class="chapter" data-level="F" data-path="course-map-phs-921.html"><a href="course-map-phs-921.html"><i class="fa fa-check"></i><b>F</b> Course map: PHS 921</a></li>
+<li class="chapter" data-level="G" data-path="further-reading.html"><a href="further-reading.html"><i class="fa fa-check"></i><b>G</b> Further reading</a></li>
 </ul>
 
       </nav>
@@ -976,6 +978,20 @@ and untreated patients receive <code>ps / (1 - ps)</code>. Confirm that it
 reproduces the SMR-weighted estimate above, then compare it with
 Chapter 8’s matched estimate. Why is stabilization unnecessary for
 these weights, and which arm’s weights now carry the long tail?</li>
+<li>In <code>ns</code> the ATE and ATT estimates above sit close together, which is a
+fact about this cohort rather than a general result. Kurth and
+colleagues (2006, AJE) analyzed thrombolysis with t-PA and mortality
+after ischemic stroke, where the treatment effect varied sharply with
+baseline stroke severity, and found that IPTW and SMR weighting of the
+same cohort gave sharply different answers, far apart enough that a
+reader would draw different conclusions from the two. Using this
+chapter’s vocabulary, explain which patients
+dominate the weighted comparison under each scheme, and why effect
+heterogeneity turns the choice between them from a technical preference
+into a substantive one. Then say which of the two you would specify in
+advance for a question about whether to start treatment in a patient
+who currently would not receive it, and which for a question about
+whether current prescribing practice is doing harm.</li>
 </ol>
 
 </div>

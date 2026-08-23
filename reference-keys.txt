@@ -7,6 +7,8 @@ tab:ch06-table1-categorical
 tab:app-nsaid-codebook
 tab:app-statin-codebook
 tab:app-toolkit-table
+tab:app-glm-links
+tab:app-glm-robust
 who-this-book-is-for
 how-the-book-works
 software
@@ -111,5 +113,7 @@ the-nsaid-cohort-ns
 the-statin-cohort-sta
 a-note-on-the-outcomes
 the-estimator-toolkit
+generalized-linear-models-for-causal-contrasts
+a-bridge-to-cox-regression
 course-map-phs-921
 further-reading

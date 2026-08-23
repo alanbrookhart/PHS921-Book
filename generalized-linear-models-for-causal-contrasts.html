@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 4 The randomized trial as the benchmark | Causal Inference in Epidemiology Using R</title>
+  <title>D Generalized linear models for causal contrasts | Causal Inference in Epidemiology Using R</title>
   <meta name="description" content="An introduction to causal inference with epidemiologic applications in R." />
   <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 4 The randomized trial as the benchmark | Causal Inference in Epidemiology Using R" />
+  <meta property="og:title" content="D Generalized linear models for causal contrasts | Causal Inference in Epidemiology Using R" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="An introduction to causal inference with epidemiologic applications in R." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 4 The randomized trial as the benchmark | Causal Inference in Epidemiology Using R" />
+  <meta name="twitter:title" content="D Generalized linear models for causal contrasts | Causal Inference in Epidemiology Using R" />
   
   <meta name="twitter:description" content="An introduction to causal inference with epidemiologic applications in R." />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="potential-outcomes-and-causal-effects.html"/>
-<link rel="next" href="causal-diagrams.html"/>
+<link rel="prev" href="the-estimator-toolkit.html"/>
+<link rel="next" href="a-bridge-to-cox-regression.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -306,484 +306,155 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="the-randomized-trial-as-the-benchmark" class="section level1 hasAnchor" number="4">
-<h1><span class="header-section-number">Chapter 4</span> The randomized trial as the benchmark<a href="the-randomized-trial-as-the-benchmark.html#the-randomized-trial-as-the-benchmark" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Chapter 3 named exchangeability as the condition that made the naive
-comparison in Chapter 1 fail: Cox-2 initiators and nonselective
-initiators were not exchangeable, because physicians routed patients
-toward one drug or the other based on characteristics connected to
-ulcer risk. That chapter also promised, in passing, that a randomized
-trial buys exchangeability “by construction,” rather than by an
-assumption you have to defend with subject-matter argument. In this
-chapter we make good on that promise, first in code and then in words,
-by showing why handing the treatment decision to a random number
-generator rather than to a physician’s judgment produces two groups that
-are, on average, alike with respect to both measured and unmeasured
-characteristics. We then consider what a randomized trial can and cannot
-still promise once patients stop doing what they were assigned to do,
-using the distinction between intention-to-treat and per-protocol
-analysis. Finally, we introduce the idea that organizes the rest of this
-book, the target trial, which is the discipline of writing down the trial
-one wishes one could run before attempting to emulate it with the data
-actually available.</p>
-<div id="why-randomization-works" class="section level2 hasAnchor" number="4.1">
-<h2><span class="header-section-number">4.1</span> Why randomization works<a href="the-randomized-trial-as-the-benchmark.html#why-randomization-works" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Confounding by indication, as Chapter 1 described it, arises because
-treatment assignment is a function of patient characteristics connected
-to the outcome: a physician who suspects a patient is at elevated
-gastrointestinal risk is more likely to reach for the Cox-2 selective
-drug for exactly that patient, so Cox-2 initiators end up looking sicker
-on the very dimension the drug is meant to protect. Randomization
-addresses this at its source by making assignment a function of nothing
-about the patient at all, neither age nor arthritis history nor anything
-else a physician can observe, and, equally important, nothing a physician
-cannot observe. It is this last property that makes randomization more
-powerful than any adjustment strategy in this book. Matching,
-standardization, and propensity scores can balance only those covariates
-someone thought to measure, whereas a coin flip balances everything,
-including confounders no one ever recorded, because the assignment
-mechanism does not consult any characteristic of the patient, known or
-unknown. Formally, when <span class="math inline">\(A\)</span> is generated by a physical randomization
-device rather than by clinical judgment, <span class="math inline">\(A\)</span> is statistically
-independent of baseline covariates <span class="math inline">\(L\)</span> and of both potential outcomes
-<span class="math inline">\(Y(1), Y(0)\)</span> by the mechanics of assignment, so that the exchangeability
-condition from Chapter 3 is delivered as a feature of the design rather
-than assumed.</p>
-<p>We do not have an actual randomized trial of Cox-2 selectivity, only the
-<code>ns</code> cohort, in which treatment was a physician’s choice. We can,
-however, ask a narrower question of the data we do have: what would the
-Table 1 comparison and the crude risk comparison look like if the label
-“Cox-2 initiator” had been handed out by a coin flip instead of by a
-physician? <code>mutate(a_rand = sample(cox2_init))</code> answers that question by
-shuffling which of the 2882 rows get called “1,” so that the
-same 240 Cox-2 labels in the data land on that many
-patients chosen completely at
-random, while every actual covariate and every actual outcome stays
-exactly as recorded. This is a relabeling exercise, not a new trial:
-nobody’s peptic ulcer disease status changes, because <code>pud</code> is not
-regenerated. The only thing the random draw decides is which of the
-real patients we call “arm 1” versus “arm 0” for the purpose of the
-comparison that follows.</p>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="the-randomized-trial-as-the-benchmark.html#cb27-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/table1.R&quot;</span>)</span>
-<span id="cb27-2"><a href="the-randomized-trial-as-the-benchmark.html#cb27-2" tabindex="-1"></a><span class="fu">table1_categorical</span>(</span>
-<span id="cb27-3"><a href="the-randomized-trial-as-the-benchmark.html#cb27-3" tabindex="-1"></a>  ns,</span>
-<span id="cb27-4"><a href="the-randomized-trial-as-the-benchmark.html#cb27-4" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">&quot;sex&quot;</span>, <span class="st">&quot;arthritis&quot;</span>, <span class="st">&quot;hypertension&quot;</span>, <span class="st">&quot;diabetes&quot;</span>),</span>
-<span id="cb27-5"><a href="the-randomized-trial-as-the-benchmark.html#cb27-5" tabindex="-1"></a>  <span class="at">by =</span> <span class="st">&quot;cox2_init&quot;</span></span>
-<span id="cb27-6"><a href="the-randomized-trial-as-the-benchmark.html#cb27-6" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb27-7"><a href="the-randomized-trial-as-the-benchmark.html#cb27-7" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Table 1 under the real, physician-chosen assignment (0 = nonselective, 1 = Cox-2 selective)&quot;</span></span>
-<span id="cb27-8"><a href="the-randomized-trial-as-the-benchmark.html#cb27-8" tabindex="-1"></a>)</span></code></pre></div>
+<div id="generalized-linear-models-for-causal-contrasts" class="section level1 hasAnchor" number="18">
+<h1><span class="header-section-number">D</span> Generalized linear models for causal contrasts<a href="generalized-linear-models-for-causal-contrasts.html#generalized-linear-models-for-causal-contrasts" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p>Chapters 7 through 9 fit a regression and then read either a single
+coefficient or a pair of predicted means as a causal contrast. Which
+contrast the coefficient carries is settled by the link function of the
+model, and those chapters chose links without stopping to explain the
+family of models they come from. This appendix is that explanation.</p>
+<p>A <strong>generalized linear model</strong> writes the conditional mean of the outcome
+as a transformation of a linear predictor,</p>
+<p><span class="math display">\[g\bigl(E[Y \mid X]\bigr) = \beta_0 + \beta_1 X_1 + \cdots + \beta_p X_p,\]</span></p>
+<p>where <span class="math inline">\(g\)</span> is the <strong>link function</strong> and the <strong>family</strong> names the assumed
+relationship between the mean and the variance. McCullagh and Nelder
+assembled the class in this form. What matters for us is that the same
+fitting machinery returns a different causal contrast for each link, with
+the data and the covariates held fixed.</p>
+<p>Three combinations do nearly all of the work in this book. The identity
+link with the gaussian family regresses <span class="math inline">\(Y\)</span> on treatment directly, so its
+coefficient is a difference of means, which for a binary outcome is a
+<strong>risk difference</strong>. The log link with the Poisson family gives a
+coefficient that exponentiates to a ratio of means, a <strong>risk ratio</strong> when
+<span class="math inline">\(Y\)</span> is binary; the likelihood is then deliberately wrong, since a 0/1
+outcome is not a count, although the mean model is correct and the
+coefficient still estimates a log risk ratio. That is the <strong>modified
+Poisson</strong> device Chapter 9 uses. The logit link with the binomial family
+is ordinary logistic regression, and its coefficient exponentiates to an
+<strong>odds ratio</strong>. All three fit with the same call to <code>glm()</code>, changed only
+in <code>family =</code>.</p>
+<div class="sourceCode" id="cb142"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb142-1"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-1" tabindex="-1"></a>links <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb142-2"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-2" tabindex="-1"></a>  <span class="st">&quot;identity / gaussian&quot;</span> <span class="ot">=</span> <span class="fu">gaussian</span>(<span class="at">link =</span> <span class="st">&quot;identity&quot;</span>),</span>
+<span id="cb142-3"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-3" tabindex="-1"></a>  <span class="st">&quot;log / Poisson&quot;</span>       <span class="ot">=</span> <span class="fu">poisson</span>(<span class="at">link =</span> <span class="st">&quot;log&quot;</span>),</span>
+<span id="cb142-4"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-4" tabindex="-1"></a>  <span class="st">&quot;logit / binomial&quot;</span>    <span class="ot">=</span> <span class="fu">binomial</span>(<span class="at">link =</span> <span class="st">&quot;logit&quot;</span>)</span>
+<span id="cb142-5"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-5" tabindex="-1"></a>)</span>
+<span id="cb142-6"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-6" tabindex="-1"></a></span>
+<span id="cb142-7"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-7" tabindex="-1"></a>glm_tab <span class="ot">&lt;-</span> <span class="fu">imap_dfr</span>(links, <span class="cf">function</span>(fam, label) {</span>
+<span id="cb142-8"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-8" tabindex="-1"></a>  fit <span class="ot">&lt;-</span> <span class="fu">glm</span>(pud <span class="sc">~</span> cox2_init, <span class="at">family =</span> fam, <span class="at">data =</span> ns)</span>
+<span id="cb142-9"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-9" tabindex="-1"></a>  b   <span class="ot">&lt;-</span> broom<span class="sc">::</span><span class="fu">tidy</span>(fit) <span class="sc">|&gt;</span> <span class="fu">filter</span>(term <span class="sc">==</span> <span class="st">&quot;cox2_init&quot;</span>)</span>
+<span id="cb142-10"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-10" tabindex="-1"></a>  <span class="fu">tibble</span>(</span>
+<span id="cb142-11"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-11" tabindex="-1"></a>    <span class="at">link        =</span> label,</span>
+<span id="cb142-12"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-12" tabindex="-1"></a>    <span class="at">contrast    =</span> <span class="fu">c</span>(<span class="st">&quot;risk difference&quot;</span>, <span class="st">&quot;risk ratio&quot;</span>, <span class="st">&quot;odds ratio&quot;</span>)[</span>
+<span id="cb142-13"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-13" tabindex="-1"></a>                    <span class="fu">match</span>(label, <span class="fu">names</span>(links))],</span>
+<span id="cb142-14"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-14" tabindex="-1"></a>    <span class="at">coefficient =</span> b<span class="sc">$</span>estimate,</span>
+<span id="cb142-15"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-15" tabindex="-1"></a>    <span class="at">value       =</span> <span class="cf">if</span> (fam<span class="sc">$</span>link <span class="sc">==</span> <span class="st">&quot;identity&quot;</span>) b<span class="sc">$</span>estimate <span class="cf">else</span> <span class="fu">exp</span>(b<span class="sc">$</span>estimate)</span>
+<span id="cb142-16"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-16" tabindex="-1"></a>  )</span>
+<span id="cb142-17"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-17" tabindex="-1"></a>})</span>
+<span id="cb142-18"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-18" tabindex="-1"></a></span>
+<span id="cb142-19"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-19" tabindex="-1"></a>glm_tab <span class="sc">|&gt;</span></span>
+<span id="cb142-20"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-20" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb142-21"><a href="generalized-linear-models-for-causal-contrasts.html#cb142-21" tabindex="-1"></a>               <span class="at">caption =</span> <span class="st">&quot;Three links, three crude contrasts, one cohort.&quot;</span>)</span></code></pre></div>
 <table>
-<caption><span id="tab:real-imbalance">Table 4.1: </span>Table 1 under the real, physician-chosen assignment (0 = nonselective, 1 = Cox-2 selective)</caption>
+<caption><span id="tab:app-glm-links">Table D.1: </span>Three links, three crude contrasts, one cohort.</caption>
 <thead>
 <tr class="header">
-<th align="left">variable</th>
-<th align="left">level</th>
-<th align="left">0</th>
-<th align="left">1</th>
+<th align="left">link</th>
+<th align="left">contrast</th>
+<th align="right">coefficient</th>
+<th align="right">value</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">arthritis</td>
-<td align="left">No</td>
-<td align="left">1849 (70.0%)</td>
-<td align="left">128 (53.3%)</td>
+<td align="left">identity / gaussian</td>
+<td align="left">risk difference</td>
+<td align="right">0.027</td>
+<td align="right">0.027</td>
 </tr>
 <tr class="even">
-<td align="left">arthritis</td>
-<td align="left">Yes</td>
-<td align="left">793 (30.0%)</td>
-<td align="left">112 (46.7%)</td>
+<td align="left">log / Poisson</td>
+<td align="left">risk ratio</td>
+<td align="right">0.247</td>
+<td align="right">1.280</td>
 </tr>
 <tr class="odd">
-<td align="left">diabetes</td>
-<td align="left">No</td>
-<td align="left">2427 (91.9%)</td>
-<td align="left">209 (87.1%)</td>
-</tr>
-<tr class="even">
-<td align="left">diabetes</td>
-<td align="left">Yes</td>
-<td align="left">215 (8.1%)</td>
-<td align="left">31 (12.9%)</td>
-</tr>
-<tr class="odd">
-<td align="left">hypertension</td>
-<td align="left">No</td>
-<td align="left">2037 (77.1%)</td>
-<td align="left">169 (70.4%)</td>
-</tr>
-<tr class="even">
-<td align="left">hypertension</td>
-<td align="left">Yes</td>
-<td align="left">605 (22.9%)</td>
-<td align="left">71 (29.6%)</td>
-</tr>
-<tr class="odd">
-<td align="left">sex</td>
-<td align="left">Female</td>
-<td align="left">1552 (58.7%)</td>
-<td align="left">140 (58.3%)</td>
-</tr>
-<tr class="even">
-<td align="left">sex</td>
-<td align="left">Male</td>
-<td align="left">1090 (41.3%)</td>
-<td align="left">100 (41.7%)</td>
+<td align="left">logit / binomial</td>
+<td align="left">odds ratio</td>
+<td align="right">0.278</td>
+<td align="right">1.320</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="the-randomized-trial-as-the-benchmark.html#cb28-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">8</span>)</span>
-<span id="cb28-2"><a href="the-randomized-trial-as-the-benchmark.html#cb28-2" tabindex="-1"></a>ns_rand <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">a_rand =</span> <span class="fu">sample</span>(cox2_init))</span>
-<span id="cb28-3"><a href="the-randomized-trial-as-the-benchmark.html#cb28-3" tabindex="-1"></a><span class="fu">table1_categorical</span>(</span>
-<span id="cb28-4"><a href="the-randomized-trial-as-the-benchmark.html#cb28-4" tabindex="-1"></a>  ns_rand,</span>
-<span id="cb28-5"><a href="the-randomized-trial-as-the-benchmark.html#cb28-5" tabindex="-1"></a>  <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">&quot;sex&quot;</span>, <span class="st">&quot;arthritis&quot;</span>, <span class="st">&quot;hypertension&quot;</span>, <span class="st">&quot;diabetes&quot;</span>),</span>
-<span id="cb28-6"><a href="the-randomized-trial-as-the-benchmark.html#cb28-6" tabindex="-1"></a>  <span class="at">by =</span> <span class="st">&quot;a_rand&quot;</span></span>
-<span id="cb28-7"><a href="the-randomized-trial-as-the-benchmark.html#cb28-7" tabindex="-1"></a>) <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(</span>
-<span id="cb28-8"><a href="the-randomized-trial-as-the-benchmark.html#cb28-8" tabindex="-1"></a>  <span class="at">caption =</span> <span class="st">&quot;Table 1 under the same patients, with the Cox-2 label reassigned by a coin flip (0/1 = random label)&quot;</span></span>
-<span id="cb28-9"><a href="the-randomized-trial-as-the-benchmark.html#cb28-9" tabindex="-1"></a>)</span></code></pre></div>
+<p>Reading down the value column, Cox-2 initiation is associated with a
+crude risk difference of +2.7 percentage
+points, a crude risk ratio of 1.28, and a crude
+odds ratio of 1.32. These are crude
+associations: nothing has been adjusted, the two arms differ at baseline
+in the ways Chapter 2 tabulated, and the outcome in <code>ns</code> is simulated.
+Adjustment is the business of the body chapters, and each of them reaches
+one of these three contrasts by a route that gives it a causal reading.
+The odds ratio sits further from the null than the risk ratio, which is
+the arithmetic of an uncommon outcome rather than a finding, and the
+non-collapsibility Chapter 7 discusses is a further reason to prefer the
+first two rows when the question is about risk.</p>
+<p>Two of the three fits report a standard error we do not want. For the
+gaussian fit on a binary outcome the variance depends on the mean rather
+than being constant, and for the Poisson fit the assumed variance exceeds
+the Bernoulli variance, so in both cases the model-based standard error
+comes from a variance model we know to be false. A <strong>robust</strong>, or
+sandwich, standard error estimates the variance of the estimating
+equation from the data instead, which repairs the interval and leaves the
+point estimate alone. Chapters 9 and 11 obtain it from
+<code>geepack::geeglm()</code>, which also takes the weights those chapters need.</p>
+<div class="sourceCode" id="cb143"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb143-1"><a href="generalized-linear-models-for-causal-contrasts.html#cb143-1" tabindex="-1"></a><span class="fu">imap_dfr</span>(links[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>], <span class="cf">function</span>(fam, label) {</span>
+<span id="cb143-2"><a href="generalized-linear-models-for-causal-contrasts.html#cb143-2" tabindex="-1"></a>  m <span class="ot">&lt;-</span> <span class="fu">glm</span>(pud <span class="sc">~</span> cox2_init, <span class="at">family =</span> fam, <span class="at">data =</span> ns)</span>
+<span id="cb143-3"><a href="generalized-linear-models-for-causal-contrasts.html#cb143-3" tabindex="-1"></a>  g <span class="ot">&lt;-</span> geepack<span class="sc">::</span><span class="fu">geeglm</span>(pud <span class="sc">~</span> cox2_init, <span class="at">id =</span> <span class="fu">seq_len</span>(<span class="fu">nrow</span>(ns)),</span>
+<span id="cb143-4"><a href="generalized-linear-models-for-causal-contrasts.html#cb143-4" tabindex="-1"></a>                       <span class="at">family =</span> fam, <span class="at">data =</span> ns)</span>
+<span id="cb143-5"><a href="generalized-linear-models-for-causal-contrasts.html#cb143-5" tabindex="-1"></a>  <span class="fu">tibble</span>(<span class="at">link =</span> label,</span>
+<span id="cb143-6"><a href="generalized-linear-models-for-causal-contrasts.html#cb143-6" tabindex="-1"></a>         <span class="at">se_model  =</span> broom<span class="sc">::</span><span class="fu">tidy</span>(m)<span class="sc">$</span>std.error[<span class="dv">2</span>],</span>
+<span id="cb143-7"><a href="generalized-linear-models-for-causal-contrasts.html#cb143-7" tabindex="-1"></a>         <span class="at">se_robust =</span> broom<span class="sc">::</span><span class="fu">tidy</span>(g)<span class="sc">$</span>std.error[<span class="dv">2</span>])</span>
+<span id="cb143-8"><a href="generalized-linear-models-for-causal-contrasts.html#cb143-8" tabindex="-1"></a>}) <span class="sc">|&gt;</span></span>
+<span id="cb143-9"><a href="generalized-linear-models-for-causal-contrasts.html#cb143-9" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>,</span>
+<span id="cb143-10"><a href="generalized-linear-models-for-causal-contrasts.html#cb143-10" tabindex="-1"></a>               <span class="at">caption =</span> <span class="st">&quot;Model-based and robust standard errors for the same coefficient.&quot;</span>)</span></code></pre></div>
 <table>
-<caption><span id="tab:rand-demo">Table 4.2: </span>Table 1 under the same patients, with the Cox-2 label reassigned by a coin flip (0/1 = random label)</caption>
+<caption><span id="tab:app-glm-robust">Table D.2: </span>Model-based and robust standard errors for the same coefficient.</caption>
 <thead>
 <tr class="header">
-<th align="left">variable</th>
-<th align="left">level</th>
-<th align="left">0</th>
-<th align="left">1</th>
+<th align="left">link</th>
+<th align="right">se_model</th>
+<th align="right">se_robust</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">arthritis</td>
-<td align="left">No</td>
-<td align="left">1823 (69.0%)</td>
-<td align="left">154 (64.2%)</td>
+<td align="left">identity / gaussian</td>
+<td align="right">0.0202</td>
+<td align="right">0.0221</td>
 </tr>
 <tr class="even">
-<td align="left">arthritis</td>
-<td align="left">Yes</td>
-<td align="left">819 (31.0%)</td>
-<td align="left">86 (35.8%)</td>
-</tr>
-<tr class="odd">
-<td align="left">diabetes</td>
-<td align="left">No</td>
-<td align="left">2416 (91.4%)</td>
-<td align="left">220 (91.7%)</td>
-</tr>
-<tr class="even">
-<td align="left">diabetes</td>
-<td align="left">Yes</td>
-<td align="left">226 (8.6%)</td>
-<td align="left">20 (8.3%)</td>
-</tr>
-<tr class="odd">
-<td align="left">hypertension</td>
-<td align="left">No</td>
-<td align="left">2037 (77.1%)</td>
-<td align="left">169 (70.4%)</td>
-</tr>
-<tr class="even">
-<td align="left">hypertension</td>
-<td align="left">Yes</td>
-<td align="left">605 (22.9%)</td>
-<td align="left">71 (29.6%)</td>
-</tr>
-<tr class="odd">
-<td align="left">sex</td>
-<td align="left">Female</td>
-<td align="left">1549 (58.6%)</td>
-<td align="left">143 (59.6%)</td>
-</tr>
-<tr class="even">
-<td align="left">sex</td>
-<td align="left">Male</td>
-<td align="left">1093 (41.4%)</td>
-<td align="left">97 (40.4%)</td>
+<td align="left">log / Poisson</td>
+<td align="right">0.1929</td>
+<td align="right">0.1807</td>
 </tr>
 </tbody>
 </table>
-<p>Look at arthritis first: under the real, physician-chosen assignment
-the gap between groups is 17 percentage
-points (46.7% among Cox-2 initiators versus
-30.0% among nonselective
-initiators), which is large, and is the kind of systematic imbalance
-Chapter 2 already flagged when it introduced this Table 1. Under the
-randomly permuted label, the same comparison shrinks to
-4.8 points. Diabetes behaves similarly:
-a real gap of 4.8 points falls to
-0.2 under random assignment. Hypertension is
-an instructive exception, in that its gap under the random label happens
-to come out to 6.7 points, identical to the
-real gap of 6.7. Rather than indicating that
-hypertension remains confounded after randomization, this coincidence is
-a reminder that any single random split is only one draw among many
-possible draws, and that a single draw will not, by chance alone, look
-perfectly balanced on every variable. What randomization guarantees is
-that mismatches of this kind are <em>unsystematic</em>: if we rerun the shuffle
-with a different seed, the hypertension coincidence disappears, while
-arthritis and diabetes continue to come back close to balanced, since
-approximate balance is what randomization delivers on average rather than
-in any particular draw.</p>
-<p>The same logic applies to the outcome itself. Because <code>pud</code> was never
-regenerated, the treated and untreated groups defined by <code>a_rand</code> are
-being compared on outcomes that already happened, for reasons that had
-nothing to do with <code>a_rand</code>.</p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="the-randomized-trial-as-the-benchmark.html#cb29-1" tabindex="-1"></a>contrasts <span class="ot">&lt;-</span> <span class="fu">bind_rows</span>(</span>
-<span id="cb29-2"><a href="the-randomized-trial-as-the-benchmark.html#cb29-2" tabindex="-1"></a>  ns <span class="sc">|&gt;</span> <span class="fu">summarise</span>(</span>
-<span id="cb29-3"><a href="the-randomized-trial-as-the-benchmark.html#cb29-3" tabindex="-1"></a>    <span class="at">assignment =</span> <span class="st">&quot;real (cox2_init)&quot;</span>,</span>
-<span id="cb29-4"><a href="the-randomized-trial-as-the-benchmark.html#cb29-4" tabindex="-1"></a>    <span class="at">risk_0 =</span> <span class="fu">mean</span>(pud[cox2_init <span class="sc">==</span> <span class="dv">0</span>]),</span>
-<span id="cb29-5"><a href="the-randomized-trial-as-the-benchmark.html#cb29-5" tabindex="-1"></a>    <span class="at">risk_1 =</span> <span class="fu">mean</span>(pud[cox2_init <span class="sc">==</span> <span class="dv">1</span>])</span>
-<span id="cb29-6"><a href="the-randomized-trial-as-the-benchmark.html#cb29-6" tabindex="-1"></a>  ),</span>
-<span id="cb29-7"><a href="the-randomized-trial-as-the-benchmark.html#cb29-7" tabindex="-1"></a>  ns_rand <span class="sc">|&gt;</span> <span class="fu">summarise</span>(</span>
-<span id="cb29-8"><a href="the-randomized-trial-as-the-benchmark.html#cb29-8" tabindex="-1"></a>    <span class="at">assignment =</span> <span class="st">&quot;randomly permuted (a_rand)&quot;</span>,</span>
-<span id="cb29-9"><a href="the-randomized-trial-as-the-benchmark.html#cb29-9" tabindex="-1"></a>    <span class="at">risk_0 =</span> <span class="fu">mean</span>(pud[a_rand <span class="sc">==</span> <span class="dv">0</span>]),</span>
-<span id="cb29-10"><a href="the-randomized-trial-as-the-benchmark.html#cb29-10" tabindex="-1"></a>    <span class="at">risk_1 =</span> <span class="fu">mean</span>(pud[a_rand <span class="sc">==</span> <span class="dv">1</span>])</span>
-<span id="cb29-11"><a href="the-randomized-trial-as-the-benchmark.html#cb29-11" tabindex="-1"></a>  )</span>
-<span id="cb29-12"><a href="the-randomized-trial-as-the-benchmark.html#cb29-12" tabindex="-1"></a>) <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">diff =</span> risk_1 <span class="sc">-</span> risk_0)</span>
-<span id="cb29-13"><a href="the-randomized-trial-as-the-benchmark.html#cb29-13" tabindex="-1"></a>contrasts <span class="sc">|&gt;</span> knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">4</span>)</span></code></pre></div>
-<table>
-<thead>
-<tr class="header">
-<th align="left">assignment</th>
-<th align="right">risk_0</th>
-<th align="right">risk_1</th>
-<th align="right">diff</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">real (cox2_init)</td>
-<td align="right">0.0977</td>
-<td align="right">0.125</td>
-<td align="right">0.0273</td>
-</tr>
-<tr class="even">
-<td align="left">randomly permuted (a_rand)</td>
-<td align="right">0.0999</td>
-<td align="right">0.100</td>
-<td align="right">0.0001</td>
-</tr>
-</tbody>
-</table>
-<p>The real crude contrast reproduces Chapter 1’s finding: Cox-2
-initiators have a 2.7-point higher
-crude risk of PUD than nonselective initiators, the wrong-signed,
-confounded comparison this whole book exists to fix. The randomly
-permuted contrast, computed from the identical set of recorded <code>pud</code>
-values, comes out to 0.01 points, which is
-indistinguishable from zero. No patient’s actual outcome changed between
-the two rows of that table; the only difference is which label we used to
-split the data into two groups. When the label carries no information
-about who received it, as a coin flip guarantees, the crude contrast is
-an unbiased estimate of a null effect, and it recovers one. When the
-label is instead a physician’s judgment, correlated with everything that
-judgment was trying to account for, the same arithmetic turns up a gap
-that has nothing to do with the drug. This is why the randomized trial is
-described as the <em>benchmark</em>. The reason is not that any one trial is
-guaranteed a perfectly matched Table 1, since chance imbalance of the
-sort seen for hypertension above does occur, but rather that whatever
-mismatch remains is due to chance alone, which is the kind of uncertainty
-that ordinary confidence intervals are built to quantify. Confounding by
-indication is a different kind of error, and no amount of additional data
-makes it smaller, because it is not noise. Every design and every
-adjustment method in the rest of this book is judged by how close it comes
-to the null contrast that randomization produced in this section without
-any adjustment at all.</p>
-</div>
-<div id="intention-to-treat-and-per-protocol" class="section level2 hasAnchor" number="4.2">
-<h2><span class="header-section-number">4.2</span> Intention-to-treat and per-protocol<a href="the-randomized-trial-as-the-benchmark.html#intention-to-treat-and-per-protocol" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>A coin flip decides the arm a patient is assigned to; it does not
-decide what that patient actually does afterward. In a real Cox-2 trial,
-some patients randomized to the Cox-2 arm would stop the drug early
-because of side effects or cost, some randomized to nonselective NSAIDs
-would switch to Cox-2 therapy if their joint pain persisted, and some in
-either arm would take over-the-counter NSAIDs the protocol never
-intended to capture. Once assignment and actual treatment can diverge,
-a trial supports (at least) two different analyses, and they answer two
-different questions.</p>
-<p>The <strong>intention-to-treat (ITT)</strong> analysis compares patients according to
-the arm they were <em>randomized</em> to, regardless of what treatment they
-actually went on to receive. Writing <span class="math inline">\(A\)</span> for randomized assignment, the
-ITT contrast is <span class="math inline">\(E[Y \mid A = 1] - E[Y \mid A = 0]\)</span>, computed on the
-groups the randomization device itself created. Because <span class="math inline">\(A\)</span> is here the
-coin flip, ITT preserves exchangeability as constructed, and the
-comparison remains a contrast between groups that differ, on average,
-only by that coin flip, however much nonadherence occurs afterward. For
-this reason ITT is the default primary analysis in nearly every large
-randomized trial, being the one contrast that inherits randomization’s
-guarantee without further qualification.</p>
-<p>That guarantee, however, comes at a cost of interpretation, because ITT
-does not estimate the effect of <em>taking</em> the assigned drug. It estimates
-the effect of being <em>assigned</em> to a strategy, which is a blend of the
-effect among patients who followed it and the effect among patients who
-did not. When nonadherence is common, ITT effects are typically
-attenuated toward the null relative to the effect of full adherence, so
-that a drug that would be beneficial if everyone took it as directed can
-produce a modest or null ITT result if enough assigned patients
-discontinue treatment. The <strong>per-protocol</strong> analysis attempts to recover
-the more specific question by restricting to, or reclassifying patients
-according to, what they actually did, comparing adherers to the Cox-2
-strategy against adherers to the nonselective strategy rather than
-comparing the arms as randomized. Although this is often the clinically
-more interesting question, once patients are grouped by what they
-actually did rather than by what the coin flip assigned them, the
-randomization at baseline no longer protects the comparison. Whatever led
-a given patient to adhere rather than switch or discontinue (eg, symptom
-severity, general health, health literacy, or tolerance of side effects)
-may also be connected to the outcome, which is the mechanism Chapter 1
-called the healthy-user effect, now operating <em>inside</em> a randomized trial
-rather than across an observational cohort. A naive per-protocol
-comparison can therefore be confounded even though the trial that
-produced the data was, at the point of randomization, perfectly
-randomized.</p>
-<p>The <code>sta</code> cohort makes these concerns concrete without requiring a real
-trial. Because <code>sta</code> is observational, and nobody was randomized to start
-a statin, any comparison of patients who initiated and <em>stayed on</em> a
-statin for some minimum duration against everyone else is already
-per-protocol in spirit, and already vulnerable to the same
-self-selection just described. It is vulnerable to a further problem as
-well: misclassifying the follow-up time before a patient meets the
-“adherer” criterion can build survival into the definition of one of the
-groups, a distortion called immortal time bias that Chapter 6 introduces
-on its own terms. Chapter 12 develops the clone-censor-weight
-approach specifically to answer a per-protocol-style question — what
-would happen if patients followed a specific treatment strategy for its
-full duration — using observational data like <code>sta</code>, without letting
-either kind of bias back in.</p>
-</div>
-<div id="the-target-trial" class="section level2 hasAnchor" number="4.3">
-<h2><span class="header-section-number">4.3</span> The target trial<a href="the-randomized-trial-as-the-benchmark.html#the-target-trial" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Every method in this book adjusts observational data so that it can stand
-in for a randomized trial. Hernán and Robins (2016) turned that
-observation into a discipline, called the <strong>target trial</strong> framework: for
-any causal question one wants to answer with observational data, one
-first specifies, in full protocol detail, the randomized trial that would
-answer it, as though funding, ethics, and recruitment were not obstacles,
-and only then describes how each piece of that protocol will be
-<em>emulated</em> using the data actually available. Almost none of the trials
-specified this way will ever be run. The value of writing the protocol
-anyway is that it brings every design decision a trial would have to make
-(who is eligible, what counts as each treatment strategy, when follow-up
-starts, and how the outcome is defined) into the open before any
-adjustment method is chosen, instead of leaving those decisions implicit
-in a modeling script.</p>
-<p>Here is that protocol, written out for the Cox-2 question this book has
-been asking since Chapter 1:</p>
-<table>
-<colgroup>
-<col width="33%" />
-<col width="33%" />
-<col width="33%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th>Protocol component</th>
-<th>Target trial</th>
-<th>Emulation using <code>ns</code></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Eligibility</td>
-<td>Adults beginning NSAID therapy, with no NSAID use in the preceding period</td>
-<td>Same criterion, applied when <code>ns</code> was assembled: new users only</td>
-</tr>
-<tr class="even">
-<td>Treatment strategies</td>
-<td>(1) Initiate a Cox-2 selective NSAID; (2) initiate a nonselective NSAID</td>
-<td><code>cox2_init == 1</code> versus <code>cox2_init == 0</code> at the qualifying prescription</td>
-</tr>
-<tr class="odd">
-<td>Assignment</td>
-<td>Random allocation to strategy (1) or (2)</td>
-<td>Not randomized; approximated by conditioning on measured confounders (<code>ns_covs</code>) under the conditional exchangeability assumption from Chapter 3</td>
-</tr>
-<tr class="even">
-<td>Follow-up</td>
-<td>Begins at randomization (“time zero”) and continues to the outcome, loss to follow-up, or a fixed administrative end</td>
-<td>Begins at the qualifying prescription date, ends at incident PUD, loss to follow-up, or the administrative end</td>
-</tr>
-<tr class="odd">
-<td>Outcome</td>
-<td>Incident peptic ulcer disease</td>
-<td><code>pud == 1</code> observed during follow-up</td>
-</tr>
-<tr class="even">
-<td>Causal contrast</td>
-<td>Intention-to-treat comparison of the two assigned strategies</td>
-<td>ITT analog: compare all patients who initiated each strategy at time zero, regardless of later switching or discontinuation</td>
-</tr>
-<tr class="odd">
-<td>Analysis plan</td>
-<td>Risk difference or risk ratio between arms, estimated directly from randomized groups</td>
-<td>Same contrast, estimated with an adjustment method (standardization, propensity scores, or IPTW — Chapters 7 through 9) that stands in for randomization</td>
-</tr>
-</tbody>
-</table>
-<p>Six of these seven rows can already be written down for <code>ns</code> with no
-controversy, in the same language a trial protocol would use: the
-eligibility criteria are those used to identify new users, the two
-strategies are already coded in <code>cox2_init</code>, follow-up already has a
-defined start and end, the outcome is already defined as <code>pud</code>, and
-even the causal contrast and analysis plan can be stated without
-needing to resolve anything about confounding first. Only the
-<strong>Assignment</strong> row cannot be filled in as “randomized,” because
-assignment was not randomized, and that single row is where the rest of
-this book does its work. Standardization and outcome regression,
-propensity scores and inverse probability weighting, and instrumental
-variables and sensitivity analysis are each a different technical
-strategy for filling in that one row with something that behaves enough
-like a coin flip to make the causal contrast in the last row credible.
-Chapters 6, 10, and 12 return to a version of this same protocol, adapted
-for study design choices, for survival outcomes, and for the dynamic
-treatment strategies studied in <code>sta</code>, although the structure of the
-argument is the same in each case: specify the trial first, then argue,
-row by row, for how well the observational data emulate it.</p>
-<p>One application of this logic has become common enough in regulatory
-submissions to deserve a name here. In an <strong>external control arm</strong>
-design, a single-arm trial — typically in a rare disease, or in an
-oncology setting where randomizing patients to the standard of care is
-hard to justify — is compared against a comparator group assembled from
-observational data: a disease registry, an electronic health record
-extract, or the control arm of an earlier trial. The target trial is the
-two-arm randomized trial that was not run, and the emulation problem is
-the one Part II of this book spends its chapters on, since the trial
-patients and the external controls were selected by different criteria,
-treated in different calendar periods, and followed by different means.
-Every row of the protocol table therefore has to be argued for rather
-than assumed, and the Assignment row carries the same weight it carries
-above, which is why the confounding machinery of the next several
-chapters applies here without alteration. The course’s session on
-external control arms works through examples of submissions that were
-accepted and of submissions that were not.</p>
-</div>
-<div id="exercises-2" class="section level2 hasAnchor" number="4.4">
-<h2><span class="header-section-number">4.4</span> Exercises<a href="the-randomized-trial-as-the-benchmark.html#exercises-2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<ol style="list-style-type: decimal">
-<li>Draft a target trial protocol table, in the same seven-row format
-used above, for the statin question this book has been asking
-alongside the Cox-2 question. Use the <code>sta</code> cohort and <code>sta_covs</code> to
-fill in eligibility, treatment strategies, assignment, follow-up,
-outcome, causal contrast, and analysis plan in your own words.</li>
-<li>Immortal time bias was named in this chapter as a hazard for
-per-protocol-style comparisons in <code>sta</code>, and Chapter 6 takes it up in
-full. Looking at the seven rows of the target trial table above,
-which single protocol component does immortal time bias violate, and
-why does misclassifying a patient’s follow-up before they meet a
-treatment-defining criterion break that component specifically,
-rather than, say, the eligibility or outcome rows?</li>
-</ol>
-
-</div>
+<p>The two disagreements run in opposite directions, the robust error being
+the larger one for the identity link and the smaller one for the log
+link. Neither direction is guaranteed in general, which is the reason to
+compute the robust error rather than to reason about which way a
+misspecified variance will err.</p>
+<p>In the course, session 8 takes up generalized linear models before the
+propensity-score sessions that follow, and every body chapter from
+Chapter 7 onward assumes that material. This appendix is where a reader
+who wants it written down once can find it.</p>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="potential-outcomes-and-causal-effects.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="causal-diagrams.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="the-estimator-toolkit.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="a-bridge-to-cox-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>

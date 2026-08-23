@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>D Course map: PHS 921 | Causal Inference in Epidemiology Using R</title>
+  <title>F Course map: PHS 921 | Causal Inference in Epidemiology Using R</title>
   <meta name="description" content="An introduction to causal inference with epidemiologic applications in R." />
   <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="D Course map: PHS 921 | Causal Inference in Epidemiology Using R" />
+  <meta property="og:title" content="F Course map: PHS 921 | Causal Inference in Epidemiology Using R" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="An introduction to causal inference with epidemiologic applications in R." />
   
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="D Course map: PHS 921 | Causal Inference in Epidemiology Using R" />
+  <meta name="twitter:title" content="F Course map: PHS 921 | Causal Inference in Epidemiology Using R" />
   
   <meta name="twitter:description" content="An introduction to causal inference with epidemiologic applications in R." />
   
@@ -30,7 +30,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="the-estimator-toolkit.html"/>
+<link rel="prev" href="a-bridge-to-cox-regression.html"/>
 <link rel="next" href="further-reading.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
@@ -285,8 +285,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="B.3" data-path="namcs-codebook.html"><a href="namcs-codebook.html#a-note-on-the-outcomes"><i class="fa fa-check"></i><b>B.3</b> A note on the outcomes</a></li>
 </ul></li>
 <li class="chapter" data-level="C" data-path="the-estimator-toolkit.html"><a href="the-estimator-toolkit.html"><i class="fa fa-check"></i><b>C</b> The estimator toolkit</a></li>
-<li class="chapter" data-level="D" data-path="course-map-phs-921.html"><a href="course-map-phs-921.html"><i class="fa fa-check"></i><b>D</b> Course map: PHS 921</a></li>
-<li class="chapter" data-level="E" data-path="further-reading.html"><a href="further-reading.html"><i class="fa fa-check"></i><b>E</b> Further reading</a></li>
+<li class="chapter" data-level="D" data-path="generalized-linear-models-for-causal-contrasts.html"><a href="generalized-linear-models-for-causal-contrasts.html"><i class="fa fa-check"></i><b>D</b> Generalized linear models for causal contrasts</a></li>
+<li class="chapter" data-level="E" data-path="a-bridge-to-cox-regression.html"><a href="a-bridge-to-cox-regression.html"><i class="fa fa-check"></i><b>E</b> A bridge to Cox regression</a></li>
+<li class="chapter" data-level="F" data-path="course-map-phs-921.html"><a href="course-map-phs-921.html"><i class="fa fa-check"></i><b>F</b> Course map: PHS 921</a></li>
+<li class="chapter" data-level="G" data-path="further-reading.html"><a href="further-reading.html"><i class="fa fa-check"></i><b>G</b> Further reading</a></li>
 </ul>
 
       </nav>
@@ -304,8 +306,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="course-map-phs-921" class="section level1 hasAnchor" number="18">
-<h1><span class="header-section-number">D</span> Course map: PHS 921<a href="course-map-phs-921.html#course-map-phs-921" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="course-map-phs-921" class="section level1 hasAnchor" number="20">
+<h1><span class="header-section-number">F</span> Course map: PHS 921<a href="course-map-phs-921.html#course-map-phs-921" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>This book accompanies PHS 921, and the two are organized on their own
 terms: the course moves in the order that works for a semester of
 lectures, the book in the order that works for a reader building one
@@ -361,7 +363,7 @@ session is built around it.</p>
 <tr class="odd">
 <td>8</td>
 <td>Generalized linear models</td>
-<td>used throughout Chapters 7–9</td>
+<td>Appendix D; used throughout Chapters 7–9</td>
 </tr>
 <tr class="even">
 <td>9–11</td>
@@ -386,7 +388,7 @@ session is built around it.</p>
 <tr class="even">
 <td>17</td>
 <td>Cox regression, IPCW, competing risks</td>
-<td>Chapter 11; Chapter 10 (death as a competing risk)</td>
+<td>Chapter 11; Chapter 10 (death as a competing risk); Appendix E (Cox regression)</td>
 </tr>
 <tr class="odd">
 <td>18</td>
@@ -411,7 +413,7 @@ session is built around it.</p>
 <tr class="odd">
 <td>24</td>
 <td>External control arms</td>
-<td>Chapter 4 (target trials, for context)</td>
+<td>Chapter 4 (target trials, and the external control arm paragraph that closes that section)</td>
 </tr>
 <tr class="even">
 <td>25–26</td>
@@ -426,13 +428,20 @@ book introduces causal diagrams (Chapter 5) before study design
 (Chapters 8–9), because each earlier chapter supplies vocabulary the
 later one uses. The course takes both pairs in the other order. Where
 the two disagree, follow the map rather than the page numbers.</p>
+<p>Two sessions have no counterpart here. Session 16 is the midterm, and
+session 21 takes up missing data, which this book does not treat: the two
+cohorts are complete on the variables we use, and the assumptions and
+imputation machinery that incomplete data require are a subject of their
+own rather than a section of a causal-inference chapter. Students should
+take that session from the lecture notes and the reading assigned with
+them.</p>
 </div>
             </section>
 
           </div>
         </div>
       </div>
-<a href="the-estimator-toolkit.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="a-bridge-to-cox-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
 <a href="further-reading.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
