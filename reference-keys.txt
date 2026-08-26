@@ -13,7 +13,10 @@ who-this-book-is-for
 how-the-book-works
 software
 why
-questions-epidemiology-cannot-answer-with-association-alone
+three-kinds-of-questions
+why-not-just-run-a-trial
+the-central-problem-confounding
+causal-inference-old-and-new
 a-first-look-at-the-data
 what-this-book-covers
 how-to-read-this-book
@@ -23,13 +26,13 @@ the-namcs-teaching-cohorts
 plotting-with-ggplot2
 your-first-reusable-functions-table-1
 exercises
-potential-outcomes-and-causal-effects
+potential-outcomes
 two-futures-for-every-patient
 simulating-both-potential-outcomes
 average-causal-effects-and-estimands
 the-identification-conditions
 exercises-1
-the-randomized-trial-as-the-benchmark
+rct
 why-randomization-works
 intention-to-treat-and-per-protocol
 the-target-trial
@@ -90,7 +93,7 @@ deviation-in-the-statin-cohort
 estimating-per-protocol-risk-curves
 interpreting-the-per-protocol-effect
 exercises-10
-instrumental-variables
+iv
 when-exchangeability-fails
 provider-preference-as-an-instrument
 the-wald-and-two-stage-estimators

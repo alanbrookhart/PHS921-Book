@@ -31,7 +31,7 @@
   
   
 <link rel="prev" href="getting-started-with-r-and-the-namcs-data.html"/>
-<link rel="next" href="the-randomized-trial-as-the-benchmark.html"/>
+<link rel="next" href="rct.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -150,10 +150,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="part"><span><b>I Foundations</b></span></li>
 <li class="chapter" data-level="1" data-path="why.html"><a href="why.html"><i class="fa fa-check"></i><b>1</b> Why causal inference?</a>
 <ul>
-<li class="chapter" data-level="1.1" data-path="why.html"><a href="why.html#questions-epidemiology-cannot-answer-with-association-alone"><i class="fa fa-check"></i><b>1.1</b> Questions epidemiology cannot answer with association alone</a></li>
-<li class="chapter" data-level="1.2" data-path="why.html"><a href="why.html#a-first-look-at-the-data"><i class="fa fa-check"></i><b>1.2</b> A first look at the data</a></li>
-<li class="chapter" data-level="1.3" data-path="why.html"><a href="why.html#what-this-book-covers"><i class="fa fa-check"></i><b>1.3</b> What this book covers</a></li>
-<li class="chapter" data-level="1.4" data-path="why.html"><a href="why.html#how-to-read-this-book"><i class="fa fa-check"></i><b>1.4</b> How to read this book</a></li>
+<li class="chapter" data-level="1.1" data-path="why.html"><a href="why.html#three-kinds-of-questions"><i class="fa fa-check"></i><b>1.1</b> Three kinds of questions</a></li>
+<li class="chapter" data-level="1.2" data-path="why.html"><a href="why.html#why-not-just-run-a-trial"><i class="fa fa-check"></i><b>1.2</b> Why not just run a trial?</a></li>
+<li class="chapter" data-level="1.3" data-path="why.html"><a href="why.html#the-central-problem-confounding"><i class="fa fa-check"></i><b>1.3</b> The central problem: confounding</a></li>
+<li class="chapter" data-level="1.4" data-path="why.html"><a href="why.html#causal-inference-old-and-new"><i class="fa fa-check"></i><b>1.4</b> Causal inference, old and new</a></li>
+<li class="chapter" data-level="1.5" data-path="why.html"><a href="why.html#a-first-look-at-the-data"><i class="fa fa-check"></i><b>1.5</b> A first look at the data</a></li>
+<li class="chapter" data-level="1.6" data-path="why.html"><a href="why.html#what-this-book-covers"><i class="fa fa-check"></i><b>1.6</b> What this book covers</a></li>
+<li class="chapter" data-level="1.7" data-path="why.html"><a href="why.html#how-to-read-this-book"><i class="fa fa-check"></i><b>1.7</b> How to read this book</a></li>
 </ul></li>
 <li class="chapter" data-level="2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html"><i class="fa fa-check"></i><b>2</b> Getting started with R and the NAMCS data</a>
 <ul>
@@ -163,20 +166,20 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.4" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1"><i class="fa fa-check"></i><b>2.4</b> Your first reusable functions: Table 1</a></li>
 <li class="chapter" data-level="2.5" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#exercises"><i class="fa fa-check"></i><b>2.5</b> Exercises</a></li>
 </ul></li>
-<li class="chapter" data-level="3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html"><i class="fa fa-check"></i><b>3</b> Potential outcomes and causal effects</a>
+<li class="chapter" data-level="3" data-path="potential-outcomes.html"><a href="potential-outcomes.html"><i class="fa fa-check"></i><b>3</b> Potential outcomes and causal effects</a>
 <ul>
-<li class="chapter" data-level="3.1" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#two-futures-for-every-patient"><i class="fa fa-check"></i><b>3.1</b> Two futures for every patient</a></li>
-<li class="chapter" data-level="3.2" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#simulating-both-potential-outcomes"><i class="fa fa-check"></i><b>3.2</b> Simulating both potential outcomes</a></li>
-<li class="chapter" data-level="3.3" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#average-causal-effects-and-estimands"><i class="fa fa-check"></i><b>3.3</b> Average causal effects and estimands</a></li>
-<li class="chapter" data-level="3.4" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#the-identification-conditions"><i class="fa fa-check"></i><b>3.4</b> The identification conditions</a></li>
-<li class="chapter" data-level="3.5" data-path="potential-outcomes-and-causal-effects.html"><a href="potential-outcomes-and-causal-effects.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a></li>
+<li class="chapter" data-level="3.1" data-path="potential-outcomes.html"><a href="potential-outcomes.html#two-futures-for-every-patient"><i class="fa fa-check"></i><b>3.1</b> Two futures for every patient</a></li>
+<li class="chapter" data-level="3.2" data-path="potential-outcomes.html"><a href="potential-outcomes.html#simulating-both-potential-outcomes"><i class="fa fa-check"></i><b>3.2</b> Simulating both potential outcomes</a></li>
+<li class="chapter" data-level="3.3" data-path="potential-outcomes.html"><a href="potential-outcomes.html#average-causal-effects-and-estimands"><i class="fa fa-check"></i><b>3.3</b> Average causal effects and estimands</a></li>
+<li class="chapter" data-level="3.4" data-path="potential-outcomes.html"><a href="potential-outcomes.html#the-identification-conditions"><i class="fa fa-check"></i><b>3.4</b> The identification conditions</a></li>
+<li class="chapter" data-level="3.5" data-path="potential-outcomes.html"><a href="potential-outcomes.html#exercises-1"><i class="fa fa-check"></i><b>3.5</b> Exercises</a></li>
 </ul></li>
-<li class="chapter" data-level="4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html"><i class="fa fa-check"></i><b>4</b> The randomized trial as the benchmark</a>
+<li class="chapter" data-level="4" data-path="rct.html"><a href="rct.html"><i class="fa fa-check"></i><b>4</b> The randomized trial as the benchmark</a>
 <ul>
-<li class="chapter" data-level="4.1" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#why-randomization-works"><i class="fa fa-check"></i><b>4.1</b> Why randomization works</a></li>
-<li class="chapter" data-level="4.2" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#intention-to-treat-and-per-protocol"><i class="fa fa-check"></i><b>4.2</b> Intention-to-treat and per-protocol</a></li>
-<li class="chapter" data-level="4.3" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#the-target-trial"><i class="fa fa-check"></i><b>4.3</b> The target trial</a></li>
-<li class="chapter" data-level="4.4" data-path="the-randomized-trial-as-the-benchmark.html"><a href="the-randomized-trial-as-the-benchmark.html#exercises-2"><i class="fa fa-check"></i><b>4.4</b> Exercises</a></li>
+<li class="chapter" data-level="4.1" data-path="rct.html"><a href="rct.html#why-randomization-works"><i class="fa fa-check"></i><b>4.1</b> Why randomization works</a></li>
+<li class="chapter" data-level="4.2" data-path="rct.html"><a href="rct.html#intention-to-treat-and-per-protocol"><i class="fa fa-check"></i><b>4.2</b> Intention-to-treat and per-protocol</a></li>
+<li class="chapter" data-level="4.3" data-path="rct.html"><a href="rct.html#the-target-trial"><i class="fa fa-check"></i><b>4.3</b> The target trial</a></li>
+<li class="chapter" data-level="4.4" data-path="rct.html"><a href="rct.html#exercises-2"><i class="fa fa-check"></i><b>4.4</b> Exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="5" data-path="causal-diagrams.html"><a href="causal-diagrams.html"><i class="fa fa-check"></i><b>5</b> Causal diagrams</a>
 <ul>
@@ -253,13 +256,13 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="12.6" data-path="clone-censor-weight.html"><a href="clone-censor-weight.html#exercises-10"><i class="fa fa-check"></i><b>12.6</b> Exercises</a></li>
 </ul></li>
 <li class="part"><span><b>IV Beyond Exchangeability</b></span></li>
-<li class="chapter" data-level="13" data-path="instrumental-variables.html"><a href="instrumental-variables.html"><i class="fa fa-check"></i><b>13</b> Instrumental variables</a>
+<li class="chapter" data-level="13" data-path="iv.html"><a href="iv.html"><i class="fa fa-check"></i><b>13</b> Instrumental variables</a>
 <ul>
-<li class="chapter" data-level="13.1" data-path="instrumental-variables.html"><a href="instrumental-variables.html#when-exchangeability-fails"><i class="fa fa-check"></i><b>13.1</b> When exchangeability fails</a></li>
-<li class="chapter" data-level="13.2" data-path="instrumental-variables.html"><a href="instrumental-variables.html#provider-preference-as-an-instrument"><i class="fa fa-check"></i><b>13.2</b> Provider preference as an instrument</a></li>
-<li class="chapter" data-level="13.3" data-path="instrumental-variables.html"><a href="instrumental-variables.html#the-wald-and-two-stage-estimators"><i class="fa fa-check"></i><b>13.3</b> The Wald and two-stage estimators</a></li>
-<li class="chapter" data-level="13.4" data-path="instrumental-variables.html"><a href="instrumental-variables.html#interpreting-the-late"><i class="fa fa-check"></i><b>13.4</b> Interpreting the LATE</a></li>
-<li class="chapter" data-level="13.5" data-path="instrumental-variables.html"><a href="instrumental-variables.html#exercises-11"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
+<li class="chapter" data-level="13.1" data-path="iv.html"><a href="iv.html#when-exchangeability-fails"><i class="fa fa-check"></i><b>13.1</b> When exchangeability fails</a></li>
+<li class="chapter" data-level="13.2" data-path="iv.html"><a href="iv.html#provider-preference-as-an-instrument"><i class="fa fa-check"></i><b>13.2</b> Provider preference as an instrument</a></li>
+<li class="chapter" data-level="13.3" data-path="iv.html"><a href="iv.html#the-wald-and-two-stage-estimators"><i class="fa fa-check"></i><b>13.3</b> The Wald and two-stage estimators</a></li>
+<li class="chapter" data-level="13.4" data-path="iv.html"><a href="iv.html#interpreting-the-late"><i class="fa fa-check"></i><b>13.4</b> Interpreting the LATE</a></li>
+<li class="chapter" data-level="13.5" data-path="iv.html"><a href="iv.html#exercises-11"><i class="fa fa-check"></i><b>13.5</b> Exercises</a></li>
 </ul></li>
 <li class="chapter" data-level="14" data-path="sensitivity-analysis.html"><a href="sensitivity-analysis.html"><i class="fa fa-check"></i><b>14</b> Sensitivity analysis</a>
 <ul>
@@ -306,8 +309,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="potential-outcomes-and-causal-effects" class="section level1 hasAnchor" number="3">
-<h1><span class="header-section-number">Chapter 3</span> Potential outcomes and causal effects<a href="potential-outcomes-and-causal-effects.html#potential-outcomes-and-causal-effects" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="potential-outcomes" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">Chapter 3</span> Potential outcomes and causal effects<a href="potential-outcomes.html#potential-outcomes" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Chapter 1 asked whether Cox-2 selective NSAIDs cause less peptic ulcer
 disease than nonselective NSAIDs, and then showed that the obvious way of
 answering the question, comparing crude risks between the two groups,
@@ -320,7 +323,7 @@ outcomes</strong>, and it allows a causal effect to be defined as a specific
 quantity that we can write down, simulate in code, and, under conditions
 we will state carefully, estimate from data.</p>
 <div id="two-futures-for-every-patient" class="section level2 hasAnchor" number="3.1">
-<h2><span class="header-section-number">3.1</span> Two futures for every patient<a href="potential-outcomes-and-causal-effects.html#two-futures-for-every-patient" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<h2><span class="header-section-number">3.1</span> Two futures for every patient<a href="potential-outcomes.html#two-futures-for-every-patient" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Consider a single patient in the <code>ns</code> cohort — call her Patient 47 —
 who presents at her physician’s office with joint pain that warrants an
 NSAID. Her physician has a choice: prescribe a nonselective NSAID, or
@@ -372,7 +375,7 @@ of patients to estimate causal effects that are well defined on average,
 although they remain unknowable one person at a time.</p>
 </div>
 <div id="simulating-both-potential-outcomes" class="section level2 hasAnchor" number="3.2">
-<h2><span class="header-section-number">3.2</span> Simulating both potential outcomes<a href="potential-outcomes-and-causal-effects.html#simulating-both-potential-outcomes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<h2><span class="header-section-number">3.2</span> Simulating both potential outcomes<a href="potential-outcomes.html#simulating-both-potential-outcomes" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The fundamental problem of causal inference is a permanent limitation of
 real data: no data set on real patients ever contains both of anyone’s
 potential outcomes. In a simulated population, however, we are the ones
@@ -393,19 +396,19 @@ treatment <code>a</code> so that more severe patients are more likely to receive
 Cox-2 drug, which is the channeling Chapter 1 described, and construct
 the single outcome <code>y</code> actually recorded: the potential outcome
 matching the treatment each patient actually got.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="potential-outcomes-and-causal-effects.html#cb23-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">921</span>)</span>
-<span id="cb23-2"><a href="potential-outcomes-and-causal-effects.html#cb23-2" tabindex="-1"></a>truth <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
-<span id="cb23-3"><a href="potential-outcomes-and-causal-effects.html#cb23-3" tabindex="-1"></a>  <span class="at">severity =</span> <span class="fu">rbinom</span>(<span class="dv">100000</span>, <span class="dv">1</span>, <span class="fl">0.3</span>),                       <span class="co"># confounder</span></span>
-<span id="cb23-4"><a href="potential-outcomes-and-causal-effects.html#cb23-4" tabindex="-1"></a>  <span class="at">y0 =</span> <span class="fu">rbinom</span>(<span class="dv">100000</span>, <span class="dv">1</span>, <span class="fl">0.05</span> <span class="sc">+</span> <span class="fl">0.15</span> <span class="sc">*</span> severity),          <span class="co"># risk untreated</span></span>
-<span id="cb23-5"><a href="potential-outcomes-and-causal-effects.html#cb23-5" tabindex="-1"></a>  <span class="at">y1 =</span> <span class="fu">rbinom</span>(<span class="dv">100000</span>, <span class="dv">1</span>, <span class="fl">0.03</span> <span class="sc">+</span> <span class="fl">0.15</span> <span class="sc">*</span> severity),          <span class="co"># risk treated</span></span>
-<span id="cb23-6"><a href="potential-outcomes-and-causal-effects.html#cb23-6" tabindex="-1"></a>  <span class="at">a  =</span> <span class="fu">rbinom</span>(<span class="dv">100000</span>, <span class="dv">1</span>, <span class="fl">0.2</span> <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> severity),            <span class="co"># treated more if severe</span></span>
-<span id="cb23-7"><a href="potential-outcomes-and-causal-effects.html#cb23-7" tabindex="-1"></a>  <span class="at">y  =</span> <span class="fu">if_else</span>(a <span class="sc">==</span> <span class="dv">1</span>, y1, y0)                             <span class="co"># consistency</span></span>
-<span id="cb23-8"><a href="potential-outcomes-and-causal-effects.html#cb23-8" tabindex="-1"></a>)</span>
-<span id="cb23-9"><a href="potential-outcomes-and-causal-effects.html#cb23-9" tabindex="-1"></a>truth <span class="sc">|&gt;</span> <span class="fu">summarise</span>(</span>
-<span id="cb23-10"><a href="potential-outcomes-and-causal-effects.html#cb23-10" tabindex="-1"></a>  <span class="at">ate   =</span> <span class="fu">mean</span>(y1) <span class="sc">-</span> <span class="fu">mean</span>(y0),</span>
-<span id="cb23-11"><a href="potential-outcomes-and-causal-effects.html#cb23-11" tabindex="-1"></a>  <span class="at">att   =</span> <span class="fu">mean</span>(y1[a <span class="sc">==</span> <span class="dv">1</span>]) <span class="sc">-</span> <span class="fu">mean</span>(y0[a <span class="sc">==</span> <span class="dv">1</span>]),</span>
-<span id="cb23-12"><a href="potential-outcomes-and-causal-effects.html#cb23-12" tabindex="-1"></a>  <span class="at">naive =</span> <span class="fu">mean</span>(y[a <span class="sc">==</span> <span class="dv">1</span>]) <span class="sc">-</span> <span class="fu">mean</span>(y[a <span class="sc">==</span> <span class="dv">0</span>])</span>
-<span id="cb23-13"><a href="potential-outcomes-and-causal-effects.html#cb23-13" tabindex="-1"></a>)</span></code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="potential-outcomes.html#cb23-1" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">921</span>)</span>
+<span id="cb23-2"><a href="potential-outcomes.html#cb23-2" tabindex="-1"></a>truth <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb23-3"><a href="potential-outcomes.html#cb23-3" tabindex="-1"></a>  <span class="at">severity =</span> <span class="fu">rbinom</span>(<span class="dv">100000</span>, <span class="dv">1</span>, <span class="fl">0.3</span>),                       <span class="co"># confounder</span></span>
+<span id="cb23-4"><a href="potential-outcomes.html#cb23-4" tabindex="-1"></a>  <span class="at">y0 =</span> <span class="fu">rbinom</span>(<span class="dv">100000</span>, <span class="dv">1</span>, <span class="fl">0.05</span> <span class="sc">+</span> <span class="fl">0.15</span> <span class="sc">*</span> severity),          <span class="co"># risk untreated</span></span>
+<span id="cb23-5"><a href="potential-outcomes.html#cb23-5" tabindex="-1"></a>  <span class="at">y1 =</span> <span class="fu">rbinom</span>(<span class="dv">100000</span>, <span class="dv">1</span>, <span class="fl">0.03</span> <span class="sc">+</span> <span class="fl">0.15</span> <span class="sc">*</span> severity),          <span class="co"># risk treated</span></span>
+<span id="cb23-6"><a href="potential-outcomes.html#cb23-6" tabindex="-1"></a>  <span class="at">a  =</span> <span class="fu">rbinom</span>(<span class="dv">100000</span>, <span class="dv">1</span>, <span class="fl">0.2</span> <span class="sc">+</span> <span class="fl">0.5</span> <span class="sc">*</span> severity),            <span class="co"># treated more if severe</span></span>
+<span id="cb23-7"><a href="potential-outcomes.html#cb23-7" tabindex="-1"></a>  <span class="at">y  =</span> <span class="fu">if_else</span>(a <span class="sc">==</span> <span class="dv">1</span>, y1, y0)                             <span class="co"># consistency</span></span>
+<span id="cb23-8"><a href="potential-outcomes.html#cb23-8" tabindex="-1"></a>)</span>
+<span id="cb23-9"><a href="potential-outcomes.html#cb23-9" tabindex="-1"></a>truth <span class="sc">|&gt;</span> <span class="fu">summarise</span>(</span>
+<span id="cb23-10"><a href="potential-outcomes.html#cb23-10" tabindex="-1"></a>  <span class="at">ate   =</span> <span class="fu">mean</span>(y1) <span class="sc">-</span> <span class="fu">mean</span>(y0),</span>
+<span id="cb23-11"><a href="potential-outcomes.html#cb23-11" tabindex="-1"></a>  <span class="at">att   =</span> <span class="fu">mean</span>(y1[a <span class="sc">==</span> <span class="dv">1</span>]) <span class="sc">-</span> <span class="fu">mean</span>(y0[a <span class="sc">==</span> <span class="dv">1</span>]),</span>
+<span id="cb23-12"><a href="potential-outcomes.html#cb23-12" tabindex="-1"></a>  <span class="at">naive =</span> <span class="fu">mean</span>(y[a <span class="sc">==</span> <span class="dv">1</span>]) <span class="sc">-</span> <span class="fu">mean</span>(y[a <span class="sc">==</span> <span class="dv">0</span>])</span>
+<span id="cb23-13"><a href="potential-outcomes.html#cb23-13" tabindex="-1"></a>)</span></code></pre></div>
 <pre><code>## # A tibble: 1 × 3
 ##       ate     att  naive
 ##     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;
@@ -434,7 +437,7 @@ side by side, and the remainder of the chapter takes up the conditions
 under which the gap can nonetheless be closed.</p>
 </div>
 <div id="average-causal-effects-and-estimands" class="section level2 hasAnchor" number="3.3">
-<h2><span class="header-section-number">3.3</span> Average causal effects and estimands<a href="potential-outcomes-and-causal-effects.html#average-causal-effects-and-estimands" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<h2><span class="header-section-number">3.3</span> Average causal effects and estimands<a href="potential-outcomes.html#average-causal-effects-and-estimands" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The individual causal effect <span class="math inline">\(Y(1) - Y(0)\)</span> cannot be observed, although
 its <em>average</em> over a population can be estimated once we have the right
 tools, which is why causal inference is framed in terms of
@@ -496,7 +499,7 @@ of scale is a separate decision, made after identification, about how
 best to communicate a causal contrast.</p>
 </div>
 <div id="the-identification-conditions" class="section level2 hasAnchor" number="3.4">
-<h2><span class="header-section-number">3.4</span> The identification conditions<a href="potential-outcomes-and-causal-effects.html#the-identification-conditions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<h2><span class="header-section-number">3.4</span> The identification conditions<a href="potential-outcomes.html#the-identification-conditions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Estimands such as the ATE are defined in terms of potential outcomes we
 never fully observe. <strong>Identification</strong> is the step of showing that,
 under stated assumptions, an estimand written in potential outcomes is
@@ -543,13 +546,13 @@ confounding the naive comparison. If we compute the same treated-minus-untreated
 contrast <em>separately within each level of severity</em>, using
 <code>group_by(severity)</code>, we are conditioning on the confounder in the way
 conditional exchangeability requires:</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="potential-outcomes-and-causal-effects.html#cb25-1" tabindex="-1"></a>by_severity <span class="ot">&lt;-</span> truth <span class="sc">|&gt;</span></span>
-<span id="cb25-2"><a href="potential-outcomes-and-causal-effects.html#cb25-2" tabindex="-1"></a>  <span class="fu">group_by</span>(severity) <span class="sc">|&gt;</span></span>
-<span id="cb25-3"><a href="potential-outcomes-and-causal-effects.html#cb25-3" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb25-4"><a href="potential-outcomes-and-causal-effects.html#cb25-4" tabindex="-1"></a>    <span class="at">naive_within =</span> <span class="fu">mean</span>(y[a <span class="sc">==</span> <span class="dv">1</span>]) <span class="sc">-</span> <span class="fu">mean</span>(y[a <span class="sc">==</span> <span class="dv">0</span>]),</span>
-<span id="cb25-5"><a href="potential-outcomes-and-causal-effects.html#cb25-5" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
-<span id="cb25-6"><a href="potential-outcomes-and-causal-effects.html#cb25-6" tabindex="-1"></a>  )</span>
-<span id="cb25-7"><a href="potential-outcomes-and-causal-effects.html#cb25-7" tabindex="-1"></a>by_severity</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="potential-outcomes.html#cb25-1" tabindex="-1"></a>by_severity <span class="ot">&lt;-</span> truth <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="potential-outcomes.html#cb25-2" tabindex="-1"></a>  <span class="fu">group_by</span>(severity) <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="potential-outcomes.html#cb25-3" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb25-4"><a href="potential-outcomes.html#cb25-4" tabindex="-1"></a>    <span class="at">naive_within =</span> <span class="fu">mean</span>(y[a <span class="sc">==</span> <span class="dv">1</span>]) <span class="sc">-</span> <span class="fu">mean</span>(y[a <span class="sc">==</span> <span class="dv">0</span>]),</span>
+<span id="cb25-5"><a href="potential-outcomes.html#cb25-5" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">&quot;drop&quot;</span></span>
+<span id="cb25-6"><a href="potential-outcomes.html#cb25-6" tabindex="-1"></a>  )</span>
+<span id="cb25-7"><a href="potential-outcomes.html#cb25-7" tabindex="-1"></a>by_severity</span></code></pre></div>
 <pre><code>## # A tibble: 2 × 2
 ##   severity naive_within
 ##      &lt;int&gt;        &lt;dbl&gt;
@@ -591,7 +594,7 @@ same identified quantity, and none of them can substitute for these three
 conditions holding.</p>
 </div>
 <div id="exercises-1" class="section level2 hasAnchor" number="3.5">
-<h2><span class="header-section-number">3.5</span> Exercises<a href="potential-outcomes-and-causal-effects.html#exercises-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<h2><span class="header-section-number">3.5</span> Exercises<a href="potential-outcomes.html#exercises-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <ol style="list-style-type: decimal">
 <li>Modify the <code>sim-po</code> simulation so that the Cox-2 drug is <em>harmful</em>
 rather than beneficial — for instance, swap the coefficients so <code>y1</code>
@@ -621,7 +624,7 @@ her current, already-treated patients should care about most.</li>
         </div>
       </div>
 <a href="getting-started-with-r-and-the-namcs-data.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="the-randomized-trial-as-the-benchmark.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="rct.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
