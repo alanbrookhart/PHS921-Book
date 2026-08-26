@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-23" />
+<meta name="date" content="2026-08-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -320,7 +320,7 @@ comparison is capable of estimating, independent of which model
 eventually gets fit to the data: choosing new users over prevalent
 users, choosing an active comparator over no treatment at all, and
 aligning the moment a patient becomes eligible with the moment their
-follow-up clock starts. If any of the three is specified badly, no
+follow-up clock starts. If any of the three is misspecified, no
 amount of standardization, propensity-score weighting, or careful
 modeling in the chapters ahead will repair it, because the bias has
 entered through which rows and which person-time were analyzed.</p>
@@ -361,7 +361,7 @@ it distorts a comparison and how a new-user design addresses it. A
 drug, of whatever duration, and compares them to patients who are not.
 Two distinct problems follow from that choice, although they usually
 occur together. The first is <strong>depletion of susceptibles</strong>: patients who
-could not tolerate a drug, or for whom it plainly was not working, tend
+could not tolerate a drug, or for whom it was clearly ineffective, tend
 to stop taking it early and so drop out of the pool of “current users”
 long before anyone samples that pool. The current users who remain are
 enriched with patients who tolerated the drug well, which biases any
@@ -387,15 +387,15 @@ recorded at that visit, and their initiating prescription — Cox-2
 selective or nonselective — fixes which arm, <code>cox2_initiation</code>, they
 belong to for the rest of the cohort. Of the 2882 patients in
 <code>ns</code>, 240 are captured this way as
-Cox-2 initiators and the rest as nonselective initiators; nobody in
+Cox-2 initiators and the rest as nonselective initiators; no patient in
 either group had already been taking an NSAID before the qualifying
-visit, and nobody’s baseline covariates were measured after the drug
+visit, and no patient’s baseline covariates were measured after the drug
 had a chance to act on them. <code>ns</code> is therefore already a new-user cohort
 by construction, although we had not previously named the design
 principle it follows.</p>
 <p>The idea generalizes beyond initiation. Starting a drug is one clinical
 decision, but stopping one, switching, and intensifying a dose are
-decisions too, and each can anchor a comparison in the same way: enroll
+decisions as well, and each can anchor a comparison in the same way: enroll
 patients at the moment the decision is made, classify them by what was
 decided, and follow them forward. This framing — the <strong>treatment
 decision design</strong> (Brookhart 2015) — is the general form of the

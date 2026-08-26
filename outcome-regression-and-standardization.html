@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-23" />
+<meta name="date" content="2026-08-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -452,7 +452,7 @@ single source of truth for what “adjusted” means in this book.</p>
 <code>cox2_init</code>,
 exponentiated, is an odds ratio of 0.93 (95% CI
 0.59 to 1.42) —
-moved from the crude odds ratio of 1.32 to just
+a shift from the crude odds ratio of 1.32 to just
 below the null, though with an interval far too wide to rule out either
 a modest benefit or a modest harm. Age carries an odds ratio of
 1.07 per year, and accounts for much of the
@@ -497,7 +497,7 @@ each individual’s risk would have been under each treatment, and the
 averaging — over the observed covariate distribution of the whole
 cohort — is what turns those individual predictions into a marginal,
 population-level contrast.</p>
-<p>In code it takes five lines.</p>
+<p>In code, the entire recipe takes five lines.</p>
 <div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="outcome-regression-and-standardization.html#cb45-1" tabindex="-1"></a>ns1 <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cox2_init =</span> <span class="dv">1</span>)</span>
 <span id="cb45-2"><a href="outcome-regression-and-standardization.html#cb45-2" tabindex="-1"></a>ns0 <span class="ot">&lt;-</span> ns <span class="sc">|&gt;</span> <span class="fu">mutate</span>(<span class="at">cox2_init =</span> <span class="dv">0</span>)</span>
 <span id="cb45-3"><a href="outcome-regression-and-standardization.html#cb45-3" tabindex="-1"></a>risk1 <span class="ot">&lt;-</span> <span class="fu">mean</span>(<span class="fu">predict</span>(fit, <span class="at">newdata =</span> ns1, <span class="at">type =</span> <span class="st">&quot;response&quot;</span>))</span>
@@ -526,7 +526,8 @@ covariate patterns in which almost no Cox-2 initiator was observed.
 Standardization will return an estimate regardless, which is a reason to
 keep Chapter 6’s Table 1 in view rather than relying on the estimator
 alone.</p>
-<p>We are going to want this in Chapters 8 and 9, so let us package it.
+<p>We will want this estimator again in Chapters 8 and 9, so let us
+package it.
 The function takes the data, a model formula, and the name of the
 treatment column, and returns one row per estimand. Two details are
 worth pausing on. The <code>"{treat}" := 1</code> syntax inside <code>mutate()</code> is
@@ -657,9 +658,9 @@ each replicate, model fitting included; bootstrapping
 only the averaging step, with the coefficients held fixed, would ignore
 the largest source of uncertainty in the procedure.</p>
 <p><code>n_boot</code> trades precision for time. Each replicate is a full <code>glm()</code> fit
-on 2882 rows, and our default of 200 is enough to place an
-interval roughly while keeping a book that re-renders often tolerable to
-build. The percentile endpoints are themselves noisy at that size,
+on 2882 rows, and our default of 200 is enough to place the
+interval approximately while keeping the build time tolerable for a book
+that re-renders often. The percentile endpoints are themselves noisy at that size,
 though, so a different seed will shift them in the second decimal place;
 for a result you intend to publish, 1,000 or 2,000 is the right order of
 magnitude, and <code>seed</code> is what makes whichever number you choose
@@ -667,8 +668,8 @@ reproducible.</p>
 </div>
 <div id="effect-modification" class="section level2 hasAnchor" number="7.4">
 <h2><span class="header-section-number">7.4</span> Effect modification<a href="outcome-regression-and-standardization.html#effect-modification" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>So far we have estimated one effect for everybody. But the effect of a
-Cox-2 inhibitor might plausibly differ by whether a patient is also
+<p>So far we have estimated a single effect for the whole cohort. However,
+the effect of a Cox-2 inhibitor might plausibly differ by whether a patient is also
 taking aspirin, since aspirin damages gastric mucosa through the same
 prostaglandin pathway the Cox-2 drug was designed to spare. When a
 causal effect differs across levels of a covariate, we call that
@@ -741,7 +742,7 @@ Fitting a separate model within each stratum is the fully flexible
 version of the interaction above — it lets every coefficient, not just
 treatment’s, differ by aspirin use — so we can get subgroup effects by
 calling <code>standardize()</code> on each subset. One adjustment is forced on us:
-<code>aspirin_use</code> is constant within a stratum by construction and has to
+<code>aspirin_use</code> is constant within a stratum by construction and must
 leave the covariate list, and among aspirin users
 <code>anti_coagulant_use</code> turns out to be constant too. With only
 92 aspirin users we cannot support nineteen covariates in that
@@ -844,7 +845,7 @@ reflects the sparsity of the data rather than anything about the drug. We
 suppressed R’s separation warnings in that chunk to keep the output
 readable, although they convey the same information.</p>
 <p>It is worth being precise about how effect modification differs from
-confounding, because both get described loosely as “a covariate that
+confounding, because both are described loosely as “a covariate that
 matters.” Confounding is a problem of identification: a common cause of
 treatment and outcome makes the observed contrast fail to equal the
 causal one, and we adjust for it to recover a valid estimate. Effect

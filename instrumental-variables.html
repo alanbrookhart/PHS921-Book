@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-23" />
+<meta name="date" content="2026-08-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -340,7 +340,7 @@ epidemiologists.</p>
 <li><strong>Relevance.</strong> <span class="math inline">\(Z\)</span> is associated with treatment <span class="math inline">\(A\)</span>. This is the one
 condition the data can speak to.</li>
 <li><strong>Exclusion restriction.</strong> <span class="math inline">\(Z\)</span> affects the outcome <span class="math inline">\(Y\)</span> only through
-<span class="math inline">\(A\)</span>. No arrow from <span class="math inline">\(Z\)</span> to <span class="math inline">\(Y\)</span> that bypasses treatment.</li>
+<span class="math inline">\(A\)</span>. There is no arrow from <span class="math inline">\(Z\)</span> to <span class="math inline">\(Y\)</span> that bypasses treatment.</li>
 <li><strong>Instrument exchangeability.</strong> Nothing points into both <span class="math inline">\(Z\)</span> and <span class="math inline">\(Y\)</span> —
 no backdoor path connects the instrument to the outcome, either
 unconditionally or after conditioning on measured covariates <span class="math inline">\(L\)</span>. The
@@ -362,7 +362,7 @@ Under <strong>monotonicity</strong> — no patient’s treatment is pushed in th
 direction to everyone else’s by the instrument — it identifies the
 average effect among those patients whose treatment the instrument
 actually moved. That second quantity is the <strong>local average treatment
-effect</strong>, and it is the one we will end up with.</p>
+effect</strong>, and it is the one we will ultimately estimate.</p>
 <div class="sourceCode" id="cb117"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb117-1"><a href="instrumental-variables.html#cb117-1" tabindex="-1"></a><span class="fu">library</span>(ggdag)</span>
 <span id="cb117-2"><a href="instrumental-variables.html#cb117-2" tabindex="-1"></a>dag_iv <span class="ot">&lt;-</span> <span class="fu">dagify</span>(</span>
 <span id="cb117-3"><a href="instrumental-variables.html#cb117-3" tabindex="-1"></a>  pud  <span class="sc">~</span> cox2 <span class="sc">+</span> u,</span>
@@ -425,7 +425,7 @@ zero and the score undefined. The cohort falls from
 156 Cox-2 initiators and 207 ulcer
 cases. This is the first cost of the method, paid before any estimation,
 since an IV analysis buys its differently placed assumptions with data.</p>
-<p>The distribution is lopsided. Cox-2 initiation is uncommon and most
+<p>The distribution is heavily skewed. Cox-2 initiation is uncommon and most
 physicians in a panel of two to ten visits prescribed none, so <code>pref</code> is
 exactly zero for 1766 of the 2054
 visits; only 288 patients saw a physician who prescribed a
@@ -456,7 +456,7 @@ other patients to one who prescribed it to all of them raises this
 patient’s probability of receiving one by
 24.5 percentage points
 (SE 2.6), with an <span class="math inline">\(F\)</span> statistic of
-90 — comfortably past the conventional
+90 — well past the conventional
 rule-of-thumb threshold of 10. Adding <code>ns_covs</code> to the first stage barely
 touches it: the partial <span class="math inline">\(F\)</span> for <code>pref</code> is
 80. Physician habit therefore does predict
@@ -623,7 +623,7 @@ balanced across levels of the instrument than across levels of treatment.</p>
 </table>
 <p>The comparison is partly reassuring and partly not, and the mixed result
 is more instructive than a clean one would have been. On the clinical
-covariates the instrument behaves as advertised: age differs by
+covariates the instrument behaves as it should: age differs by
 0.33 standardized units across treatment but
 only 0.11 across the instrument, and
 arthritis by 0.34 against
@@ -697,10 +697,10 @@ substantive contrast.</p>
 <p>The instrument moves treatment by
 11.0 percentage points and the outcome by
 +1.6, so the ratio is
-+14.7 percentage points. The two numerators
++14.7 percentage points. The numerator and denominator
 are worth reading before the quotient: a +1.6-point
 difference in ulcer risk between groups of 1766 and
-288 patients is well inside noise, and dividing a noisy
+288 patients is well within sampling variability, and dividing a noisy
 small number by 0.11 multiplies the noise by nine.</p>
 <p>The general form replaces the ratio with two regressions. Fit treatment
 on the instrument, take the fitted values, and regress the outcome on
@@ -917,11 +917,12 @@ each increment shifts (Angrist and Imbens 1995). The complier arithmetic
 above is exact for the binary row and an illustration of the idea for the
 others; no single describable subgroup sits behind that weighted average.</p>
 <p>Compliers are a subgroup we cannot enumerate, since no patient is
-labelled as one, and their clinical meaning depends on the instrument.
-Here they are the patients whose prescription was genuinely up for grabs.
+labeled as one, and their clinical meaning depends on the instrument.
+Here they are the patients whose prescription could genuinely have gone
+either way.
 The arthritic patient with a prior bleed, for whom a Cox-2 agent is
 clearly indicated, is an always-taker, and the young patient with no GI
-history who will get ibuprofen from anyone is a never-taker; the complier
+history who would receive ibuprofen from any physician is a never-taker; the complier
 is the intermediate patient whose treatment tracked her physician’s
 habit. Whether the average effect in that group is what a guideline
 committee wants is worth asking explicitly, and the answer is often no.
@@ -945,8 +946,8 @@ zero, and dividing a null numerator by a small denominator yields a wide
 interval around nothing.</p>
 <p>The provider-preference instrument in these data is strong enough to be
 worth constructing and transparent enough to audit, since the year
-imbalance we found is itself a finding about the instrument, but it is
-far too small to settle the question. Although its non-contradiction of
+imbalance we found is itself a finding about the instrument, but the
+analysis it yields is far too imprecise to settle the question. Although its non-contradiction of
 the null is mildly informative as one line in a sensitivity table beside
 Part II’s estimates, because it rests on different assumptions, it would
 be indefensible as a headline result with the point estimate quoted and

@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-23" />
+<meta name="date" content="2026-08-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -311,7 +311,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Chapter 1 named confounding by indication in words: physicians steer
 Cox-2 selective NSAIDs toward patients they already judge to be at
 higher gastrointestinal risk, which is why the crude comparison came out
-backwards. Chapter 3 gave that idea a formal home inside potential
+with the wrong sign. Chapter 3 gave that idea a formal home inside potential
 outcomes, as a failure of exchangeability, and named the covariates that
 would need to be equal on average across treatment groups for a
 comparison to be believable. Neither chapter offered a way to <em>look</em> at a
@@ -476,7 +476,7 @@ in this simulation — we turn that null slope into
 a strong and highly significant association between two variables that
 have no causal connection at all. Nothing about the data-generating
 process differs between the two regressions; only the sample does. This
-is collider bias, and it illustrates that adjustment applied to the wrong
+is <strong>collider bias</strong>, and it illustrates that adjustment applied to the wrong
 kind of node does not merely fail to help but induces the sort of
 spurious association that the methods in this book are intended to
 avoid.</p>
@@ -507,7 +507,7 @@ whereas colliders and mediators, for their different reasons, do not.</p>
 <h2><span class="header-section-number">5.4</span> Selection bias as collider stratification<a href="causal-diagrams.html#selection-bias-as-collider-stratification" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The collider simulation above used “hospitalized” as a placeholder,
 although the same mechanism underlies a problem known by a more familiar
-name, selection bias. The structural reading of selection bias, in which
+name, <strong>selection bias</strong>. The structural reading of selection bias, in which
 it is understood as conditioning on a collider rather than as a catalog
 of study-design mishaps, is the account given by Hernán,
 Hernández-Díaz, and Robins (2004), and it is the one the rest of this

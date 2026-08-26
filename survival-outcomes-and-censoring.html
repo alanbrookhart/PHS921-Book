@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-23" />
+<meta name="date" content="2026-08-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -310,7 +310,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <h1><span class="header-section-number">Chapter 10</span> Survival outcomes and censoring<a href="survival-outcomes-and-censoring.html#survival-outcomes-and-censoring" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p>Part II asked one question three ways and arrived at one answer: whatever
 Cox-2 selectivity does to ulcer risk, the <code>ns</code> cohort cannot see it
-clearly, and the crude signal of harm was confounding by indication. That
+clearly, and the crude signal of harm reflected confounding by indication. That
 question had a convenient shape, with one row, one treatment, and one
 binary outcome per patient, so that a risk was a proportion and an
 adjusted risk a weighted proportion. Part III gives up that convenience.
@@ -403,7 +403,7 @@ different lengths of time: median follow-up is
 two. A logistic regression of <code>cv_event</code> on <code>statin</code> and <code>sta_covs</code> would
 produce a tidy odds ratio for a quantity with no definition, since the
 denominator of each “risk” mixes people observed for one year with people
-observed for ten. Nor can the problem be cleaned up by restricting to
+observed for ten. Nor can the problem be remedied by restricting to
 patients with complete follow-up: staying under observation for ten years
 is not a baseline characteristic but something that happens after time
 zero, and Chapter 5 named the cost of selecting on such a variable. We
@@ -563,7 +563,7 @@ death. That is a <strong>crude</strong> risk. Neither quantity is the wrong one;
 answer different questions, and which to report depends on whether the
 reader wants to know what treatment would do absent competing mortality
 or what will happen to patients like these.</p>
-<p>Coding it requires a three-valued status rather than a yes-or-no one.
+<p>Coding it requires a three-valued status rather than a binary one.
 Death competes only when it arrives first, so a patient who has a
 cardiovascular event and dies a year later contributes a cardiovascular
 event and nothing else.</p>
@@ -656,10 +656,10 @@ epidemiology, estimates a ratio of hazards.</p>
 ##   &lt;chr&gt;         &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;     &lt;dbl&gt;
 ## 1 0-2 years     statin    0.695     0.292     -1.25   2.12e-1    0.392     1.23 
 ## 2 after 2 years statin    0.322     0.256     -4.43   9.62e-6    0.195     0.532</code></pre>
-<p>One hazard ratio for the whole decade comes out at
-0.42. Split the decade in two and the first
-interval gives 0.69 and the remainder
-0.32. The single number was therefore an average
+<p>A single hazard ratio fitted to the whole decade is
+0.42. Splitting the decade in two gives
+0.69 for the first interval and
+0.32 for the remainder. The single number was therefore an average
 over periods that do not agree, which is the milder of two interpretive
 problems.</p>
 <p>The more serious problem is what the second interval conditions on. Its
@@ -692,14 +692,14 @@ than as the estimand.</p>
 <div id="when-censoring-lies" class="section level2 hasAnchor" number="10.6">
 <h2><span class="header-section-number">10.6</span> When censoring lies<a href="survival-outcomes-and-censoring.html#when-censoring-lies" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>Kaplan–Meier removes a censored patient from the denominator and carries
-on with the rest, which is a fair thing to do only if the patients who
+on with the rest, which is defensible only if the patients who
 remain represent the patients who left. Formally, censoring must be
 <strong>non-informative</strong>: at each time, those still under observation must
 have the same hazard as those censored just before, conditional on
 whatever we have adjusted for. Administrative censoring satisfies this by
 construction. Loss to follow-up need not, and in <code>sta</code> it is the largest
 single reason follow-up ends.</p>
-<p>Since censoring is not random by design, the first thing to do is look at
+<p>Since censoring is not random by design, the first step is to examine
 who leaves. We compare patients censored by loss to follow-up in the
 first two years against everyone else on the baseline covariates we have.</p>
 <div class="sourceCode" id="cb94"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb94-1"><a href="survival-outcomes-and-censoring.html#cb94-1" tabindex="-1"></a>loss <span class="ot">&lt;-</span> sta <span class="sc">|&gt;</span></span>

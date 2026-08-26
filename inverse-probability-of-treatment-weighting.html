@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-23" />
+<meta name="date" content="2026-08-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -417,7 +417,7 @@ inflated into a copy of the whole cohort. In this
 <strong>pseudo-population</strong> — Hernán and Robins’s term for the reweighted
 cohort — frailty is distributed identically across arms; the association
 between frailty and treatment has been broken by duplicating patients
-rather than by conditioning on frailty, and the weighted risks come out at
+rather than by conditioning on frailty, and the weighted risks are
 14.0% and
 14.0%, a risk difference of exactly
 zero.</p>
@@ -524,13 +524,13 @@ weights themselves.</p>
 <p><img src="causal-inference-epi-r_files/figure-html/ch09-wt-hist-1.png" alt="" width="672" /></p>
 <p>The stabilized weights average 0.997, close
 enough to 1 to be reassuring, while the unstabilized ones average about
-2 as advertised. The maxima are more informative:
+2, as expected. The maxima are more informative:
 34.2 unstabilized against
 2.8 stabilized. That largest unstabilized weight
 belongs to the Cox-2 initiator whose estimated propensity score is
 0.029 — a patient whose covariates made the
 Cox-2 drug very unlikely, who received it anyway, and who is therefore
-asked to represent thirty-odd patients like herself who did not. Kish’s
+asked to represent roughly thirty patients like herself who did not. Kish’s
 effective sample size, <span class="math inline">\((\sum w)^2 / \sum w^2\)</span>, falls from
 2882 unweighted to 2823 under stabilized
 weights and all the way to 756 unstabilized: a
@@ -747,7 +747,7 @@ for either operation, so it is worth saying which one you did.</p>
 </div>
 <div id="standardized-mortality-ratio-weights" class="section level2 hasAnchor" number="9.5">
 <h2><span class="header-section-number">9.5</span> Standardized mortality ratio weights<a href="inverse-probability-of-treatment-weighting.html#standardized-mortality-ratio-weights" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The weights built so far blow both arms up into a copy of the whole
+<p>The weights built so far inflate both arms into a copy of the whole
 cohort, which is why they estimate the ATE. A small change to the weight
 redirects the estimator at a different population. Leave the treated arm
 alone — every treated patient keeps weight 1 — and give each untreated
@@ -983,7 +983,7 @@ fact about this cohort rather than a general result. Kurth and
 colleagues (2006, AJE) analyzed thrombolysis with t-PA and mortality
 after ischemic stroke, where the treatment effect varied sharply with
 baseline stroke severity, and found that IPTW and SMR weighting of the
-same cohort gave sharply different answers, far apart enough that a
+same cohort gave sharply different answers, far enough apart that a
 reader would draw different conclusions from the two. Using this
 chapter’s vocabulary, explain which patients
 dominate the weighted comparison under each scheme, and why effect

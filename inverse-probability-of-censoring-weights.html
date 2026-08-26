@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-23" />
+<meta name="date" content="2026-08-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -328,7 +328,7 @@ L)\)</span>, and it builds a pseudo-population in which treatment is unrelated t
 the probability of the <em>observation status</em> a patient actually had: among
 patients still under observation at time <span class="math inline">\(t\)</span>, each is weighted by one
 over her probability of having remained uncensored that long. She then
-stands in for herself plus the patients like her who dropped out, and in
+stands in for herself and for the patients like her who dropped out, and in
 the reweighted data the people we can still see represent the people we
 started with.</p>
 <p>One structural difference matters. Treatment here happens once, at time
@@ -493,9 +493,9 @@ the right-hand side, is a <strong>pooled logistic</strong> model and approximate
 proportional hazards model when the interval hazards are small. Ours
 carries time as <code>splines::ns(tstop, 3)</code> rather than <code>factor(tstop)</code>,
 spending three degrees of freedom instead of nine on a hazard we expect
-to be smooth. And because the hazards can be multiplied back up into a
-survival curve, the model returns risks at the horizons the target trial
-named, not only ratios.</p>
+to be smooth. Furthermore, because the hazards can be multiplied back up
+into a survival curve, the model returns risks at the horizons the target
+trial named, not only ratios.</p>
 </div>
 <div id="building-censoring-weights" class="section level2 hasAnchor" number="11.3">
 <h2><span class="header-section-number">11.3</span> Building censoring weights<a href="inverse-probability-of-censoring-weights.html#building-censoring-weights" class="anchor-section" aria-label="Anchor link to header"></a></h2>
@@ -514,7 +514,7 @@ analysis.</p>
 <p>With the indicator fixed, the censoring model is a pooled logistic
 regression of <code>censored</code> on time and the baseline covariates, fitted
 across all person-period rows at once. In lecture, and in much of the
-literature, censoring models are instead fit with Cox proportional
+literature, censoring models are instead fitted with Cox proportional
 hazards regression; the pooled logistic on person-period data is its
 discrete-time analog, and with intervals this short the two give
 essentially the same weights. Our estimator wraps the whole

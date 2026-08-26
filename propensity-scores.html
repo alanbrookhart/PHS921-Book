@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-23" />
+<meta name="date" content="2026-08-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -311,8 +311,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <p>Chapter 7 adjusted for confounding by modeling the outcome. We wrote
 down a logistic regression for <code>pud</code> that included the treatment
 indicator and all nineteen covariates in <code>ns_covs</code>, then averaged its
-predictions over the cohort twice. It worked, but notice how much weight
-that single model was carrying: nineteen covariates and their functional
+predictions over the cohort twice. The approach worked, but notice how
+much weight that single model was carrying: nineteen covariates and their functional
 forms, all of it resting on 288 ulcer cases. This chapter
 takes a second route to the same question, and it moves the modeling
 burden to the other side of the problem. Instead of modeling how
@@ -349,9 +349,9 @@ covariates.</p>
 <p>The consequence for us is the second half of the theorem. If
 conditional exchangeability holds given the full covariate vector <span class="math inline">\(L\)</span> —
 Chapter 3’s assumption, for which Chapter 5’s diagram is the argument —
-then it also holds given <span class="math inline">\(e(L)\)</span> alone. So we may condition on a single
-scalar in place of nineteen variables without loss, reducing nineteen
-dimensions of confounding to one number.</p>
+then it also holds given <span class="math inline">\(e(L)\)</span> alone. We may therefore condition on a
+single scalar in place of nineteen variables without loss, reducing
+nineteen dimensions of confounding to one number.</p>
 <p>Two cautions belong here at the outset. First, the propensity score is
 a <strong>nuisance parameter</strong>: a patient’s probability of receiving a Cox-2
 inhibitor is of no interest in itself, and the coefficients of the
@@ -700,8 +700,8 @@ vector, which sets already-matched controls to infinite distance so no
 control appears twice — keeping the paired analysis honest at the cost
 of using fewer controls. The <code>arrange(desc())</code> orders treated
 patients from the highest score down, so the hardest patients to match,
-the ones out at the sparse end of the distribution, get first pick of
-the control pool. The <em>caliper</em> sets a limit on how poor a match will be
+the ones out at the sparse end of the distribution, are matched first,
+before the control pool has been depleted. The <em>caliper</em> sets a limit on how poor a match will be
 accepted: if the nearest available control differs by more than 0.05 on
 the propensity scale, that treated patient is left unmatched rather than
 paired with an implausible comparator. Unmatched patients are how a

@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-23" />
+<meta name="date" content="2026-08-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -312,8 +312,8 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 have never used R before, this chapter introduces enough of the
 tidyverse to read and write the data manipulations used in the
 chapters that follow, describes the two example cohorts we will work
-with for the rest of the semester, and ends by building a first
-reusable function: a “Table 1” generator that will be useful in most
+with for the rest of the book, and ends by building a first set of
+reusable functions: a “Table 1” generator that will be useful in most
 observational studies you conduct, in this course and after it. If you
 already know R and the tidyverse well, skim this chapter for the two data
 sets and read the Table 1 section, since <code>table1_continuous()</code> and
@@ -393,8 +393,8 @@ indicator for being 65 or older, and then counts how many patients land
 in each category — the same recode-and-count pattern behind <code>cox2_init</code>
 and <code>pud</code>, the two convenience columns <code>R/setup.R</code> added for us. The
 fourth groups patients by which drug class they initiated and reports
-the number of patients and mean age in each group — a first, very small
-taste of the comparisons we will spend the rest of the book refining. The
+the number of patients and mean age in each group — a first, very simple
+version of the comparisons we will spend the rest of the book refining. The
 fifth cross-tabulates sex against treatment group. None of this is
 causal inference yet; it is description, but description is where an
 analysis begins, and it is worth being fluent in it before adding
@@ -486,7 +486,8 @@ ulcer disease. <code>glimpse()</code> gives a quick sense of what is in it:</p>
 inhibitor. Alongside the treatment indicator <code>cox2_initiation</code> and the
 outcome <code>incident_pud</code>, the cohort carries baseline covariates: age, sex,
 race, region, calendar year, a set of chronic conditions, and
-comedications like corticosteroids, aspirin, and gastroprotective drugs.
+comedications such as corticosteroids, aspirin, and gastroprotective
+drugs.
 <code>R/setup.R</code> already added two convenience columns, <code>cox2_init</code> and <code>pud</code>,
 which are the same information as <code>cox2_initiation</code> and <code>incident_pud</code>
 recoded as 0/1 integers — most of the model-fitting functions we write
@@ -547,7 +548,7 @@ event has a missing <code>cv_time</code>). <code>R/setup.R</code> combines these
 <code>event_time</code>, the time to whichever of a cardiovascular event, death,
 loss to follow-up, or the administrative end of the study (<code>admin_end</code>,
 set to 10 years) happened first, and a <code>cv_event</code> indicator for whether
-that first thing was actually the cardiovascular event. We will not need
+that first event was the cardiovascular event. We will not need
 any of that machinery until Chapter 10, on survival outcomes and
 censoring. For now it is enough to know that <code>sta</code> is larger than <code>ns</code>,
 that its outcomes accrue over years of follow-up, and that it is the
@@ -610,7 +611,7 @@ will concern us once we take up adjustment for confounding.</p>
 </div>
 <div id="your-first-reusable-functions-table-1" class="section level2 hasAnchor" number="2.4">
 <h2><span class="header-section-number">2.4</span> Your first reusable functions: Table 1<a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Nearly every observational paper opens with a table comparing the
+<p>Nearly every observational paper opens with a table describing the
 characteristics of the groups under comparison, conventionally called
 “Table 1.” It is descriptive rather than causal, but it is where a
 reader first sees whether the groups appear comparable, and often where
@@ -645,7 +646,7 @@ own column.</p>
 <span id="cb19-10"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-10" tabindex="-1"></a>    ) <span class="sc">|&gt;</span></span>
 <span id="cb19-11"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-11" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="fu">all_of</span>(by), <span class="at">values_from =</span> stat)</span>
 <span id="cb19-12"><a href="getting-started-with-r-and-the-namcs-data.html#cb19-12" tabindex="-1"></a>}</span></code></pre></div>
-<p>A couple of details are worth pointing out because they recur throughout
+<p>Two details are worth noting because they recur throughout
 this book. <code>all_of(vars)</code> tells <code>select()</code> and <code>pivot_longer()</code> that
 <code>vars</code> is a character vector of column names supplied by the caller,
 rather than a single column to look up literally, which is what allows
@@ -671,8 +672,8 @@ averaging values:</p>
 <span id="cb20-11"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-11" tabindex="-1"></a>    <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> <span class="fu">all_of</span>(by), <span class="at">values_from =</span> stat)</span>
 <span id="cb20-12"><a href="getting-started-with-r-and-the-namcs-data.html#cb20-12" tabindex="-1"></a>}</span></code></pre></div>
 <p>Both functions are saved in <code>R/table1.R</code> so that later chapters can pull
-them in with a single <code>source()</code> call rather than redefining them. Let’s
-use them on the NSAID cohort, comparing Cox-2 initiators to nonselective
+them in with a single <code>source()</code> call rather than redefining them. We can
+now use them on the NSAID cohort, comparing Cox-2 initiators to nonselective
 NSAID initiators on age and on five categorical covariates, and format
 the results with <code>knitr::kable()</code> for a readable table:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb21-1" tabindex="-1"></a><span class="fu">source</span>(<span class="st">&quot;R/table1.R&quot;</span>)</span>
@@ -770,9 +771,9 @@ the results with <code>knitr::kable()</code> for a readable table:</p>
 </tr>
 </tbody>
 </table>
-<p>Look at the two tables side by side. Cox-2 initiators are, on average,
-older than nonselective NSAID initiators, and a substantially larger
-share of them have a history of arthritis. Neither table tells us
+<p>Read side by side, the two tables show that Cox-2 initiators are, on
+average, older than nonselective NSAID initiators, and that a
+substantially larger share of them have a history of arthritis. Neither table tells us
 whether Cox-2 selectivity affects peptic ulcer risk, a question that
 occupies the rest of the book, but both are the kind of descriptive
 evidence an epidemiologist examines first, and both came from two
@@ -785,7 +786,7 @@ functions short enough to read line by line.</p>
 cohort, comparing statin initiators to non-initiators
 (<code>statin_use</code>) on <code>age</code> and on <code>diabetes</code>, <code>hypertension</code>, and
 <code>tobacco_use</code>. Use <code>table1_continuous()</code> and <code>table1_categorical()</code>
-exactly as they were used above, just pointing them at <code>sta</code> and a
+exactly as they were used above, pointing them at <code>sta</code> with a
 different <code>by</code> variable and variable list.</li>
 <li>The age-by-group histogram in the <em>Plotting with ggplot2</em> section was
 built for the NSAID cohort. Adapt that code to plot the distribution

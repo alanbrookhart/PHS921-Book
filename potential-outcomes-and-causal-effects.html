@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-23" />
+<meta name="date" content="2026-08-26" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -321,8 +321,8 @@ quantity that we can write down, simulate in code, and, under conditions
 we will state carefully, estimate from data.</p>
 <div id="two-futures-for-every-patient" class="section level2 hasAnchor" number="3.1">
 <h2><span class="header-section-number">3.1</span> Two futures for every patient<a href="potential-outcomes-and-causal-effects.html#two-futures-for-every-patient" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Picture a single patient in the <code>ns</code> cohort — call her Patient 47 — who
-shows up at her physician’s office with joint pain that warrants an
+<p>Consider a single patient in the <code>ns</code> cohort — call her Patient 47 —
+who presents at her physician’s office with joint pain that warrants an
 NSAID. Her physician has a choice: prescribe a nonselective NSAID, or
 prescribe a Cox-2 selective inhibitor. Whichever one is chosen, Patient
 47 either does or does not go on to develop peptic ulcer disease over
@@ -360,8 +360,8 @@ drug prevented her ulcer; if both are 0, or both are 1, the choice of
 drug made no difference to her outcome, even though the drugs may differ
 substantially for other patients. Although this quantity is well
 defined, for any real patient it is unobservable. We only ever see one of
-Patient 47’s two potential outcomes, because she can only actually take
-one drug. This is what Holland (1986) called the <strong>fundamental problem of
+Patient 47’s two potential outcomes, because she can take only one of
+the two drugs. This is what Holland (1986) called the <strong>fundamental problem of
 causal inference</strong>: for any individual, at most one potential outcome is
 ever realized, and the individual causal effect can never be computed
 from data on that individual alone, no matter how much we know about her
@@ -497,7 +497,7 @@ best to communicate a causal contrast.</p>
 </div>
 <div id="the-identification-conditions" class="section level2 hasAnchor" number="3.4">
 <h2><span class="header-section-number">3.4</span> The identification conditions<a href="potential-outcomes-and-causal-effects.html#the-identification-conditions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Estimands like the ATE are defined in terms of potential outcomes we
+<p>Estimands such as the ATE are defined in terms of potential outcomes we
 never fully observe. <strong>Identification</strong> is the step of showing that,
 under stated assumptions, an estimand written in potential outcomes is
 equal to some quantity we actually could compute from observed data.
@@ -517,9 +517,9 @@ consistency fails for reasons that have nothing to do with statistical
 estimation.</p>
 <p><strong>Exchangeability</strong> (also called ignorability) says that the treated
 and untreated groups would have had the same average outcome had they
-received the same treatment — formally, <span class="math inline">\(Y(1), Y(0) \perp A\)</span>, potential
-outcomes are statistically independent of the treatment actually
-received. This is the condition that fails in our simulation: because <code>a</code>
+received the same treatment — formally, <span class="math inline">\(Y(1), Y(0) \perp A\)</span>; that is,
+the potential outcomes are statistically independent of the treatment
+actually received. This is the condition that fails in our simulation: because <code>a</code>
 depends on <code>severity</code>, and <code>severity</code> also drives <code>y0</code> and <code>y1</code>, treated
 and untreated patients are not exchangeable, which is why the naive
 contrast diverged from the ATE. A randomized trial delivers
@@ -537,9 +537,9 @@ assignment is as good as random. This is a considerably more plausible
 assumption whenever we can measure the variables driving treatment
 choice, and it is the assumption that standardization, propensity scores,
 and IPTW in later chapters are built to exploit.</p>
-<p>Conditional exchangeability can be seen to work in our simulated example,
-since we have measured the one variable, <code>severity</code>, that was confounding
-the naive comparison. If we compute the same treated-minus-untreated
+<p>We can see conditional exchangeability at work in our simulated example,
+because we have measured the one variable, <code>severity</code>, that was
+confounding the naive comparison. If we compute the same treated-minus-untreated
 contrast <em>separately within each level of severity</em>, using
 <code>group_by(severity)</code>, we are conditioning on the confounder in the way
 conditional exchangeability requires:</p>
