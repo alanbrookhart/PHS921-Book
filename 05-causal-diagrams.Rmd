@@ -4,11 +4,9 @@
 source("R/setup.R")
 ```
 
-Chapter 1 named confounding by indication in words: physicians steer
+Chapter 1 described confounding by indication in words: physicians steer
 Cox-2 selective NSAIDs toward patients they already judge to be at
-higher gastrointestinal risk, which is why the crude comparison came out
-with the wrong sign. Chapter 3 gave that idea a formal home inside potential
-outcomes, as a failure of exchangeability, and named the covariates that
+higher gastrointestinal risk. Chapter 3 provided a formal definition for that using potential outcomes, as a failure of exchangeability, and named the covariates that
 would need to be equal on average across treatment groups for a
 comparison to be believable. Neither chapter offered a way to *look* at a
 causal assumption and read off which variables belong on that list, or,
