@@ -2,20 +2,123 @@
 
 # Why causal inference? {#why}
 
-## Questions epidemiology cannot answer with association alone
+## Three kinds of questions
 
-Epidemiologic studies are increasingly used to investigate the safety
-and effectiveness of medical products and procedures as they are used in
-routine care, in unselected patient populations. This book builds a
-narrative around variations on two such questions: 1) Does starting a
-Cox-2 selective NSAID result in a lower risk of peptic ulcer disease
-than starting a nonselective NSAID? and 2) Does starting a statin reduce
-the risk of cardiovascular events compared with no treatment in a broad
-routine-care population? Both are causal questions, in that they ask
-what would happen to a group of patients if a particular treatment
-decision changed, and both are the kind of question epidemiologists are
-asked to answer using data collected for other purposes, such as
-electronic health records, administrative claims, and disease
+Epidemiologic analyses of healthcare data — electronic health records,
+administrative claims, disease registries — can serve several distinct
+scientific purposes, and it is worth separating them at the outset,
+because the methods in this book apply to only one of them.
+
+The first purpose is **description**. Descriptive questions ask what is
+happening in a population: How many patients in North Carolina Medicaid
+have asthma? Which counties have the highest rates? How many patients
+will develop asthma this year? Answering such questions well requires
+careful attention to how conditions are defined and to who is captured
+in the data, but it does not require comparing groups of patients or
+reasoning about what would happen under a different course of action.
+
+The second purpose is **prediction**. Predictive questions include
+classification problems — does this radiological image show a patient
+with lung damage from asthma? — and risk prediction problems — which
+patients are at highest risk of being admitted for an asthma
+exacerbation? A model built for prediction is judged by how accurately
+it predicts, and its inputs need no causal interpretation: a variable
+can be an excellent predictor of an outcome without causing it. This is
+why the common phrase "risk factors for admission" is ambiguous — it may
+describe variables that merely flag high-risk patients, or variables
+that, if changed, would change the risk.
+
+The third purpose is **causal**. What is the effect of treatment with a
+biologic, versus standard of care, on the one-year risk of admission for
+an asthma exacerbation among newly diagnosed patients? Which patient
+subgroups are most likely to benefit? What is the effect of reducing
+copayments on adherence to guideline-recommended asthma treatments? What
+is the effect of a spike in fine particulate air pollution on emergency
+department visits for asthma? Each of these asks what would happen to a
+population if something — a treatment, a policy, an exposure — were
+different from what it was.
+
+This book is about the third kind of question. It builds a narrative
+around variations on two of them: 1) Does starting a Cox-2 selective
+NSAID result in a lower risk of peptic ulcer disease than starting a
+nonselective NSAID? and 2) Does starting a statin reduce the risk of
+cardiovascular events compared with no treatment in a broad routine-care
+population? Both ask what would happen to a group of patients if a
+particular treatment decision changed, and both are the kind of question
+epidemiologists are asked to answer using data collected for other
+purposes.
+
+## Why not just run a trial?
+
+The natural first response to a causal question about a treatment is to
+propose a randomized trial. Randomization ensures that the groups being
+compared are, on average, alike at baseline, so a difference in their
+outcomes can be attributed to the treatment; Chapter \@ref(rct) develops
+this argument carefully, because the trial is the benchmark against
+which every analysis in this book is implicitly judged. If a trial could
+be run for every causal question in medicine, there would be little need
+for the rest of this book. Several forces ensure that it cannot.
+
+First, trials are expensive and slow. The ALLHAT trial randomized 33,357
+patients with hypertension and at least one cardiovascular risk factor
+to one of three classes of antihypertensive drugs and followed them for
+between three and eight years. The trial established that thiazide
+diuretics were as good as or superior to the newer, more expensive
+alternatives for every outcome studied — a finding that still shapes
+hypertension guidelines — but it took eight years to complete and cost
+roughly $120 million. Only a small fraction of the clinically important
+comparisons in medicine will ever command resources on that scale.
+
+Second, it is often unclear who would pay. Head-to-head comparative
+trials are commercially risky for manufacturers: in the PROVE-IT trial,
+the sponsor's statin proved inferior to a competitor's more intensive
+regimen, a result that reshaped practice at the sponsor's expense. A
+manufacturer weighing whether to fund a comparison against a rival
+product must accept the possibility of financing the demonstration that
+its own drug is worse.
+
+Third, the efficacy a trial estimates may differ from the effectiveness
+a treatment achieves in routine care. Denosumab, an injectable biologic
+for osteoporosis, reduced fracture risk in its pivotal placebo-controlled
+trial; whether it prevents fractures in real-world use depends on
+matters the trial protocol controlled — whether patients return for
+their injections on schedule, and how the medication is offered and
+covered by insurers. Nonexperimental studies can provide evidence about
+real-world effectiveness that a trial, by design, cannot. The second of
+this book's two questions — whether starting a statin reduces
+cardiovascular risk in a broad routine-care population — is a question
+of exactly this kind.
+
+Fourth, trials often exclude the patients in whom a treatment will
+actually be used: the elderly, patients with chronic comorbidities such
+as end-stage renal disease or liver disease, racial and ethnic
+minorities, patients with limited access to the healthcare system,
+pregnant women, and children. For these groups, evidence about a
+treatment's effects must frequently come from data generated by routine
+care.
+
+Finally, a trial may be unethical or impractical. Antipsychotic
+medications, approved to treat schizophrenia, came to be widely used
+off-label to manage behavioral disturbances in elderly patients with
+dementia. Placebo-controlled trials of the newer atypical agents were
+conducted in this population, and a meta-analysis of those trials by the
+FDA found an increased risk of death among patients randomized to the
+atypical drugs. The finding created a clinical dilemma: should
+physicians switch patients to the older, conventional antipsychotics?
+Those agents have many known side effects and a poor safety profile of
+their own, and a head-to-head trial in frail elderly patients — with
+death as the anticipated outcome — will never be done. The question
+could only be answered by analyzing existing data. We will return to how
+it was answered at the end of this chapter.
+
+When a trial cannot be run, the causal question does not go away; it
+falls to nonexperimental studies, and with them comes the central
+problem this book is organized around.
+
+## The central problem: confounding
+
+A nonexperimental study must answer its question with data generated by
+routine care — electronic health records, administrative claims, disease
 registries. Because such data were not collected as part of a designed
 study, many variables the researcher might wish to have remain
 unrecorded, and the meaning of the variables that are available is often
@@ -132,6 +235,62 @@ study. What is needed is a framework, grounded in subject-matter
 knowledge, that says when an association can be given a causal
 interpretation and what to do when it cannot. The rest of the book
 describes such a framework and how the analysis can be implemented in R.
+
+## Causal inference, old and new
+
+Learning about causes from nonexperimental data is not a new ambition in
+epidemiology. In 1854, John Snow traced a cholera outbreak in London to
+a single water pump on Broad Street; the company supplying the pump drew
+its water downstream from a sewage outflow, and the outbreak subsided
+after the pump handle was removed. The investigation provided early
+support for the germ theory of disease — that cholera was caused by
+something in the water — against the then-prevailing miasma theory,
+which attributed it to bad air.
+
+What is new is the formality. Modern causal inference restates questions
+like Snow's as questions about well-defined interventions: What would
+have happened had the pump handle not been removed? How many cases would
+have been prevented had it been removed a day earlier? These are
+counterfactual quantities — statements about outcomes under conditions
+that did not occur — and Chapter \@ref(potential-outcomes) introduces
+the notation and assumptions that make them precise. As a formal
+discipline, causal inference is young: it took shape over roughly the
+past three decades, developing in parallel in statistics, epidemiology,
+economics, and computer science. Its methods are now widely used and
+increasingly accepted by drug regulatory agencies, studies built on them
+appear regularly in leading medical journals, and the 2021 Nobel
+Memorial Prize in Economic Sciences was awarded for work on drawing
+causal conclusions from observational data.
+
+The antipsychotic dilemma described earlier in this chapter was, in
+fact, answered this way. Using Medicare claims data, investigators
+compared elderly patients who newly started a conventional antipsychotic
+with those who newly started an atypical agent — roughly 23,000 new
+users in all — using both conventional adjustment methods and an
+instrumental variable analysis that exploited variation in physicians'
+prescribing preferences, a design developed in Chapter \@ref(iv). The
+primary finding was an approximately 37% higher risk of death within 180
+days among new users of the conventional agents. No single
+nonexperimental study settles such a question, but the result argued
+against switching patients to the older drugs, and no trial has emerged
+to contradict it.
+
+What made that study credible is worth noticing, because it previews
+much of this book. The comparison was between two active treatments with
+similar indications, so the patients being compared were far more alike
+at baseline than treated patients and untreated patients would have
+been, limiting confounding by indication. The outcome window was short,
+leaving less room for changes in treatment and health status to
+accumulate over follow-up. Both the exposure and the outcome could be
+measured well in the available claims data. And the cohorts were
+restricted to new users, avoiding the prevalent-user bias described
+above. This combination — the new-user, active-comparator cohort with a
+well-measured, short-term outcome — is something of a sweet spot for
+pharmacoepidemiology, and it is the basis of most pharmacoepidemiologic
+investigations, including the `ns` cohort at the center of this book.
+The later parts of the book extend beyond that sweet spot, to questions
+involving sustained treatment strategies, censoring, and unmeasured
+confounding, where more is asked of both the data and the methods.
 
 ## A first look at the data
 

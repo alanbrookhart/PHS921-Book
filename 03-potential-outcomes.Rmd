@@ -1,4 +1,4 @@
-# Potential outcomes and causal effects
+# Potential outcomes and causal effects {#potential-outcomes}
 
 ```{r setup-ch03, include=FALSE}
 source("R/setup.R")

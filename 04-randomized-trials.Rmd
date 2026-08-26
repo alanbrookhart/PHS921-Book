@@ -1,4 +1,4 @@
-# The randomized trial as the benchmark
+# The randomized trial as the benchmark {#rct}
 
 ```{r setup-ch04, include=FALSE}
 source("R/setup.R")

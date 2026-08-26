@@ -1,6 +1,6 @@
 # (PART) Beyond Exchangeability {-}
 
-# Instrumental variables
+# Instrumental variables {#iv}
 
 ```{r setup-ch13, include=FALSE}
 source("R/setup.R")
