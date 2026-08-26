@@ -4,54 +4,104 @@
 
 ## Questions epidemiology cannot answer with association alone
 
-This book keeps returning to two clinical questions, in different guises,
-from Chapter 2 onward. Do Cox-2 selective NSAIDs cause
-less peptic ulcer disease than nonselective NSAIDs? Do statins reduce the
-risk of a cardiovascular event when they are used the way clinicians
-actually use them, in routine care rather than in a trial? Both are
-causal questions, in that they ask what would happen to a group of
-patients if a particular treatment decision changed, and both are the
-kind of question epidemiologists are asked to answer using data
-collected for other purposes: medical records, claims, surveys,
-registries.
+Epidemiologic studies are increasingly used to investigate the safety
+and effectiveness of medical products and procedures as they are used in
+routine care, in unselected patient populations. This book builds a
+narrative around variations on two such questions: 1) Does starting a
+Cox-2 selective NSAID result in a lower risk of peptic ulcer disease
+than starting a nonselective NSAID? and 2) Does starting a statin reduce
+the risk of cardiovascular events compared with no treatment in a broad
+routine-care population? Both are causal questions, in that they ask
+what would happen to a group of patients if a particular treatment
+decision changed, and both are the kind of question epidemiologists are
+asked to answer using data collected for other purposes, such as
+electronic health records, administrative claims, and disease
+registries. Because such data were not collected as part of a designed
+study, many variables the researcher might wish to have remain
+unrecorded, and the meaning of the variables that are available is often
+unclear.
 
-The trouble is that the most natural thing to do with such data, namely
-compare patients who took a treatment to patients who did not, answers a
-different and easier question: whether patients who took the treatment
-did better or worse. Such a comparison yields an association. "Patients
-who took statins had
-fewer cardiovascular events" is a statement about a difference in
-outcomes between two groups of patients as they actually existed.
-"Statin initiation causes fewer cardiovascular events" is a statement
-about what would have happened to the same patients under a treatment
-decision they did not actually make. The two statements can point in the
-same direction, but nothing about them guarantees it, because the
-patients who took the treatment and the patients who did not usually
-differ in the first place, for reasons connected to their risk of the
-outcome.
+One of the principal problems of such studies is confounding — a
+systematic difference between the group of patients exposed to an
+intervention and a chosen comparator group. Comparing patients who took
+a treatment with patients who did not yields an estimate of an
+association between treatment and outcome. It answers a question of the
+form "How did the risk of peptic ulcer disease differ between patients
+who initiated a Cox-2 selective versus a nonselective NSAID?" — a
+question about a difference in outcomes between two groups of patients
+as they actually existed, not a causal question. Confounding arises when
+the factors that influence physician treatment decisions and patient
+medication use are also independent determinants of health outcomes.
 
-Two patterns of difference come up often enough in pharmacoepidemiology
-to have names. The first is the **healthy-user effect**: people who
-reliably take a preventive medication as prescribed also tend to
-exercise more, smoke less, keep other appointments, and generally do the
-many small things that predict good health, so a drug looks protective
-partly because the kind of person who takes it was already going to do
-well. Statins are a familiar example: some of the early apparent benefit
-of statin therapy in observational data reflected the fact that adherent,
-health-conscious patients are also less likely to have a heart attack for
-reasons unrelated to cholesterol. The second is
-**confounding by indication**, sometimes called channeling: physicians
-assign treatments according to their judgment of which patient needs
-them, so the treated group differs
-systematically in exactly the dimension the treatment is meant
-to address. A Cox-2 selective NSAID is often chosen, deliberately, for a
-patient a physician already suspects is at higher gastrointestinal risk,
-so that Cox-2 initiators can appear to fare worse with respect to peptic
-ulcer disease not because the drug fails to protect them but because
-they were a higher-risk group at baseline. If the direction of that
-confounding is misjudged, the apparent effect of a genuinely protective
-drug can be reversed. A third pattern worth naming here because it will
-recur throughout the book is prevalent-user bias: comparing people
+Those factors are rarely simple. The use of a medical intervention is
+determined by system-, physician-, and patient-level variables that
+often interact in complex and poorly understood ways. A physician's
+treatment decision may be based on an evaluation of the patient's health
+status and prognosis, the physician's past experience with the
+medication, or an assessment of the patient's ability and willingness to
+take the medication as prescribed. Patients may initiate and remain
+adherent to a new therapy because of their health beliefs, their
+preferences about treatment, their trust in the physician, the
+out-of-pocket cost of the medication, or their perceptions of their
+disease risk and the benefits of treatment. Initiation and adherence may
+also depend on a patient's physical and cognitive abilities. Each of
+these variables may directly affect health outcomes or be related to
+them through indirect pathways. From this process, several recognizable
+patterns of bias result; they recur often enough in pharmacoepidemiology
+to have earned names.
+
+A common and often intractable form is **confounding by indication**,
+sometimes called channeling. It arises from good medical practice:
+physicians tend to prescribe medications to, and perform procedures on,
+the patients who are most likely to benefit. Because it is often
+difficult to measure medical indications and underlying disease severity
+and prognosis, confounding by indication often makes medications appear
+to cause the outcomes they are meant to prevent. Statins, lipid-lowering
+drugs that reduce the risk of cardiovascular events, tend to be
+prescribed to patients perceived to be at increased cardiovascular risk,
+and incomplete control of those risk factors can make statins appear to
+cause rather than prevent cardiovascular events. The same logic runs
+through the first of our two questions: Cox-2 selective NSAIDs were
+developed, and are often chosen, specifically to reduce gastrointestinal
+risk in patients thought to need that protection, so Cox-2 initiators
+can appear to fare worse with respect to peptic ulcer disease not
+because the drug fails to protect them but because they were a
+higher-risk group at baseline. If the magnitude of that confounding is
+large enough, the apparent effect of a genuinely protective drug can be
+reversed.
+
+A second pattern is the **healthy user effect**. Patients who initiate a
+preventive medication may be more likely than other patients to engage
+in other healthy, prevention-oriented behaviors: to seek out preventive
+healthcare services, exercise regularly, moderate their alcohol
+consumption, and avoid unsafe and unhealthy activities. Incomplete
+adjustment for such behaviors can make use of a preventive medication
+spuriously associated with reduced risk of a wide range of adverse
+health outcomes. Patients who adhere to a treatment once started may
+likewise be more likely to engage in other healthy behaviors — the
+closely related **healthy adherer effect**. Strong evidence for it comes
+from a meta-analysis of randomized trials in which adherence to
+*placebo* was associated with reduced mortality. This is clearly not an
+effect of the placebo; it reflects the characteristics of patients who
+take a medication as prescribed.
+
+Related phenomena operate at the other end of the health spectrum.
+Patients who are functionally impaired — who have difficulty performing
+daily activities of living — may be less able to visit a physician or
+pharmacy, and therefore less likely to fill prescriptions and receive
+preventive healthcare services, a difference that can exaggerate the
+apparent benefit of prescription medications, vaccines, and screening
+tests. Similarly, patients who are perceived by a physician to be close
+to death may be less likely to be prescribed preventive medications, and
+patients may themselves discontinue preventive medications when their
+health deteriorates. These mechanisms arise through different processes
+but have the same effect: decreased exposure to preventive medications
+among the patients at highest risk of death, which can produce a
+substantially decreased mortality risk among users of statins and other
+preventive drugs compared with apparently similar nonusers.
+
+A final pattern worth naming here, because it shapes how this book's
+cohorts are constructed, is **prevalent-user bias**: comparing people
 already on a treatment to people never treated mixes in everyone who
 started the drug, tolerated it, and stayed on it long enough to be
 captured in the data, while excluding the patients who stopped early
@@ -68,12 +118,20 @@ when the Women's Health Initiative randomized women to hormone therapy
 or placebo, the trial found an increased risk. The discrepancy did not
 arise from careless analysis. Rather, women who used hormone therapy
 were healthier, more health-conscious, and more closely monitored than
-women who did not, a difference that simple adjustment did not fully
-remove. If a body of careful nonexperimental research can get the sign
-of an effect wrong, then a large or richly detailed data set is not by
-itself sufficient; what is needed is a framework that says when an
-association can be given a causal interpretation, and what to do when
-it cannot. The rest of the book develops such a framework.
+women who did not — the healthy user effect operating at scale — and
+that difference was not fully removed by adjustment for the variables
+the studies had measured.
+
+If a body of careful nonexperimental research can get the sign of an
+effect wrong, then a large or richly detailed data set is not by itself
+sufficient. Indeed, the property of being a confounder is a question of
+causality, not of statistics: it is not identifiable, or testable, in
+the data themselves, so no variable selection procedure or statistical
+model can by itself guarantee an unbiased estimate, even in a very large
+study. What is needed is a framework, grounded in subject-matter
+knowledge, that says when an association can be given a causal
+interpretation and what to do when it cannot. The rest of the book
+describes such a framework and how the analysis can be implemented in R.
 
 ## A first look at the data
 
@@ -113,11 +171,9 @@ Cox-2 selective drug, the figure was
 Is that comparison an estimate of the causal effect of Cox-2 selectivity
 on peptic ulcer risk? It is not, and there is reason to think it is far
 from one. Nothing in the code above accounts for why a given patient
-started one drug
-rather than the other. Cox-2 selective inhibitors were developed, and
-are often chosen, specifically to reduce gastrointestinal risk in
-patients thought to need that protection. For example, a patient with a
-history of arthritis, prior GI bleeding, or concurrent corticosteroid or
+started one drug rather than the other. This is exactly the setting for
+the confounding by indication described above: a patient with a history
+of arthritis, prior GI bleeding, or concurrent corticosteroid or
 aspirin use is more likely to be steered toward the Cox-2 selective
 option. If Cox-2 initiators are systematically older or sicker in
 ways connected to ulcer risk, as we will confirm with a proper Table 1 in

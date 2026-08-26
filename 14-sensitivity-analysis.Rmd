@@ -29,7 +29,7 @@ and patients who received a nonselective NSAID were exchangeable.
 
 Notice the asymmetry between that assumption and its companion.
 Positivity leaves traces: Chapter 9's long tail of large weights and
-Chapter 8's unmatchable patients were the data complaining that some
+Chapter 8's unmatchable patients were the data signaling that some
 covariate regions were nearly empty. Exchangeability, in contrast, leaves
 nothing behind. A cohort with a severe unmeasured confounder looks exactly
 like a cohort with none, with the same balance table, the same overlap
@@ -37,10 +37,10 @@ plot, and the same effective sample size. Chapter 8's diagnostics speak
 to the covariates we recorded and, by construction, cannot speak to the
 ones we did not.
 
-So there is no test to run, only two useful responses. One is to change
+There is therefore no test to run, only two useful responses. One is to change
 the assumption, which is what Chapter 13 did. The other is to hold it and
-quantify the departure that would overturn the finding, and that comes in
-two flavors. **External adjustment** asks us to name a specific
+quantify the departure that would overturn the finding, and that
+quantification takes two forms. **External adjustment** asks us to name a specific
 confounder and supply its parameters, then returns the corrected
 estimate. The **E-value** inverts the question: given the estimate alone,
 what is the *weakest* confounder that would suffice?
@@ -85,7 +85,7 @@ since `ppi_use`, `h2_antagonist_use`, `corticosteroid_use`, and
 `aspirin_use` are all partial proxies for perceived ulcer risk, and some
 of it is not. Over-the-counter NSAID use, meaning the ibuprofen a patient
 buys herself on top of what she is prescribed, appears in no survey
-field, and heavy alcohol use is asked inconsistently and recorded
+field, and heavy alcohol use is ascertained inconsistently and recorded
 incompletely. Both raise ulcer risk, and both plausibly differ between
 the arms.
 
@@ -170,8 +170,8 @@ cannot choose between them, which is both the point of the exercise and
 the method's main limitation. It is called *external* adjustment because
 the three parameters must come from outside the analysis, whether from a
 validation substudy that measured $U$ on a subsample, a survey, or a
-published cohort. When they come from nowhere, the exercise draws a
-picture of what-if rather than correcting an estimate, which is worth
+published cohort. When no such source exists, the exercise sketches
+hypothetical scenarios rather than correcting an estimate, which is worth
 doing so long as it is labeled as such. One
 further caution: the formula describes a single binary confounder, and
 several correlated unmeasured confounders do not collapse into one, so
@@ -312,7 +312,7 @@ Tchetgen Tchetgen, and Cohen (2010, *Epidemiology*) set out the logic and
 the conditions under which it licenses an inference about the primary
 estimate.
 
-The examples that made the method famous are worth carrying around. When
+The examples that established the method are worth keeping in mind. When
 influenza vaccination in the elderly is studied in the weeks *before*
 influenza begins circulating, the vaccinated appear substantially
 protected from death in a period when the vaccine cannot plausibly be
@@ -321,7 +321,7 @@ negative control reveals is that the people who get vaccinated are in
 better functional health than the people who do not, in ways claims data
 do not record. Similarly, patients adherent to statins have fewer
 traffic accidents and fewer fractures than nonadherent patients, which
-is the healthy-adherer effect declaring itself on an outcome no
+is the healthy adherer effect declaring itself on an outcome no
 lipid-lowering mechanism can reach; that comparison is Dormuth and
 colleagues' (2009). The course gives this a
 session of its own (session 23), and rightly, since the technique is best
@@ -362,12 +362,12 @@ imbalance, which is mild evidence that the confounding structure they do
 capture is broad enough to carry unmeasured correlates of it along.
 
 That result carries two qualifications. The first is why we had to use an
-excluded covariate. Anything appearing in the treatment model is balanced
+excluded covariate. Any variable appearing in the treatment model is balanced
 by the fitting itself; running this check on `diabetes` would return a
 near-zero difference no matter how badly confounded the study was, and so
 would tell us nothing. The informative negative control is always one the
 adjustment did not see. The second is that a pre-treatment variable is a
-weaker instrument than a genuine negative control outcome, which would be
+weaker probe than a genuine negative control outcome, which would be
 measured *after* time zero and would therefore also probe whether the
 follow-up itself is differential — selection, censoring, and detection
 effects that a baseline covariate cannot speak to. A passing check here

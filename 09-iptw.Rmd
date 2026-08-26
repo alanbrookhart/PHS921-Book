@@ -68,7 +68,7 @@ inflated into a copy of the whole cohort. In this
 **pseudo-population** — Hernán and Robins's term for the reweighted
 cohort — frailty is distributed identically across arms; the association
 between frailty and treatment has been broken by duplicating patients
-rather than by conditioning on frailty, and the weighted risks come out at
+rather than by conditioning on frailty, and the weighted risks are
 `r sprintf("%.1f", 100 * wtd_toy[2])`% and
 `r sprintf("%.1f", 100 * wtd_toy[1])`%, a risk difference of exactly
 zero.
@@ -200,13 +200,13 @@ ps_min_trt <- min(wts$ps[wts$cox2_init == 1])
 
 The stabilized weights average `r sprintf("%.3f", mean_stab)`, close
 enough to 1 to be reassuring, while the unstabilized ones average about
-2 as advertised. The maxima are more informative:
+2, as expected. The maxima are more informative:
 `r sprintf("%.1f", max_un)` unstabilized against
 `r sprintf("%.1f", max_st)` stabilized. That largest unstabilized weight
 belongs to the Cox-2 initiator whose estimated propensity score is
 `r sprintf("%.3f", ps_min_trt)` — a patient whose covariates made the
 Cox-2 drug very unlikely, who received it anyway, and who is therefore
-asked to represent thirty-odd patients like herself who did not. Kish's
+asked to represent roughly thirty patients like herself who did not. Kish's
 effective sample size, $(\sum w)^2 / \sum w^2$, falls from
 `r nrow(ns)` unweighted to `r sprintf("%.0f", ess_st)` under stabilized
 weights and all the way to `r sprintf("%.0f", ess_un)` unstabilized: a
@@ -330,7 +330,7 @@ for either operation, so it is worth saying which one you did.
 
 ## Standardized mortality ratio weights
 
-The weights built so far blow both arms up into a copy of the whole
+The weights built so far inflate both arms into a copy of the whole
 cohort, which is why they estimate the ATE. A small change to the weight
 redirects the estimator at a different population. Leave the treated arm
 alone — every treated patient keeps weight 1 — and give each untreated
@@ -522,7 +522,7 @@ a better estimator cannot supply information the cohort does not contain.
    colleagues (2006, AJE) analyzed thrombolysis with t-PA and mortality
    after ischemic stroke, where the treatment effect varied sharply with
    baseline stroke severity, and found that IPTW and SMR weighting of the
-   same cohort gave sharply different answers, far apart enough that a
+   same cohort gave sharply different answers, far enough apart that a
    reader would draw different conclusions from the two. Using this
    chapter's vocabulary, explain which patients
    dominate the weighted comparison under each scheme, and why effect

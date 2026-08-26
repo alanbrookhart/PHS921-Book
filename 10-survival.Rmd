@@ -8,7 +8,7 @@ source("R/setup.R")
 
 Part II asked one question three ways and arrived at one answer: whatever
 Cox-2 selectivity does to ulcer risk, the `ns` cohort cannot see it
-clearly, and the crude signal of harm was confounding by indication. That
+clearly, and the crude signal of harm reflected confounding by indication. That
 question had a convenient shape, with one row, one treatment, and one
 binary outcome per patient, so that a risk was a proportion and an
 adjusted risk a weighted proportion. Part III gives up that convenience.
@@ -68,7 +68,7 @@ different lengths of time: median follow-up is
 two. A logistic regression of `cv_event` on `statin` and `sta_covs` would
 produce a tidy odds ratio for a quantity with no definition, since the
 denominator of each "risk" mixes people observed for one year with people
-observed for ten. Nor can the problem be cleaned up by restricting to
+observed for ten. Nor can the problem be remedied by restricting to
 patients with complete follow-up: staying under observation for ten years
 is not a baseline characteristic but something that happens after time
 zero, and Chapter 5 named the cost of selecting on such a variable. We
@@ -253,7 +253,7 @@ answer different questions, and which to report depends on whether the
 reader wants to know what treatment would do absent competing mortality
 or what will happen to patients like these.
 
-Coding it requires a three-valued status rather than a yes-or-no one.
+Coding it requires a three-valued status rather than a binary one.
 Death competes only when it arrives first, so a patient who has a
 cardiovascular event and dies a year later contributes a cardiovascular
 event and nothing else.
@@ -354,10 +354,10 @@ hr_l <- broom::tidy(coxph(Surv(event_time, cv_event) ~ statin, data = late),
                     exponentiate = TRUE)$estimate
 ```
 
-One hazard ratio for the whole decade comes out at
-`r sprintf("%.2f", hr_all)`. Split the decade in two and the first
-interval gives `r sprintf("%.2f", hr_e)` and the remainder
-`r sprintf("%.2f", hr_l)`. The single number was therefore an average
+A single hazard ratio fitted to the whole decade is
+`r sprintf("%.2f", hr_all)`. Splitting the decade in two gives
+`r sprintf("%.2f", hr_e)` for the first interval and
+`r sprintf("%.2f", hr_l)` for the remainder. The single number was therefore an average
 over periods that do not agree, which is the milder of two interpretive
 problems.
 
@@ -392,7 +392,7 @@ than as the estimand.
 ## When censoring lies
 
 Kaplan–Meier removes a censored patient from the denominator and carries
-on with the rest, which is a fair thing to do only if the patients who
+on with the rest, which is defensible only if the patients who
 remain represent the patients who left. Formally, censoring must be
 **non-informative**: at each time, those still under observation must
 have the same hazard as those censored just before, conditional on
@@ -400,7 +400,7 @@ whatever we have adjusted for. Administrative censoring satisfies this by
 construction. Loss to follow-up need not, and in `sta` it is the largest
 single reason follow-up ends.
 
-Since censoring is not random by design, the first thing to do is look at
+Since censoring is not random by design, the first step is to examine
 who leaves. We compare patients censored by loss to follow-up in the
 first two years against everyone else on the baseline covariates we have.
 

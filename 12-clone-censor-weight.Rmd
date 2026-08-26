@@ -9,7 +9,7 @@ zero, namely patients disappearing from view, and left another
 untouched. Patients also stop the drug they started, and patients who
 began untreated start one. Chapter 10's Kaplan–Meier curves ignore that
 entirely: a patient assigned to the statin arm by her `statin` value at
-time zero stays in that arm for ten years whatever she swallows
+time zero stays in that arm for ten years whatever she takes
 afterward. Although that is a respectable estimand, it is not the only
 one worth estimating, and this chapter turns to the other one, which asks
 what would happen if patients actually followed the strategy their arm
@@ -50,7 +50,7 @@ strategy.
 
 ## The clone-censor-weight recipe
 
-The fix keeps the per-protocol estimand and repairs the selection with
+The remedy keeps the per-protocol estimand and repairs the selection with
 weights. It has three steps. The strategy, and the formulation of the
 censoring rule in terms of when a person's data cease to be compatible
 with the protocol she was assigned, come from Hernán and Robins's
@@ -95,9 +95,9 @@ strategy the whole time, and she is also following the do-not-initiate
 strategy right up until she starts. She is cloned into both arms,
 contributes person-time to both, and her non-initiator clone is
 artificially censored at month four while her initiator clone continues.
-The grace period removes the immortal-time problem that classifying her
-by a later event would create, at the cost of a patient who is
-genuinely two rows-worth of follow-up. Our cohort has no
+The grace period removes the immortal time bias that classifying her
+by a later event would create, at the cost of a patient who
+genuinely contributes two clones' worth of follow-up. Our cohort has no
 grace period, so we get the simple case; the recipe is identical either
 way.
 
@@ -149,7 +149,7 @@ analysis if it goes wrong. Patients who never deviate get
 `dev_time = Inf`, so `pmin()` leaves their follow-up at `event_time`.
 The `deviated` indicator is 1 when
 deviation came first, with the `!(cv_event == 1 & ...)` clause settling
-ties in the outcome's favour: a patient whose event and deviation are
+ties in the outcome's favor: a patient whose event and deviation are
 recorded at the same instant had the event, and `event_c` — the outcome
 indicator for this analysis — says so. `split_time` is a copy of `fu_end`
 for the same reason Chapter 11 copied `event_time`: `survSplit()` consumes
@@ -191,7 +191,7 @@ data from Chapter 11's 44,485 rows to
 `r format(nrow(pp), big.mark = ",")`, and it discards `r n_lost` of the
 `r sum(sta_ccw$cv_event)` cardiovascular events in the cohort because they
 happened after their patient had already left her protocol. The statin arm
-is hit hardest: `r by_arm$ev_pp[2]` of its `r by_arm$ev_all[2]` events
+loses the most: `r by_arm$ev_pp[2]` of its `r by_arm$ev_all[2]` events
 survive the censoring, against `r by_arm$ev_pp[1]` of
 `r by_arm$ev_all[1]` among non-initiators. Per-protocol questions are
 therefore always answered with less information than intention-to-treat
@@ -453,11 +453,11 @@ enzyme, a change in perceived prognosis — are time-varying and
 unrecorded. If they matter, the weights are built from the wrong model
 and this analysis looks exactly as it does now, which is Chapter 11's
 uncomfortable symmetry once more. It needs positivity at every interval
-besides: in each stratum the model uses, some patients like her must
+as well: in each stratum the model uses, some patients like her must
 actually have stayed on protocol. Unlike exchangeability, that assumption
 leaves a trace in the weights we have just examined.
 
-Two further limits belong on the record. The comparison here is still
+Two further limitations belong on the record. The comparison here is still
 crude with respect to baseline confounding: the arms differ at time zero
 and nothing in this chapter fixes that. The complete recipe, promised at
 the end of Chapter 11, multiplies three weights per row — Chapter 9's

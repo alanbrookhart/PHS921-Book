@@ -25,7 +25,7 @@ $L$. An **inverse probability of censoring weight** is the reciprocal of
 the probability of the *observation status* a patient actually had: among
 patients still under observation at time $t$, each is weighted by one
 over her probability of having remained uncensored that long. She then
-stands in for herself plus the patients like her who dropped out, and in
+stands in for herself and for the patients like her who dropped out, and in
 the reweighted data the people we can still see represent the people we
 started with.
 
@@ -179,9 +179,9 @@ the right-hand side, is a **pooled logistic** model and approximates a
 proportional hazards model when the interval hazards are small. Ours
 carries time as `splines::ns(tstop, 3)` rather than `factor(tstop)`,
 spending three degrees of freedom instead of nine on a hazard we expect
-to be smooth. And because the hazards can be multiplied back up into a
-survival curve, the model returns risks at the horizons the target trial
-named, not only ratios.
+to be smooth. Furthermore, because the hazards can be multiplied back up
+into a survival curve, the model returns risks at the horizons the target
+trial named, not only ratios.
 
 ## Building censoring weights
 
@@ -201,7 +201,7 @@ analysis.
 With the indicator fixed, the censoring model is a pooled logistic
 regression of `censored` on time and the baseline covariates, fitted
 across all person-period rows at once. In lecture, and in much of the
-literature, censoring models are instead fit with Cox proportional
+literature, censoring models are instead fitted with Cox proportional
 hazards regression; the pooled logistic on person-period data is its
 discrete-time analog, and with intervals this short the two give
 essentially the same weights. Our estimator wraps the whole

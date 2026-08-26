@@ -7,8 +7,8 @@ source("R/setup.R")
 Chapter 7 adjusted for confounding by modeling the outcome. We wrote
 down a logistic regression for `pud` that included the treatment
 indicator and all nineteen covariates in `ns_covs`, then averaged its
-predictions over the cohort twice. It worked, but notice how much weight
-that single model was carrying: nineteen covariates and their functional
+predictions over the cohort twice. The approach worked, but notice how
+much weight that single model was carrying: nineteen covariates and their functional
 forms, all of it resting on `r sum(ns$pud)` ulcer cases. This chapter
 takes a second route to the same question, and it moves the modeling
 burden to the other side of the problem. Instead of modeling how
@@ -48,9 +48,9 @@ covariates.
 The consequence for us is the second half of the theorem. If
 conditional exchangeability holds given the full covariate vector $L$ —
 Chapter 3's assumption, for which Chapter 5's diagram is the argument —
-then it also holds given $e(L)$ alone. So we may condition on a single
-scalar in place of nineteen variables without loss, reducing nineteen
-dimensions of confounding to one number.
+then it also holds given $e(L)$ alone. We may therefore condition on a
+single scalar in place of nineteen variables without loss, reducing
+nineteen dimensions of confounding to one number.
 
 Two cautions belong here at the outset. First, the propensity score is
 a **nuisance parameter**: a patient's probability of receiving a Cox-2
@@ -313,8 +313,8 @@ vector, which sets already-matched controls to infinite distance so no
 control appears twice — keeping the paired analysis honest at the cost
 of using fewer controls. The `arrange(desc())` orders treated
 patients from the highest score down, so the hardest patients to match,
-the ones out at the sparse end of the distribution, get first pick of
-the control pool. The *caliper* sets a limit on how poor a match will be
+the ones out at the sparse end of the distribution, are matched first,
+before the control pool has been depleted. The *caliper* sets a limit on how poor a match will be
 accepted: if the nearest available control differs by more than 0.05 on
 the propensity scale, that treated patient is left unmatched rather than
 paired with an implausible comparator. Unmatched patients are how a

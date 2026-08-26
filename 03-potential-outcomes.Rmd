@@ -18,8 +18,8 @@ we will state carefully, estimate from data.
 
 ## Two futures for every patient
 
-Picture a single patient in the `ns` cohort — call her Patient 47 — who
-shows up at her physician's office with joint pain that warrants an
+Consider a single patient in the `ns` cohort — call her Patient 47 —
+who presents at her physician's office with joint pain that warrants an
 NSAID. Her physician has a choice: prescribe a nonselective NSAID, or
 prescribe a Cox-2 selective inhibitor. Whichever one is chosen, Patient
 47 either does or does not go on to develop peptic ulcer disease over
@@ -60,8 +60,8 @@ drug prevented her ulcer; if both are 0, or both are 1, the choice of
 drug made no difference to her outcome, even though the drugs may differ
 substantially for other patients. Although this quantity is well
 defined, for any real patient it is unobservable. We only ever see one of
-Patient 47's two potential outcomes, because she can only actually take
-one drug. This is what Holland (1986) called the **fundamental problem of
+Patient 47's two potential outcomes, because she can take only one of
+the two drugs. This is what Holland (1986) called the **fundamental problem of
 causal inference**: for any individual, at most one potential outcome is
 ever realized, and the individual causal effect can never be computed
 from data on that individual alone, no matter how much we know about her
@@ -209,7 +209,7 @@ best to communicate a causal contrast.
 
 ## The identification conditions
 
-Estimands like the ATE are defined in terms of potential outcomes we
+Estimands such as the ATE are defined in terms of potential outcomes we
 never fully observe. **Identification** is the step of showing that,
 under stated assumptions, an estimand written in potential outcomes is
 equal to some quantity we actually could compute from observed data.
@@ -231,9 +231,9 @@ estimation.
 
 **Exchangeability** (also called ignorability) says that the treated
 and untreated groups would have had the same average outcome had they
-received the same treatment — formally, $Y(1), Y(0) \perp A$, potential
-outcomes are statistically independent of the treatment actually
-received. This is the condition that fails in our simulation: because `a`
+received the same treatment — formally, $Y(1), Y(0) \perp A$; that is,
+the potential outcomes are statistically independent of the treatment
+actually received. This is the condition that fails in our simulation: because `a`
 depends on `severity`, and `severity` also drives `y0` and `y1`, treated
 and untreated patients are not exchangeable, which is why the naive
 contrast diverged from the ATE. A randomized trial delivers
@@ -253,9 +253,9 @@ assumption whenever we can measure the variables driving treatment
 choice, and it is the assumption that standardization, propensity scores,
 and IPTW in later chapters are built to exploit.
 
-Conditional exchangeability can be seen to work in our simulated example,
-since we have measured the one variable, `severity`, that was confounding
-the naive comparison. If we compute the same treated-minus-untreated
+We can see conditional exchangeability at work in our simulated example,
+because we have measured the one variable, `severity`, that was
+confounding the naive comparison. If we compute the same treated-minus-untreated
 contrast *separately within each level of severity*, using
 `group_by(severity)`, we are conditioning on the confounder in the way
 conditional exchangeability requires:

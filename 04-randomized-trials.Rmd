@@ -34,8 +34,8 @@ on the very dimension the drug is meant to protect. Randomization
 addresses this at its source by making assignment a function of nothing
 about the patient at all, neither age nor arthritis history nor anything
 else a physician can observe, and, equally important, nothing a physician
-cannot observe. It is this last property that makes randomization more
-powerful than any adjustment strategy in this book. Matching,
+cannot observe. It is this last property that no adjustment strategy in
+this book can reproduce. Matching,
 standardization, and propensity scores can balance only those covariates
 someone thought to measure, whereas a coin flip balances everything,
 including confounders no one ever recorded, because the assignment
@@ -51,14 +51,14 @@ We do not have an actual randomized trial of Cox-2 selectivity, only the
 `ns` cohort, in which treatment was a physician's choice. We can,
 however, ask a narrower question of the data we do have: what would the
 Table 1 comparison and the crude risk comparison look like if the label
-"Cox-2 initiator" had been handed out by a coin flip instead of by a
+"Cox-2 initiator" had been assigned by a coin flip rather than by a
 physician? `mutate(a_rand = sample(cox2_init))` answers that question by
-shuffling which of the `r nrow(ns)` rows get called "1," so that the
+shuffling which of the `r nrow(ns)` rows are labeled "1," so that the
 same `r sum(ns$cox2_init)` Cox-2 labels in the data land on that many
 patients chosen completely at
 random, while every actual covariate and every actual outcome stays
 exactly as recorded. This is a relabeling exercise, not a new trial:
-nobody's peptic ulcer disease status changes, because `pud` is not
+no patient's peptic ulcer disease status changes, because `pud` is not
 regenerated. The only thing the random draw decides is which of the
 real patients we call "arm 1" versus "arm 0" for the purpose of the
 comparison that follows.
@@ -110,7 +110,7 @@ diab_real <- gap_pp(ns, "diabetes", "cox2_init")
 diab_rand <- gap_pp(ns_rand, "diabetes", "a_rand")
 ```
 
-Look at arthritis first: under the real, physician-chosen assignment
+Consider arthritis first: under the real, physician-chosen assignment
 the gap between groups is `r sprintf("%.0f", arth_real)` percentage
 points (`r sprintf("%.1f", arth_pct_1)`% among Cox-2 initiators versus
 `r sprintf("%.1f", arth_pct_0)`% among nonselective
@@ -162,7 +162,8 @@ rand_diff <- contrasts$diff[2]
 The real crude contrast reproduces Chapter 1's finding: Cox-2
 initiators have a `r sprintf("%.1f", 100 * real_diff)`-point higher
 crude risk of PUD than nonselective initiators, the wrong-signed,
-confounded comparison this whole book exists to fix. The randomly
+confounded comparison that the rest of this book is devoted to
+correcting. The randomly
 permuted contrast, computed from the identical set of recorded `pud`
 values, comes out to `r sprintf("%.2f", 100 * rand_diff)` points, which is
 indistinguishable from zero. No patient's actual outcome changed between
@@ -171,7 +172,7 @@ split the data into two groups. When the label carries no information
 about who received it, as a coin flip guarantees, the crude contrast is
 an unbiased estimate of a null effect, and it recovers one. When the
 label is instead a physician's judgment, correlated with everything that
-judgment was trying to account for, the same arithmetic turns up a gap
+judgment was trying to account for, the same arithmetic produces a gap
 that has nothing to do with the drug. This is why the randomized trial is
 described as the *benchmark*. The reason is not that any one trial is
 guaranteed a perfectly matched Table 1, since chance imbalance of the
@@ -224,10 +225,11 @@ comparing the arms as randomized. Although this is often the clinically
 more interesting question, once patients are grouped by what they
 actually did rather than by what the coin flip assigned them, the
 randomization at baseline no longer protects the comparison. Whatever led
-a given patient to adhere rather than switch or discontinue (eg, symptom
-severity, general health, health literacy, or tolerance of side effects)
+a given patient to adhere rather than switch or discontinue (for
+example, symptom severity, general health, health literacy, or tolerance
+of side effects)
 may also be connected to the outcome, which is the mechanism Chapter 1
-called the healthy-user effect, now operating *inside* a randomized trial
+called the healthy user effect, now operating *inside* a randomized trial
 rather than across an observational cohort. A naive per-protocol
 comparison can therefore be confounded even though the trial that
 produced the data was, at the point of randomization, perfectly
@@ -241,7 +243,7 @@ per-protocol in spirit, and already vulnerable to the same
 self-selection just described. It is vulnerable to a further problem as
 well: misclassifying the follow-up time before a patient meets the
 "adherer" criterion can build survival into the definition of one of the
-groups, a distortion called immortal time bias that Chapter 6 introduces
+groups, a distortion called **immortal time bias** that Chapter 6 introduces
 on its own terms. Chapter 12 develops the clone-censor-weight
 approach specifically to answer a per-protocol-style question — what
 would happen if patients followed a specific treatment strategy for its
@@ -302,7 +304,7 @@ One application of this logic has become common enough in regulatory
 submissions to deserve a name here. In an **external control arm**
 design, a single-arm trial — typically in a rare disease, or in an
 oncology setting where randomizing patients to the standard of care is
-hard to justify — is compared against a comparator group assembled from
+difficult to justify — is compared against a comparator group assembled from
 observational data: a disease registry, an electronic health record
 extract, or the control arm of an earlier trial. The target trial is the
 two-arm randomized trial that was not run, and the emulation problem is

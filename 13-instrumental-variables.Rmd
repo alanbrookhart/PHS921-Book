@@ -40,7 +40,7 @@ epidemiologists.
 1. **Relevance.** $Z$ is associated with treatment $A$. This is the one
    condition the data can speak to.
 2. **Exclusion restriction.** $Z$ affects the outcome $Y$ only through
-   $A$. No arrow from $Z$ to $Y$ that bypasses treatment.
+   $A$. There is no arrow from $Z$ to $Y$ that bypasses treatment.
 3. **Instrument exchangeability.** Nothing points into both $Z$ and $Y$ —
    no backdoor path connects the instrument to the outcome, either
    unconditionally or after conditioning on measured covariates $L$. The
@@ -63,7 +63,7 @@ Under **monotonicity** — no patient's treatment is pushed in the opposite
 direction to everyone else's by the instrument — it identifies the
 average effect among those patients whose treatment the instrument
 actually moved. That second quantity is the **local average treatment
-effect**, and it is the one we will end up with.
+effect**, and it is the one we will ultimately estimate.
 
 ```{r ch13-iv-dag, message=FALSE}
 library(ggdag)
@@ -142,7 +142,7 @@ zero and the score undefined. The cohort falls from
 cases. This is the first cost of the method, paid before any estimation,
 since an IV analysis buys its differently placed assumptions with data.
 
-The distribution is lopsided. Cox-2 initiation is uncommon and most
+The distribution is heavily skewed. Cox-2 initiation is uncommon and most
 physicians in a panel of two to ten visits prescribed none, so `pref` is
 exactly zero for `r nrow(ns_iv) - n_pref_pos` of the `r nrow(ns_iv)`
 visits; only `r n_pref_pos` patients saw a physician who prescribed a
@@ -170,7 +170,7 @@ other patients to one who prescribed it to all of them raises this
 patient's probability of receiving one by
 `r sprintf("%.1f", 100 * fs_coef)` percentage points
 (SE `r sprintf("%.1f", 100 * fs_se)`), with an $F$ statistic of
-`r sprintf("%.0f", fs_f)` — comfortably past the conventional
+`r sprintf("%.0f", fs_f)` — well past the conventional
 rule-of-thumb threshold of 10. Adding `ns_covs` to the first stage barely
 touches it: the partial $F$ for `pref` is
 `r sprintf("%.0f", fs_f_adj)`. Physician habit therefore does predict
@@ -209,7 +209,7 @@ cox2_by_year <- tapply(ns_iv$cox2_init, ns_iv$year, mean)
 
 The comparison is partly reassuring and partly not, and the mixed result
 is more instructive than a clean one would have been. On the clinical
-covariates the instrument behaves as advertised: age differs by
+covariates the instrument behaves as it should: age differs by
 `r sprintf("%.2f", smd_t["age"])` standardized units across treatment but
 only `r sprintf("%.2f", smd_i["age"])` across the instrument, and
 arthritis by `r sprintf("%.2f", smd_t["arthritis_Yes"])` against
@@ -271,10 +271,10 @@ fs_bin_f <- summary(lm(cox2_init ~ pref_any, data = ns_iv))$fstatistic[["value"]
 The instrument moves treatment by
 `r sprintf("%.1f", 100 * d_a)` percentage points and the outcome by
 `r sprintf("%+.1f", 100 * d_y)`, so the ratio is
-`r sprintf("%+.1f", 100 * wald)` percentage points. The two numerators
+`r sprintf("%+.1f", 100 * wald)` percentage points. The numerator and denominator
 are worth reading before the quotient: a `r sprintf("%+.1f", 100 * d_y)`-point
 difference in ulcer risk between groups of `r wald_tab$n[1]` and
-`r wald_tab$n[2]` patients is well inside noise, and dividing a noisy
+`r wald_tab$n[2]` patients is well within sampling variability, and dividing a noisy
 small number by `r sprintf("%.2f", d_a)` multiplies the noise by nine.
 
 The general form replaces the ratio with two regressions. Fit treatment
@@ -422,11 +422,12 @@ above is exact for the binary row and an illustration of the idea for the
 others; no single describable subgroup sits behind that weighted average.
 
 Compliers are a subgroup we cannot enumerate, since no patient is
-labelled as one, and their clinical meaning depends on the instrument.
-Here they are the patients whose prescription was genuinely up for grabs.
+labeled as one, and their clinical meaning depends on the instrument.
+Here they are the patients whose prescription could genuinely have gone
+either way.
 The arthritic patient with a prior bleed, for whom a Cox-2 agent is
 clearly indicated, is an always-taker, and the young patient with no GI
-history who will get ibuprofen from anyone is a never-taker; the complier
+history who would receive ibuprofen from any physician is a never-taker; the complier
 is the intermediate patient whose treatment tracked her physician's
 habit. Whether the average effect in that group is what a guideline
 committee wants is worth asking explicitly, and the answer is often no.
@@ -452,8 +453,8 @@ interval around nothing.
 
 The provider-preference instrument in these data is strong enough to be
 worth constructing and transparent enough to audit, since the year
-imbalance we found is itself a finding about the instrument, but it is
-far too small to settle the question. Although its non-contradiction of
+imbalance we found is itself a finding about the instrument, but the
+analysis it yields is far too imprecise to settle the question. Although its non-contradiction of
 the null is mildly informative as one line in a sensitivity table beside
 Part II's estimates, because it rests on different assumptions, it would
 be indefensible as a headline result with the point estimate quoted and

@@ -92,7 +92,7 @@ Adjustment moves the estimate as expected. The coefficient on
 `cox2_init`,
 exponentiated, is an odds ratio of `r sprintf("%.2f", cond_or)` (95% CI
 `r sprintf("%.2f", cond_or_lo)` to `r sprintf("%.2f", cond_or_hi)`) —
-moved from the crude odds ratio of `r sprintf("%.2f", crude_or)` to just
+a shift from the crude odds ratio of `r sprintf("%.2f", crude_or)` to just
 below the null, though with an interval far too wide to rule out either
 a modest benefit or a modest harm. Age carries an odds ratio of
 `r sprintf("%.2f", age_or)` per year, and accounts for much of the
@@ -140,7 +140,7 @@ averaging — over the observed covariate distribution of the whole
 cohort — is what turns those individual predictions into a marginal,
 population-level contrast.
 
-In code it takes five lines.
+In code, the entire recipe takes five lines.
 
 ```{r ch07-hand-rolled}
 ns1 <- ns |> mutate(cox2_init = 1)
@@ -173,7 +173,8 @@ Standardization will return an estimate regardless, which is a reason to
 keep Chapter 6's Table 1 in view rather than relying on the estimator
 alone.
 
-We are going to want this in Chapters 8 and 9, so let us package it.
+We will want this estimator again in Chapters 8 and 9, so let us
+package it.
 The function takes the data, a model formula, and the name of the
 treatment column, and returns one row per estimand. Two details are
 worth pausing on. The `"{treat}" := 1` syntax inside `mutate()` is
@@ -286,9 +287,9 @@ only the averaging step, with the coefficients held fixed, would ignore
 the largest source of uncertainty in the procedure.
 
 `n_boot` trades precision for time. Each replicate is a full `glm()` fit
-on `r nrow(ns)` rows, and our default of 200 is enough to place an
-interval roughly while keeping a book that re-renders often tolerable to
-build. The percentile endpoints are themselves noisy at that size,
+on `r nrow(ns)` rows, and our default of 200 is enough to place the
+interval approximately while keeping the build time tolerable for a book
+that re-renders often. The percentile endpoints are themselves noisy at that size,
 though, so a different seed will shift them in the second decimal place;
 for a result you intend to publish, 1,000 or 2,000 is the right order of
 magnitude, and `seed` is what makes whichever number you choose
@@ -296,8 +297,8 @@ reproducible.
 
 ## Effect modification
 
-So far we have estimated one effect for everybody. But the effect of a
-Cox-2 inhibitor might plausibly differ by whether a patient is also
+So far we have estimated a single effect for the whole cohort. However,
+the effect of a Cox-2 inhibitor might plausibly differ by whether a patient is also
 taking aspirin, since aspirin damages gastric mucosa through the same
 prostaglandin pathway the Cox-2 drug was designed to spare. When a
 causal effect differs across levels of a covariate, we call that
@@ -341,7 +342,7 @@ Fitting a separate model within each stratum is the fully flexible
 version of the interaction above — it lets every coefficient, not just
 treatment's, differ by aspirin use — so we can get subgroup effects by
 calling `standardize()` on each subset. One adjustment is forced on us:
-`aspirin_use` is constant within a stratum by construction and has to
+`aspirin_use` is constant within a stratum by construction and must
 leave the covariate list, and among aspirin users
 `anti_coagulant_use` turns out to be constant too. With only
 `r n_asa` aspirin users we cannot support nineteen covariates in that
@@ -386,7 +387,7 @@ suppressed R's separation warnings in that chunk to keep the output
 readable, although they convey the same information.
 
 It is worth being precise about how effect modification differs from
-confounding, because both get described loosely as "a covariate that
+confounding, because both are described loosely as "a covariate that
 matters." Confounding is a problem of identification: a common cause of
 treatment and outcome makes the observed contrast fail to equal the
 causal one, and we adjust for it to recover a valid estimate. Effect

@@ -39,7 +39,7 @@ description: >
 
 I wrote this book for students in epidemiology or population health sciences working toward a PhD who want to move from associational thinking to causal thinking. I assume
 you have had an introductory course in epidemiology and one in
-biostatistics — you should be comfortable with concepts like confounding,
+biostatistics — you should be comfortable with concepts such as confounding,
 odds ratios, and hazard ratios, and with fitting a regression model. I do
 not assume any prior exposure to causal inference as a formal framework,
 and I do not assume any prior experience with R. We will develop both
@@ -71,5 +71,5 @@ that package directly from GitHub:
 remotes::install_github("alanbrookhart/NAMCS")
 ```
 
-If you run into trouble at any point, Appendix A is the place to look
-first.
+If you encounter problems at any point, Appendix A is the first place
+to look.
