@@ -4,7 +4,7 @@
 source("R/setup.R")
 ```
 
-Every idea in this book is attached to code written in R. If you
+Every idea in this book is illustrated with code written in R. If you
 have never used R before, this chapter introduces enough of the
 tidyverse to read and write the data manipulations used in the
 chapters that follow, describes the two example cohorts we will work
@@ -85,24 +85,19 @@ causal inference yet; it is description, but description is where an
 analysis begins, and it is worth being fluent in it before adding
 any causal machinery.
 
-## The NAMCS teaching cohorts
+## The NAMCS cohorts
 
 The data behind every example in this book come from the National
 Ambulatory Medical Care Survey (NAMCS), an annual survey of visits to
 office-based physicians in the United States. We use five years of
-NAMCS, 2005 through 2009, assembled into two teaching cohorts by the
+NAMCS, 2005 through 2009, assembled into two cohorts by the
 `NAMCS` R package. Both cohorts are built from real survey visits, but
 the outcomes — peptic ulcer disease in one cohort, cardiovascular events
-and survival times in the other — are simulated, so that we know there
-is a true underlying data-generating process while still working with
-realistic covariate structure. This is common in causal inference
-teaching materials: it lets us illustrate methods with plausible clinical
-questions without the ambiguity of relying on outcomes we cannot
-validate.
+and survival times in the other — are simulated, so that we know their true underlying data-generating process while still working with a
+realistic covariate structure. This allows us to recover the true causal effect and assess the properties of different estimators, something that would be impossible with a real outcome.
 
-The first cohort, `ns`, follows new users of NSAIDs — patients starting
-either a nonselective NSAID or a Cox-2 selective inhibitor — and asks
-whether the choice of drug class affects the risk of incident peptic
+The first cohort, `ns`, follows new users of NSAIDs, patients starting
+either a nonselective NSAID or a Cox-2 selective inhibitor, and allows us to examine how the choice of medication class affects the risk of incident peptic
 ulcer disease. `glimpse()` gives a quick sense of what is in it:
 
 ```{r glimpse-ns}
@@ -146,14 +141,11 @@ censoring. For now it is enough to know that `sta` is larger than `ns`,
 that its outcomes accrue over years of follow-up, and that it is the
 cohort the book turns to once follow-up time matters.
 
-Appendix B collects a full codebook for both cohorts, generated directly
-from the data rather than typed out by hand, so it will always match
-what is actually in the package. If you are ever unsure what a variable
-means, that is the place to check.
+Appendix B provides a full codebook for both cohorts. If you are ever unsure what a variable means, that is the place to check.
 
 ## Plotting with ggplot2
 
-`ggplot2` builds a plot by mapping columns of data to visual properties
+`ggplot2` is an elegant framework for graphing.  It works by building a plot by mapping columns of data to visual properties
 — an x-axis, a y-axis, a color — and then adding layers on top that
 say how to draw it: as points, bars, lines, or histograms. Every
 `ggplot2` call in this book starts the same way, with `ggplot(data,
