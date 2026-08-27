@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-26" />
+<meta name="date" content="2026-08-27" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -161,7 +161,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html"><i class="fa fa-check"></i><b>2</b> Getting started with R and the NAMCS data</a>
 <ul>
 <li class="chapter" data-level="2.1" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#r-rstudio-and-the-tidyverse"><i class="fa fa-check"></i><b>2.1</b> R, RStudio, and the tidyverse</a></li>
-<li class="chapter" data-level="2.2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-teaching-cohorts"><i class="fa fa-check"></i><b>2.2</b> The NAMCS teaching cohorts</a></li>
+<li class="chapter" data-level="2.2" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-cohorts"><i class="fa fa-check"></i><b>2.2</b> The NAMCS cohorts</a></li>
 <li class="chapter" data-level="2.3" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#plotting-with-ggplot2"><i class="fa fa-check"></i><b>2.3</b> Plotting with ggplot2</a></li>
 <li class="chapter" data-level="2.4" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1"><i class="fa fa-check"></i><b>2.4</b> Your first reusable functions: Table 1</a></li>
 <li class="chapter" data-level="2.5" data-path="getting-started-with-r-and-the-namcs-data.html"><a href="getting-started-with-r-and-the-namcs-data.html#exercises"><i class="fa fa-check"></i><b>2.5</b> Exercises</a></li>
@@ -311,7 +311,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="getting-started-with-r-and-the-namcs-data" class="section level1 hasAnchor" number="2">
 <h1><span class="header-section-number">Chapter 2</span> Getting started with R and the NAMCS data<a href="getting-started-with-r-and-the-namcs-data.html#getting-started-with-r-and-the-namcs-data" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Every idea in this book is attached to code written in R. If you
+<p>Every idea in this book is illustrated with code written in R. If you
 have never used R before, this chapter introduces enough of the
 tidyverse to read and write the data manipulations used in the
 chapters that follow, describes the two example cohorts we will work
@@ -403,23 +403,18 @@ causal inference yet; it is description, but description is where an
 analysis begins, and it is worth being fluent in it before adding
 any causal machinery.</p>
 </div>
-<div id="the-namcs-teaching-cohorts" class="section level2 hasAnchor" number="2.2">
-<h2><span class="header-section-number">2.2</span> The NAMCS teaching cohorts<a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-teaching-cohorts" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="the-namcs-cohorts" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> The NAMCS cohorts<a href="getting-started-with-r-and-the-namcs-data.html#the-namcs-cohorts" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The data behind every example in this book come from the National
 Ambulatory Medical Care Survey (NAMCS), an annual survey of visits to
 office-based physicians in the United States. We use five years of
-NAMCS, 2005 through 2009, assembled into two teaching cohorts by the
+NAMCS, 2005 through 2009, assembled into two cohorts by the
 <code>NAMCS</code> R package. Both cohorts are built from real survey visits, but
 the outcomes — peptic ulcer disease in one cohort, cardiovascular events
-and survival times in the other — are simulated, so that we know there
-is a true underlying data-generating process while still working with
-realistic covariate structure. This is common in causal inference
-teaching materials: it lets us illustrate methods with plausible clinical
-questions without the ambiguity of relying on outcomes we cannot
-validate.</p>
-<p>The first cohort, <code>ns</code>, follows new users of NSAIDs — patients starting
-either a nonselective NSAID or a Cox-2 selective inhibitor — and asks
-whether the choice of drug class affects the risk of incident peptic
+and survival times in the other — are simulated, so that we know their true underlying data-generating process while still working with a
+realistic covariate structure. This allows us to recover the true causal effect and assess the properties of different estimators, something that would be impossible with a real outcome.</p>
+<p>The first cohort, <code>ns</code>, follows new users of NSAIDs, patients starting
+either a nonselective NSAID or a Cox-2 selective inhibitor, and allows us to examine how the choice of medication class affects the risk of incident peptic
 ulcer disease. <code>glimpse()</code> gives a quick sense of what is in it:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb13-1" tabindex="-1"></a><span class="fu">glimpse</span>(ns)</span></code></pre></div>
 <pre><code>## Rows: 2,882
@@ -556,14 +551,11 @@ any of that machinery until Chapter 10, on survival outcomes and
 censoring. For now it is enough to know that <code>sta</code> is larger than <code>ns</code>,
 that its outcomes accrue over years of follow-up, and that it is the
 cohort the book turns to once follow-up time matters.</p>
-<p>Appendix B collects a full codebook for both cohorts, generated directly
-from the data rather than typed out by hand, so it will always match
-what is actually in the package. If you are ever unsure what a variable
-means, that is the place to check.</p>
+<p>Appendix B provides a full codebook for both cohorts. If you are ever unsure what a variable means, that is the place to check.</p>
 </div>
 <div id="plotting-with-ggplot2" class="section level2 hasAnchor" number="2.3">
 <h2><span class="header-section-number">2.3</span> Plotting with ggplot2<a href="getting-started-with-r-and-the-namcs-data.html#plotting-with-ggplot2" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p><code>ggplot2</code> builds a plot by mapping columns of data to visual properties
+<p><code>ggplot2</code> is an elegant framework for graphing. It works by building a plot by mapping columns of data to visual properties
 — an x-axis, a y-axis, a color — and then adding layers on top that
 say how to draw it: as points, bars, lines, or histograms. Every
 <code>ggplot2</code> call in this book starts the same way, with <code>ggplot(data, aes(...))</code> naming the data and the mapping, followed by one or more

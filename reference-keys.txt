@@ -22,7 +22,7 @@ what-this-book-covers
 how-to-read-this-book
 getting-started-with-r-and-the-namcs-data
 r-rstudio-and-the-tidyverse
-the-namcs-teaching-cohorts
+the-namcs-cohorts
 plotting-with-ggplot2
 your-first-reusable-functions-table-1
 exercises
