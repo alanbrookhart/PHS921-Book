@@ -30,7 +30,7 @@ description: >
 <circle cx="142" cy="152" r="15" fill="#012169" stroke="#7fb2e5" stroke-width="3"></circle>
 </svg>
 <p class="cover-affil">Department of Population Health Sciences<br>Duke University School of Medicine</p>
-<p class="cover-date">`r format(Sys.Date(), "%B %Y")`</p>
+<p class="cover-date">Last updated: `r format(Sys.Date(), "%B %Y")`</p>
 </div>
 
 # Preface {-}
