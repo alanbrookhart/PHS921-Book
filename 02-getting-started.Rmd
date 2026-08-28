@@ -17,8 +17,7 @@ sets and read the Table 1 section, since `table1_continuous()` and
 
 ## R, RStudio, and the tidyverse
 
-R is the language; RStudio is the editor most people use to write and run
-it. Appendix A walks through installing both, along with the packages
+R is the language; RStudio is the interactive development environment that most people use to write and run R program interactively. Appendix A walks through installing both, along with the packages
 this book relies on. Once they are installed, you will type or paste code
 into a script or, as here, into a code chunk inside an R Markdown
 document, and run it a line or a chunk at a time.
