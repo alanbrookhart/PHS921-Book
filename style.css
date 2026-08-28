@@ -2,7 +2,7 @@ p { line-height: 1.6; }
 
 /* Draft watermark: remove this block when the book is final */
 .book .book-body .page-wrapper::before {
-  content: "IN DRAFT";
+  content: "DRAFT -- FOR REVIEW ONLY";
   position: fixed;
   top: 50%;
   left: 50%;
