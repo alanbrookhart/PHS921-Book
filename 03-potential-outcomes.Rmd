@@ -8,8 +8,7 @@ Chapter 1 asked whether Cox-2 selective NSAIDs cause less peptic ulcer
 disease than nonselective NSAIDs, and then showed that the obvious way of
 answering the question, comparing crude risks between the two groups,
 does not actually answer it, because Cox-2 initiators and nonselective
-initiators differ in ways connected to ulcer risk before either drug is
-ever taken. In this chapter we build the vocabulary needed to say
+initiators differ with respect to baseline risk (the risk before either drug is started.) In this chapter we build the vocabulary needed to say
 precisely what went wrong in that comparison, and what an answer to the
 question would have to look like. The framework is called **potential
 outcomes**, and it allows a causal effect to be defined as a specific

@@ -7,8 +7,7 @@ source("R/setup.R")
 Chapter 3 raised exchangeability as the condition that made the naive
 comparison in Chapter 1 fail: Cox-2 initiators and nonselective
 initiators were not exchangeable, because physicians tended to route higher risk patients
-towards selective Cox-2 inhibitors. That chapter also promised, in passing, that a randomized
-trial provides exchangeability "by construction," rather than by an
+towards selective Cox-2 inhibitors. That chapter also promised, in passing, that a randomized trial provides exchangeability "by construction," rather than by an
 assumption you have to defend with subject-matter argument. In this
 chapter we make good on that promise, first in code and then in words,
 by showing why handing the treatment decision to a random number

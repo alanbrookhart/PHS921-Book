@@ -17,12 +17,12 @@ sets and read the Table 1 section, since `table1_continuous()` and
 
 ## R, RStudio, and the tidyverse
 
-R is the language; RStudio is the interactive development environment that most people use to write and run R program interactively. Appendix A walks through installing both, along with the packages
-this book relies on. Once they are installed, you will type or paste code
+R is the language and RStudio is the interactive development environment that most people use to write and run R program interactively. Appendix A walks through installing both, along with the packages
+this book uses. Once they are installed, you will type or paste code
 into a script or, as here, into a code chunk inside an R Markdown
 document, and run it a line or a chunk at a time.
 
-The basic vocabulary of R is small. An **object** is a name that holds a
+The basic vocabulary of R is fairly small. An **object** is a name that holds a
 value — a number, a piece of text, or, most often in this book, a
 rectangular data set with rows and columns (a **data frame**, or in the
 tidyverse a **tibble**). A **function** takes some input, does something
@@ -96,8 +96,7 @@ and survival times in the other — are simulated, so that we know their true un
 realistic covariate structure. This allows us to recover the true causal effect and assess the properties of different estimators, something that would be impossible with a real outcome.
 
 The first cohort, `ns`, follows new users of NSAIDs, patients starting
-either a nonselective NSAID or a Cox-2 selective inhibitor, and allows us to examine how the choice of medication class affects the risk of incident peptic
-ulcer disease. `glimpse()` gives a quick sense of what is in it:
+either a nonselective NSAID or a Cox-2 selective inhibitor, and allows us to examine how the choice of medication class affects the risk of incident peptic ulcer disease. `glimpse()` gives a quick sense of what is in it:
 
 ```{r glimpse-ns}
 glimpse(ns)
@@ -138,7 +137,7 @@ that first event was the cardiovascular event. We will not need
 any of that machinery until Chapter 10, on survival outcomes and
 censoring. For now it is enough to know that `sta` is larger than `ns`,
 that its outcomes accrue over years of follow-up, and that it is the
-cohort the book turns to once follow-up time matters.
+cohort the book uses to illustrate methods for time-to-event data.
 
 Appendix B provides a full codebook for both cohorts. If you are ever unsure what a variable means, that is the place to check.
 
@@ -194,11 +193,11 @@ will concern us once we take up adjustment for confounding.
 
 ## Your first reusable functions: Table 1
 
-Nearly every observational paper opens with a table describing the
+Nearly every study of an observational cohort includes a table describing the
 characteristics of the groups under comparison, conventionally called
 "Table 1." It is descriptive rather than causal, but it is where a
 reader first sees whether the groups appear comparable, and often where
-a reader first suspects that they are not. Because some version of this
+a reader first suspects that they may not be. Because some version of this
 table is needed for nearly every study, we will write it once, as a
 function, and reuse it for the rest of the book.
 
