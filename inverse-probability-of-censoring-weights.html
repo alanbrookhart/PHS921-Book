@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 11 Inverse probability of censoring weights | Causal Inference in Epidemiology Using R</title>
   <meta name="description" content="An introduction to causal inference with epidemiologic applications in R." />
-  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.48 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 11 Inverse probability of censoring weights | Causal Inference in Epidemiology Using R" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-28" />
+<meta name="date" content="2026-09-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -311,12 +311,10 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
             <section class="normal" id="section-">
 <div id="inverse-probability-of-censoring-weights" class="section level1 hasAnchor" number="11">
 <h1><span class="header-section-number">Chapter 11</span> Inverse probability of censoring weights<a href="inverse-probability-of-censoring-weights.html#inverse-probability-of-censoring-weights" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p>Chapter 10 closed with a diagram that placed loss to follow-up between
+<p>Chapter 10 closed with a diagram that placed loss to follow up as a downstream effect of of both
 treatment and an unmeasured element of prognosis, making every risk set
-past time zero a selected sample and every Kaplan–Meier factor a
-comparison among survivors of that selection. It also promised that we
-already have the tool for the problem. Chapter 9 encountered a problem of
-the same shape, namely a variable associated with treatment that we could
+past time zero a selected sample of survivors of that selection process. It also promised that we
+already have the tool for the problem. Chapter 9 encountered a similar problem, namely a variable associated with treatment that we could
 not condition on without introducing bias elsewhere, and addressed it by
 reweighting rather than conditioning. This chapter builds the
 corresponding weights for censoring, which requires reshaping the cohort
@@ -330,14 +328,8 @@ L)\)</span>, and it builds a pseudo-population in which treatment is unrelated t
 <span class="math inline">\(L\)</span>. An <strong>inverse probability of censoring weight</strong> is the reciprocal of
 the probability of the <em>observation status</em> a patient actually had: among
 patients still under observation at time <span class="math inline">\(t\)</span>, each is weighted by one
-over her probability of having remained uncensored that long. She then
-stands in for herself and for the patients like her who dropped out, and in
-the reweighted data the people we can still see represent the people we
-started with.</p>
-<p>One structural difference matters. Treatment here happens once, at time
-zero, so its weight is a single number per patient. Censoring accumulates:
-a patient must survive being censored in the first year, and then the
-second, and so on, and the chance of getting through all of it is a
+over her probability of having remained uncensored up until that time. The weight reflect both her contribution to the analysis and allows her to stand in for for the patients like her who were censored. In the reweighted data, censoring risk should be unrelated to the measured patient characteristics included in the censoring model.</p>
+<p>One structural difference is worth noting. Treatment here happens once, at time zero, so its weight is a single number per patient. Censoring accumulates: a patient must survive being censored in the first year, and then the second, and so on, and the chance of getting through all of it is a
 product of the chances of getting through each piece. Splitting follow-up
 into intervals <span class="math inline">\(k = 1, \dots, K\)</span> and writing <span class="math inline">\(C_k = 1\)</span> for censoring
 during interval <span class="math inline">\(k\)</span>, the weight in effect at interval <span class="math inline">\(t\)</span> is</p>
@@ -351,7 +343,7 @@ censoring model.</p>
 <p>What the weights buy is a weaker but still unverifiable assumption.
 Kaplan–Meier requires censoring to be non-informative outright, whereas
 the weighted analysis requires it to be non-informative <em>given the
-covariates in the censoring model</em>, which is the survival-data version of
+covariates in the censoring model</em>, which is the survival data version of
 conditional exchangeability. Two things are needed to fit it: a data
 structure with one row per patient per interval, and a model for
 censoring in that structure.</p>
@@ -359,7 +351,7 @@ censoring in that structure.</p>
 <div id="person-period-data" class="section level2 hasAnchor" number="11.2">
 <h2><span class="header-section-number">11.2</span> Person-period data<a href="inverse-probability-of-censoring-weights.html#person-period-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
 <p>The step that makes everything else straightforward is to stop treating
-each patient as one row. Cut follow-up into yearly intervals and give a
+each patient as one row. Discretize follow-up into intervals and give a
 patient one row for each interval she survives into, carrying her
 baseline covariates along; the row records the interval, whether the
 outcome happened in it, and whether censoring happened in it. A patient
@@ -502,27 +494,19 @@ trial named, not only ratios.</p>
 </div>
 <div id="building-censoring-weights" class="section level2 hasAnchor" number="11.3">
 <h2><span class="header-section-number">11.3</span> Building censoring weights<a href="inverse-probability-of-censoring-weights.html#building-censoring-weights" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>The censoring indicator above makes a substantive choice worth defending.
-Of the ways follow-up ends in <code>sta</code>, only loss to follow-up is treated as
-the censoring we weight for. Administrative censoring at
+<p>The censoring indicator above makes a substantive choice that should be noted. Of the ways follow-up ends in <code>sta</code>, only loss to follow-up is treated as
+the censoring risk that is modeled. Administrative censoring at
 10 years is excluded because it happens to everyone still
-present at a calendar boundary that no covariate predicts — the benign
-case of Chapter 10. Death is excluded for a less comfortable reason: it
-is a competing risk that Chapter 10 chose to treat as censoring, and
-putting it in the censoring model would weight the analysis toward a
-world in which nobody dies of anything else, an estimand harder to defend
-than the one we have. Both exclusions are substantive assumptions rather
-than conveniences, and the second is the weakest point in this chapter’s
-analysis.</p>
-<p>With the indicator fixed, the censoring model is a pooled logistic
+at risk at that moment and therefore should be unrelated to covariates. Treating death as a censoring event is common however putting it in the censoring model would implicitly target an estimand of a treatment effect in a world in which death didn’t occur.</p>
+<p>With the indicator fixed, censoring risk is often estimated with a pooled logistic
 regression of <code>censored</code> on time and the baseline covariates, fitted
-across all person-period rows at once. In lecture, and in much of the
+across all person-period rows at once. In the accompanying lecture, and in much of the
 literature, censoring models are instead fitted with Cox proportional
 hazards regression; the pooled logistic on person-period data is its
 discrete-time analog, and with intervals this short the two give
 essentially the same weights. Our estimator wraps the whole
 sequence: fit the censoring model, fit the numerator model, take the
-running product down each patient’s rows, truncate, and fit the weighted
+running product, possibly truncate, and then fit the weighted
 outcome model.</p>
 <div class="sourceCode" id="cb103"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb103-1"><a href="inverse-probability-of-censoring-weights.html#cb103-1" tabindex="-1"></a>ipcw_estimator <span class="ot">&lt;-</span> <span class="cf">function</span>(pp_data, censor_model, outcome_formula,</span>
 <span id="cb103-2"><a href="inverse-probability-of-censoring-weights.html#cb103-2" tabindex="-1"></a>                           <span class="at">id =</span> <span class="st">&quot;.row_id&quot;</span>, <span class="at">numerator_model =</span> <span class="cn">NULL</span>,</span>
@@ -554,18 +538,12 @@ outcome model.</p>
 <span id="cb103-28"><a href="inverse-probability-of-censoring-weights.html#cb103-28" tabindex="-1"></a>  )</span>
 <span id="cb103-29"><a href="inverse-probability-of-censoring-weights.html#cb103-29" tabindex="-1"></a>  <span class="fu">list</span>(<span class="at">fit =</span> broom<span class="sc">::</span><span class="fu">tidy</span>(fit, <span class="at">conf.int =</span> <span class="cn">TRUE</span>), <span class="at">data =</span> pp_data)</span>
 <span id="cb103-30"><a href="inverse-probability-of-censoring-weights.html#cb103-30" tabindex="-1"></a>}</span></code></pre></div>
-<p>The <code>cumprod()</code> line carries the time-varying idea in a single
-expression. Grouped by patient and ordered by interval, the weight at interval <span class="math inline">\(t\)</span> is
+<p>The <code>cumprod()</code> functions returns the cumulative product of the time-varying weights across intervals. Grouped by patient and ordered by interval, the weight at interval <span class="math inline">\(t\)</span> is
 the running product of stabilized numerators over the running product of
 uncensored probabilities, exactly the <span class="math inline">\(W^{C}(t)\)</span> written above. When
 <code>numerator_model</code> is <code>NULL</code> the numerator is 1 and the weights are
 unstabilized. Truncation reuses Chapter 9’s <code>pmin(w, quantile(w, p))</code>,
-here applied across all rows rather than all patients. The fit goes
-through <code>geepack::geeglm()</code> with <code>id</code> set to the patient identifier, which
-now does real work: a patient contributes several correlated rows, and
-treating them as independent observations would understate the standard
-error on two counts, once for the weights and once for the repeated rows.
-Clustering on the patient addresses both. The function returns the tidied
+here applied across all rows rather than all patients. The fit uses <code>geepack::geeglm()</code> with <code>id</code> set to the patient identifier, which is needed for correct inference. The function returns the tidied
 fit together with the weighted data, so that the weights themselves can
 be inspected.</p>
 <div class="sourceCode" id="cb104"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb104-1"><a href="inverse-probability-of-censoring-weights.html#cb104-1" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">ipcw_estimator</span>(</span>
@@ -645,10 +623,9 @@ be inspected.</p>
 </tr>
 </tbody>
 </table>
-<p>The outcome model is deliberately thin: <code>statin</code>, a spline in time, and
-nothing else. Confounding of the treatment contrast is Chapter 9’s job
-and is not addressed here, so the <code>statin</code> coefficient in that table is a
-censoring-corrected <em>crude</em> comparison, not an effect estimate. (A weighted binomial fit also
+<p>The outcome model is parsimonious: <code>statin</code>, a spline in time, and
+nothing else. Addressing confounding is discussed Chapter 9 and not further discussed here, so the <code>statin</code> coefficient in that table is a
+censoring-corrected <em>crude</em> comparison, not an estimate of a causal effect. (A weighted binomial fit also
 provokes a warning about non-integer successes, since the weights are
 fractional; it is expected, and the sandwich variance is what we are
 relying on rather than the likelihood.)</p>
@@ -745,8 +722,7 @@ represents, and such a claim should be examined before it is relied upon.</p>
 </tr>
 </tbody>
 </table>
-<p>Two features of the table deserve comment, of which the second is the
-more important. The stabilized weights average
+<p>Two features of the table deserve comment. The stabilized weights average
 1.000 with a standard
 deviation of 0.034, which is the reassuring
 diagnostic, indicating that the censoring model is not producing a

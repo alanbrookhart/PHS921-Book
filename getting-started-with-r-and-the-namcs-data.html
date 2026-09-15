@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Chapter 2 Getting started with R and the NAMCS data | Causal Inference in Epidemiology Using R</title>
   <meta name="description" content="An introduction to causal inference with epidemiologic applications in R." />
-  <meta name="generator" content="bookdown 0.47 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.48 and GitBook 2.6.7" />
 
   <meta property="og:title" content="Chapter 2 Getting started with R and the NAMCS data | Causal Inference in Epidemiology Using R" />
   <meta property="og:type" content="book" />
@@ -23,7 +23,7 @@
 <meta name="author" content="M. Alan Brookhart" />
 
 
-<meta name="date" content="2026-08-28" />
+<meta name="date" content="2026-09-15" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -323,11 +323,11 @@ sets and read the Table 1 section, since <code>table1_continuous()</code> and
 <code>table1_categorical()</code> are used again in later chapters.</p>
 <div id="r-rstudio-and-the-tidyverse" class="section level2 hasAnchor" number="2.1">
 <h2><span class="header-section-number">2.1</span> R, RStudio, and the tidyverse<a href="getting-started-with-r-and-the-namcs-data.html#r-rstudio-and-the-tidyverse" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>R is the language; RStudio is the interactive development environment that most people use to write and run R program interactively. Appendix A walks through installing both, along with the packages
-this book relies on. Once they are installed, you will type or paste code
+<p>R is the language and RStudio is the interactive development environment that most people use to write and run R program interactively. Appendix A walks through installing both, along with the packages
+this book uses. Once they are installed, you will type or paste code
 into a script or, as here, into a code chunk inside an R Markdown
 document, and run it a line or a chunk at a time.</p>
-<p>The basic vocabulary of R is small. An <strong>object</strong> is a name that holds a
+<p>The basic vocabulary of R is fairly small. An <strong>object</strong> is a name that holds a
 value — a number, a piece of text, or, most often in this book, a
 rectangular data set with rows and columns (a <strong>data frame</strong>, or in the
 tidyverse a <strong>tibble</strong>). A <strong>function</strong> takes some input, does something
@@ -413,8 +413,7 @@ the outcomes — peptic ulcer disease in one cohort, cardiovascular events
 and survival times in the other — are simulated, so that we know their true underlying data-generating process while still working with a
 realistic covariate structure. This allows us to recover the true causal effect and assess the properties of different estimators, something that would be impossible with a real outcome.</p>
 <p>The first cohort, <code>ns</code>, follows new users of NSAIDs, patients starting
-either a nonselective NSAID or a Cox-2 selective inhibitor, and allows us to examine how the choice of medication class affects the risk of incident peptic
-ulcer disease. <code>glimpse()</code> gives a quick sense of what is in it:</p>
+either a nonselective NSAID or a Cox-2 selective inhibitor, and allows us to examine how the choice of medication class affects the risk of incident peptic ulcer disease. <code>glimpse()</code> gives a quick sense of what is in it:</p>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="getting-started-with-r-and-the-namcs-data.html#cb13-1" tabindex="-1"></a><span class="fu">glimpse</span>(ns)</span></code></pre></div>
 <pre><code>## Rows: 2,882
 ## Columns: 60
@@ -549,7 +548,7 @@ that first event was the cardiovascular event. We will not need
 any of that machinery until Chapter 10, on survival outcomes and
 censoring. For now it is enough to know that <code>sta</code> is larger than <code>ns</code>,
 that its outcomes accrue over years of follow-up, and that it is the
-cohort the book turns to once follow-up time matters.</p>
+cohort the book uses to illustrate methods for time-to-event data.</p>
 <p>Appendix B provides a full codebook for both cohorts. If you are ever unsure what a variable means, that is the place to check.</p>
 </div>
 <div id="plotting-with-ggplot2" class="section level2 hasAnchor" number="2.3">
@@ -605,11 +604,11 @@ will concern us once we take up adjustment for confounding.</p>
 </div>
 <div id="your-first-reusable-functions-table-1" class="section level2 hasAnchor" number="2.4">
 <h2><span class="header-section-number">2.4</span> Your first reusable functions: Table 1<a href="getting-started-with-r-and-the-namcs-data.html#your-first-reusable-functions-table-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Nearly every observational paper opens with a table describing the
+<p>Nearly every study of an observational cohort includes a table describing the
 characteristics of the groups under comparison, conventionally called
 “Table 1.” It is descriptive rather than causal, but it is where a
 reader first sees whether the groups appear comparable, and often where
-a reader first suspects that they are not. Because some version of this
+a reader first suspects that they may not be. Because some version of this
 table is needed for nearly every study, we will write it once, as a
 function, and reuse it for the rest of the book.</p>
 <p>A function in R is defined with <code>function(...)</code>, naming its arguments,
